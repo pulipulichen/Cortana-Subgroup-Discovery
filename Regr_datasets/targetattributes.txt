@@ -1,0 +1,22 @@
+This file documents the datasets suitable for Single Regression mining, and
+their target attributes (occasionally with column index, starting at 1). Some 
+datasets can be found in this folder, while others can be found in 
+../SD_datasets since these are primarily suitable for Single Nominal mining.
+
+Dataset, Target
+---------------
+Abalone, Class_Rings
+Adult, Age
+Auto-mpg, class
+Automobile, price (26) / normalized-losses (2)
+Boston-housing, MEDV (14)
+CMC, Wifes_age
+Communities, ViolentCrimesPerPop
+Dermatology, Age
+Forestfires, area (13)
+Glass, RI
+Haberman, Age_of_patient_at_time_of_operation
+Pima-indians, age
+Servo, class
+YearPredictionMSD, year (1)
+Zoo, legs

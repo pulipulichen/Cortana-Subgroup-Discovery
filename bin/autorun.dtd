@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT autorun (experiment+)>
+<!ATTLIST autorun nr_experiments CDATA #REQUIRED>
+
+<!ELEMENT experiment (id?, target_concept, search_parameters, table)>
+<!ATTLIST experiment id CDATA #REQUIRED>
+
+<!ELEMENT target_concept (nr_target_attributes,
+				target_type,
+				primary_target,
+				target_value,
+				secondary_target,
+				multi_targets)>
+	<!ELEMENT nr_target_attributes (#PCDATA)>
+	<!ELEMENT target_type (#PCDATA)>
+	<!ELEMENT primary_target (#PCDATA)>
+	<!ELEMENT target_value (#PCDATA)>
+	<!ELEMENT secondary_target (#PCDATA)>
+	<!ELEMENT multi_targets (#PCDATA)>
+
+<!ELEMENT search_parameters (quality_measure,
+				quality_measure_minimum,
+				search_depth,
+				minimum_coverage,
+				maximum_coverage_fraction,
+				maximum_subgroups,
+				maximum_time,
+				search_strategy,
+				use_nominal_sets,
+				search_strategy_width,
+				numeric_operators,
+				numeric_strategy,
+				nr_bins,
+				nr_threads,
+				alpha,
+				beta,
+				post_processing_do_autorun,
+				post_processing_count)>
+	<!ELEMENT quality_measure (#PCDATA)>
+	<!ELEMENT quality_measure_minimum (#PCDATA)>
+	<!ELEMENT search_depth (#PCDATA)>
+	<!ELEMENT minimum_coverage (#PCDATA)>
+	<!ELEMENT maximum_coverage_fraction (#PCDATA)>
+	<!ELEMENT maximum_subgroups (#PCDATA)>
+	<!ELEMENT maximum_time (#PCDATA)>
+	<!ELEMENT search_strategy (#PCDATA)>
+	<!ELEMENT use_nominal_sets (#PCDATA)>
+	<!ELEMENT search_strategy_width (#PCDATA)>
+	<!ELEMENT numeric_operators (#PCDATA)>
+	<!ELEMENT numeric_strategy (#PCDATA)>
+	<!ELEMENT nr_bins (#PCDATA)>
+	<!ELEMENT nr_threads (#PCDATA)>
+	<!ELEMENT alpha (#PCDATA)>
+	<!ELEMENT beta (#PCDATA)>
+	<!ELEMENT post_processing_do_autorun (#PCDATA)>
+	<!ELEMENT post_processing_count (#PCDATA)>
+
+<!ELEMENT table (table_name, source, column+)>
+	<!ELEMENT table_name (#PCDATA)>
+	<!ELEMENT source (#PCDATA)>
+		<!ELEMENT column (type,
+					name,
+					short,
+					index,
+					missing_value,
+					enabled)>
+			<!ELEMENT type (#PCDATA)>
+			<!ELEMENT name (#PCDATA)>
+			<!ELEMENT short (#PCDATA)>
+			<!ELEMENT index (#PCDATA)>
+			<!ELEMENT missing_value (#PCDATA)>
+			<!ELEMENT enabled (#PCDATA)>
+

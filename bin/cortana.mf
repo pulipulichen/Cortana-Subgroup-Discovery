@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: nl.liacs.subdisc.gui.SubDisc
+SplashScreen-Image: cortana.jpg
+Class-Path: ./libs/jfreechart-1.0.14.jar ./libs/jcommon-1.0.17.jar ./libs/weka.jar
+
