@@ -1,0 +1,1 @@
+javaw -Dfile.encoding=UTF-8 -jar cortana1782.jar
