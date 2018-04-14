@@ -66,27 +66,6 @@ public class MiningWindow extends JFrame implements ActionListener
 		else
 			initMiningWindow();
 	}
-	
-	public void setup(Table theTable) {
-		if (theTable != null)
-		{
-			itsTable = theTable;
-			this.update();
-		}
-	}
-	
-	public void setup(Table theTable, SearchParameters theSearchParameters) {
-		if (theTable != null)
-		{
-			itsTable = theTable;
-			
-			if (theSearchParameters != null)
-				itsTargetConcept = theSearchParameters.getTargetConcept();
-			itsSearchParameters = theSearchParameters;
-			
-			this.update();
-		}
-	}
 
 	private void initMiningWindow()
 	{
@@ -518,10 +497,10 @@ public class MiningWindow extends JFrame implements ActionListener
 
 		// search conditions
 		setSearchDepthMaximum("1");
-		setSearchCoverageMinimum("2");
+		setSearchCoverageMinimum("1");
 		setSearchCoverageMaximum("1.0");
-		setSubgroupsMaximum("0");
-		setSearchTimeMaximum("1.0");
+		setSubgroupsMaximum("100");
+		setSearchTimeMaximum("0.5");
 
 		// search strategy
 		setStrategyWidth("100");

@@ -55,9 +55,10 @@ public enum NumericStrategy implements EnumInterface
 	public static ArrayList<NumericStrategy> getNormalValues()
 	{
 		ArrayList<NumericStrategy> aResult = new ArrayList<NumericStrategy>(3);
+		aResult.add(NUMERIC_ALL);
 		aResult.add(NUMERIC_BINS);
 		aResult.add(NUMERIC_BEST);
-		aResult.add(NUMERIC_ALL);
+		
 		//no intervals!
 		return aResult;
 	}

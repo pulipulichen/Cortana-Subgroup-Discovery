@@ -8,7 +8,7 @@ public enum QM implements EnumInterface
 	// ENUM		GUI text	default measure minimum	TargetType
 
 	// SINGLE_NOMINAL quality measures
-	WRACC		("WRAcc",		"0.02",	TargetType.SINGLE_NOMINAL),
+	WRACC		("WRAcc",		"-1",	TargetType.SINGLE_NOMINAL),
 	ABSWRACC	("Abs WRAcc",		"0.02",	TargetType.SINGLE_NOMINAL),
 	CHI_SQUARED	("Chi-squared",		"50",	TargetType.SINGLE_NOMINAL),
 	INFORMATION_GAIN("Information gain",	"0.02",	TargetType.SINGLE_NOMINAL),
@@ -72,7 +72,7 @@ public enum QM implements EnumInterface
 	COSTS_WRACC		("Costs WRAcc",		"0.0",	TargetType.DOUBLE_CORRELATION),
 
 	// DOUBLE_REGRESSION quality measures
-	LINEAR_REGRESSION	("Significance of Slope Difference", "0.0", TargetType.DOUBLE_REGRESSION),
+	LINEAR_REGRESSION	("Significance of Slope Difference", "-1.0", TargetType.DOUBLE_REGRESSION),
 	COOKS_DISTANCE		("Cook's Distance",	"0.0",	TargetType.DOUBLE_REGRESSION);
 
 	// to enforce implementation of SINGLE_NUMERIC and SINGLE_ORDINAL QMs
