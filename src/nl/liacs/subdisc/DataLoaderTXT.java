@@ -81,7 +81,13 @@ public class DataLoaderTXT implements FileLoaderInterface
 		BufferedReader aReader = null;
 		try
 		{
-			aReader = new BufferedReader(new FileReader(theFile));
+			// 20180414 Open file with UTF-8 encoding
+			// https://blog.csdn.net/maxracer/article/details/5436580
+			
+			//aReader = new BufferedReader(new FileReader(theFile));
+			InputStreamReader isr = new InputStreamReader(new FileInputStream(theFile), "UTF-8");
+			aReader = new BufferedReader(isr);
+			
 			String aHeaderLine = null;
 			String aLine;
 			int aLineNr = 0;

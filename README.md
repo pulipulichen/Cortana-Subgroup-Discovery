@@ -5,3 +5,9 @@ https://pulipulichen.github.io/Cortana-Subgroup-Discovery/
 
 https://pulipulichen.github.io/Cortana-Subgroup-Discovery/release/cortana1782.jar
 https://pulipulichen.github.io/Cortana-Subgroup-Discovery/release/start_cortana.bat
+
+# How to run Cortana with source code
+
+1. Install Eclipse: https://www.eclipse.org/downloads/
+2. Create "New > Project" with the path of project.
+3. Run > Run

@@ -7,6 +7,7 @@ import java.util.List;
 
 import nl.liacs.subdisc.*;
 import nl.liacs.subdisc.FileHandler.Action;
+import nl.liacs.subdisc.gui.MiningWindow.*;
 
 public class SubDisc
 {
@@ -49,11 +50,6 @@ public class SubDisc
 	
 	public static void main(String[] args)
 	{
-		
-
-		
-		
-		
 		checkLibs();
 		if (!GraphicsEnvironment.isHeadless() && (SplashScreen.getSplashScreen() != null))
 		{
@@ -71,16 +67,27 @@ public class SubDisc
 		if (XMLAutoRun.autoRunSetting(args))
 			return;
 
+		// 20180414 Open the main window directly without open a file.
+		MiningWindow w = new MiningWindow();
+		w.actionPerformed("Open File");
+		/*
 		FileHandler aLoader = new FileHandler(Action.OPEN_FILE);
 		Table aTable = aLoader.getTable();
 		SearchParameters aSearchParameters = aLoader.getSearchParameters();
 
-		if (aTable == null)
-			new MiningWindow();
-		else if (aSearchParameters == null)
-			new MiningWindow(aTable);
-		else
-			new MiningWindow(aTable, aSearchParameters);
+		if (aTable == null) {
+			//new MiningWindow();
+			// do nothing
+		}
+		else if (aSearchParameters == null) {
+			//new MiningWindow(aTable);
+			w.setup(aTable);
+		}
+		else {
+			//new MiningWindow(aTable, aSearchParameters);
+			w.setup(aTable, aSearchParameters);
+		}
+		*/
 	}
 
 	// may move to a separate class

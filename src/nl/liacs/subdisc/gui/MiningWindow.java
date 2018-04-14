@@ -66,6 +66,27 @@ public class MiningWindow extends JFrame implements ActionListener
 		else
 			initMiningWindow();
 	}
+	
+	public void setup(Table theTable) {
+		if (theTable != null)
+		{
+			itsTable = theTable;
+			this.update();
+		}
+	}
+	
+	public void setup(Table theTable, SearchParameters theSearchParameters) {
+		if (theTable != null)
+		{
+			itsTable = theTable;
+			
+			if (theSearchParameters != null)
+				itsTargetConcept = theSearchParameters.getTargetConcept();
+			itsSearchParameters = theSearchParameters;
+			
+			this.update();
+		}
+	}
 
 	private void initMiningWindow()
 	{
@@ -1007,6 +1028,8 @@ public class MiningWindow extends JFrame implements ActionListener
 	/* MENU ITEMS */
 	private void jMenuItemOpenFileActionPerformed()
 	{
+		initGuiComponents();
+		
 		FileHandler aFileHandler =  new FileHandler(Action.OPEN_FILE);
 
 		Table aTable = aFileHandler.getTable();
@@ -2079,7 +2102,11 @@ public class MiningWindow extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent theEvent)
 	{
 		String aCommand = theEvent.getActionCommand();
-
+		this.actionPerformed(aCommand);
+	}
+		
+	public void actionPerformed(String aCommand)
+	{
 		// to be replaced by Java 7 String switch someday
 		if (STD.OPEN_FILE.GUI_TEXT.equals(aCommand))
 			jMenuItemOpenFileActionPerformed();
