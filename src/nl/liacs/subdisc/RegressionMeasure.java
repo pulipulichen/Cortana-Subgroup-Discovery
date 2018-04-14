@@ -202,6 +202,9 @@ public class RegressionMeasure
 		//if we divided by zero along the way, we are considering a degenerate candidate subgroup, hence quality=0
 		if (itsSampleSize==0 || itsSampleSize==2 || aDenominator==0)
 			return 0;
+		else if (itsSampleSize==1) {
+			return -1;
+		}
 
 		//determine variance for the complement distribution
 		aNumerator = getErrorTermVariance(itsComplementErrorTermSquaredSum, aComplementSampleSize);
@@ -211,20 +214,29 @@ public class RegressionMeasure
 		//if we divided by zero along the way, we are considering a degenerate candidate subgroup complement, hence quality=0
 		if (aComplementSampleSize==0 || aComplementSampleSize==2 || aDenominator==0)
 			return 0;
+		else if (aComplementSampleSize==1) {
+			return -1;
+		}
 
 		//calculate the difference between slopes of this measure and its complement
 		double aSlope = getSlope(itsXSum, itsYSum, itsXSquaredSum, itsXYSum, itsSampleSize);
 		double aComplementSlope = getSlope(aComplementXSum, aComplementYSum, aComplementXSquaredSum, aComplementXYSum, aComplementSampleSize);
 		double aSlopeDifference = Math.abs(aComplementSlope - aSlope);
 
-		Log.logCommandLine("\n           slope: " + aSlope);
+		Log.logCommandLine("\n     whole slope: " + aSlope);
 		Log.logCommandLine("complement slope: " + aComplementSlope);
-		Log.logCommandLine("           variance: " + aVariance);
-		Log.logCommandLine("complement variance: " + aComplementVariance);
+		Log.logCommandLine("     whole variance: " + aVariance);
+		Log.logCommandLine("complement variance: " + aComplementVariance + "\n");
 
-		if (aVariance+aComplementVariance==0)
+		if (aVariance+aComplementVariance==0) {
 			return 0;
-		else {return aSlopeDifference / Math.sqrt(aVariance+aComplementVariance);}
+		}
+		else {
+			//TODO turn this t-value into a p-value.
+			double t_value = aSlopeDifference / Math.sqrt(aVariance+aComplementVariance);
+			t_value = t_value + 1;
+			return t_value;
+		}
 	}
 
 	public double calculate(Subgroup theNewSubgroup)
@@ -233,7 +245,7 @@ public class RegressionMeasure
 		int aSampleSize = aMembers.cardinality();
 
 		//filter out rank deficient model that crash matrix multiplication library
-		if (aSampleSize<2)
+		if (aSampleSize < 2)
 		{
 			itsRankDefCount++;
 			return Double.MIN_VALUE;

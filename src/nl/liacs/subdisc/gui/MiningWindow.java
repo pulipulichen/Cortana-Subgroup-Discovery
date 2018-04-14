@@ -728,11 +728,13 @@ public class MiningWindow extends JFrame implements ActionListener
 				 * updated after creation
 				 * see initTargetValues()
 				 */
-				if (fillMiscField)
+				if (fillMiscField) {
 					addMiscFieldItem(c.getName());
+				}
 			}
 		}
-
+		
+		
 		/*
 		 * NOTE
 		 * setMultiTargets() is in initTargetAttributeItems()
@@ -744,8 +746,17 @@ public class MiningWindow extends JFrame implements ActionListener
 		 * PrimaryTarget is changed, so they need to be updated on every
 		 * jComboBoxTargetAttributeActionPerformed
 		 */
-		if (aTargetType == TargetType.MULTI_LABEL)
+		if (aTargetType == TargetType.MULTI_LABEL) {
 			setMultiTargets();
+		}
+		else if (aTargetType == TargetType.DOUBLE_REGRESSION 
+				|| aTargetType == TargetType.DOUBLE_CORRELATION) {
+			selectTargetAttributeItem(getTargetAttributeItemCount()-2);
+			selectMiscFieldItem(getMiscFieldItemCount()-1);
+		}
+		else {
+			selectTargetAttributeItem(getTargetAttributeItemCount()-1);
+		}
 
 		// Re-enable ActionEvents from these two ComboBoxes.
 		jComboBoxTargetAttribute.addActionListener(this);
@@ -892,7 +903,7 @@ public class MiningWindow extends JFrame implements ActionListener
 				if (aPrimaryColumn == aSecondaryColumn)
 				{
 					jLabelTargetInfo.setText(" regression");
-					jLabelTargetInfoText.setText("s = 0.0 + 1.0 * p");
+					jLabelTargetInfoText.setText("<html><u>s</u> = 0.0 + 1.0 * <u>p</u></html>");
 					break;
 				}
 
@@ -901,7 +912,7 @@ public class MiningWindow extends JFrame implements ActionListener
 				NumberFormat aFormatter = NumberFormat.getNumberInstance();
 				aFormatter.setMaximumFractionDigits(2);
 				jLabelTargetInfo.setText(" regression");
-				jLabelTargetInfoText.setText(String.format("s = %s + %s * p",
+				jLabelTargetInfoText.setText(String.format("<html><u>s</u> = %s + %s * <u>p</u></html>",
 										aFormatter.format(aRM.getIntercept()),
 										aFormatter.format(aRM.getSlope())));
 				break;
@@ -1318,6 +1329,7 @@ public class MiningWindow extends JFrame implements ActionListener
 			}
 			case DOUBLE_REGRESSION :
 			{
+				//Log.logCommandLine("\n     getMiscFieldName: " + getMiscFieldName());
 				itsTargetConcept.setSecondaryTarget(itsTable.getColumn(getMiscFieldName()));
 				break;
 			}
@@ -1743,11 +1755,15 @@ public class MiningWindow extends JFrame implements ActionListener
 	private String getTargetAttributeName() { return (String) jComboBoxTargetAttribute.getSelectedItem(); }
 	private void setTargetAttribute(String aName) { jComboBoxTargetAttribute.setSelectedItem(aName); }
 	private void addTargetAttributeItem(String anItem) { jComboBoxTargetAttribute.addItem(anItem); }
+	private void selectTargetAttributeItem(int selectedIndex) { jComboBoxTargetAttribute.setSelectedIndex(selectedIndex); }
+	private int getTargetAttributeItemCount() { return jComboBoxTargetAttribute.getItemCount(); }
 	private void removeAllTargetAttributeItems() { jComboBoxTargetAttribute.removeAllItems(); }
-
+	
 	// target concept - misc field (target value / secondary target)
 	private void addMiscFieldItem(String anItem) { jComboBoxMiscField.addItem(anItem); }
 	private void removeAllMiscFieldItems() { jComboBoxMiscField.removeAllItems(); }
+	private void selectMiscFieldItem(int selectedIndex) { jComboBoxMiscField.setSelectedIndex(selectedIndex); }
+	private int getMiscFieldItemCount() { return jComboBoxMiscField.getItemCount(); }
 	private String getMiscFieldName() { return (String) jComboBoxMiscField.getSelectedItem(); }
 	private void setMiscFieldName(String aValue) { jComboBoxMiscField.setSelectedItem(aValue); }
 
@@ -1888,6 +1904,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JLabel jLabelQualityMeasureMinimum;
 	private JLabel jLabelTargetAttribute;
 	private JLabel jLabelMiscField;	// also for secondary target
+	private JLabel jLabelMiscSecondaryField;	// also for secondary target
 	private JLabel jLabelMultiRegressionTargets;
 	private JLabel jLabelMultiTargets;
 	private JLabel jLabelTargetInfo;
