@@ -1324,6 +1324,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		}
 		
 		jComboBoxQualityMeasure.setToolTipText(getQualityMeasureName());
+		
 	}
 
 	// see jComboBoxTargetTypeActionPerformed
@@ -2217,9 +2218,12 @@ public class MiningWindow extends JFrame implements ActionListener
 	private void jButtonQMManualActionPerformed() {
 	    if (Desktop.isDesktopSupported()) {
 	      try {
-	    	  URI uri = new URI("http://www.google.com.tw");
+	    	  URI uri = new URI("https://github.com/pulipulichen/Cortana-Subgroup-Discovery/wiki/Quality-Measure#" + EncodingUtil.encodeHeadingAnchor(getQualityMeasureName()));
 	    	  Desktop.getDesktop().browse(uri);
-	      } catch (Exception e) { /* TODO: error handling */ }
+	      } catch (Exception e) {
+	    	  e.printStackTrace();
+	    	  /* TODO: error handling */ 
+    	  }
 	    } else { /* TODO: error handling */ }
 	  }
 }
