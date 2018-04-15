@@ -15,6 +15,7 @@ import nl.liacs.subdisc.FileHandler.Action;
 import nl.liacs.subdisc.XMLAutoRun.AutoRun;
 import nl.liacs.subdisc.Process;
 import nl.liacs.subdisc.cui.*;
+import java.net.URI;
 
 public class MiningWindow extends JFrame implements ActionListener
 {
@@ -263,13 +264,16 @@ public class MiningWindow extends JFrame implements ActionListener
 		jPanelTargetConcept.setBorder(GUI.buildBorder("Target Concept"));
 
 		// TARGET CONCEPT - labels
-		jPanelTargetConceptLabels.setLayout(new GridLayout(9, 1));
+		jPanelTargetConceptLabels.setLayout(new GridLayout(10, 1));
 
 		jLabelTargetType = initJLabel("target type");
 		jPanelTargetConceptLabels.add(jLabelTargetType);
 
 		jLabelQualityMeasure = initJLabel("quality measure");
 		jPanelTargetConceptLabels.add(jLabelQualityMeasure);
+		
+		jLabelQualityMeasureHelp = initJLabel("");
+		jPanelTargetConceptLabels.add(jLabelQualityMeasureHelp);
 
 		jLabelQualityMeasureMinimum = initJLabel("measure minimum");
 		jPanelTargetConceptLabels.add(jLabelQualityMeasureMinimum);
@@ -294,13 +298,16 @@ public class MiningWindow extends JFrame implements ActionListener
 		jPanelTargetConcept.add(jPanelTargetConceptLabels);
 
 		// TARGET CONCEPT - fields
-		jPanelTargetConceptFields.setLayout(new GridLayout(9, 1));
+		jPanelTargetConceptFields.setLayout(new GridLayout(10, 1));
 
 		jComboBoxTargetType = GUI.buildComboBox(new Object[0], TARGET_TYPE_BOX, this);
 		jPanelTargetConceptFields.add(jComboBoxTargetType);
 
 		jComboBoxQualityMeasure = GUI.buildComboBox(new Object[0], QUALITY_MEASURE_BOX, this);
 		jPanelTargetConceptFields.add(jComboBoxQualityMeasure);
+		
+		jButtonQualityMeasureHelp = initButton(STD.QM_MANUAL);
+		jPanelTargetConceptFields.add(jButtonQualityMeasureHelp);
 		
 		jTextFieldQualityMeasureMinimum = GUI.buildTextField("0");
 		jPanelTargetConceptFields.add(jTextFieldQualityMeasureMinimum);
@@ -987,6 +994,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		initEvaluationMinimum();
 
 		jComboBoxQualityMeasure.addActionListener(this);
+		jComboBoxQualityMeasure.setToolTipText(getQualityMeasureName());
 	}
 
 	// see jComboBoxTargetTypeActionPerformed
@@ -1311,8 +1319,11 @@ public class MiningWindow extends JFrame implements ActionListener
 
 		// this ALWAYS resets alpha if switching TO EDIT_DISTANCE
 		// remove upon discretion
-		if (QM.EDIT_DISTANCE.GUI_TEXT.equals(getQualityMeasureName()))
+		if (QM.EDIT_DISTANCE.GUI_TEXT.equals(getQualityMeasureName())) {
 			itsSearchParameters.setAlpha(SearchParameters.ALPHA_EDIT_DISTANCE);
+		}
+		
+		jComboBoxQualityMeasure.setToolTipText(getQualityMeasureName());
 	}
 
 	// see jComboBoxTargetTypeActionPerformed
@@ -1935,6 +1946,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JPanel jPanelTargetConceptLabels;
 	private JLabel jLabelTargetType;
 	private JLabel jLabelQualityMeasure;
+	private JLabel jLabelQualityMeasureHelp;
 	private JLabel jLabelQualityMeasureMinimum;
 	private JLabel jLabelTargetAttribute;
 	private JLabel jLabelMiscField;	// also for secondary target
@@ -1946,6 +1958,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JPanel jPanelTargetConceptFields;
 	private JComboBox jComboBoxTargetType;
 	private JComboBox jComboBoxQualityMeasure;
+	private JButton jButtonQualityMeasureHelp;
 	private JTextField jTextFieldQualityMeasureMinimum;
 	private JComboBox jComboBoxTargetAttribute;
 	private JComboBox jComboBoxMiscField;
@@ -2102,6 +2115,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		ABOUT(			"About",		KeyEvent.VK_A,	false),
 		ABOUT_CORTANA(		"Cortana",		KeyEvent.VK_I,	true),
 		// TARGET CONCEPT
+		QM_MANUAL(		"Manual",		KeyEvent.VK_Q,	false),
 		SECONDARY_TERTIARY_TARGETS("Secondary/Tertiary Targets", KeyEvent.VK_Y, false),
 		TARGETS_AND_SETTINGS(	"Targets and Settings",	KeyEvent.VK_T,	false),
 		BASE_MODEL(		"Base Model",		KeyEvent.VK_M,	false),
@@ -2178,6 +2192,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		else if (MISC_FIELD_BOX.equals(aCommand))
 			jComboBoxMiscFieldActionPerformed();
 
+		else if (STD.QM_MANUAL.GUI_TEXT.equals(aCommand))
+			jButtonQMManualActionPerformed();
 		else if (STD.SECONDARY_TERTIARY_TARGETS.GUI_TEXT.equals(aCommand))
 			jButtonMultiRegressionTargetsActionPerformed();
 		else if (STD.TARGETS_AND_SETTINGS.GUI_TEXT.equals(aCommand))
@@ -2197,4 +2213,13 @@ public class MiningWindow extends JFrame implements ActionListener
 		else if (STD.COMPUTE_THRESHOLD.GUI_TEXT.equals(aCommand))
 			jButtonComputeThresholdActionPerformed();
 	}
+	
+	private void jButtonQMManualActionPerformed() {
+	    if (Desktop.isDesktopSupported()) {
+	      try {
+	    	  URI uri = new URI("http://www.google.com.tw");
+	    	  Desktop.getDesktop().browse(uri);
+	      } catch (Exception e) { /* TODO: error handling */ }
+	    } else { /* TODO: error handling */ }
+	  }
 }
