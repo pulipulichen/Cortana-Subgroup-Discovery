@@ -176,6 +176,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		jPanelDataSetLabels = new JPanel();
 		jPanelDataSetFields = new JPanel();
 		jPanelDataSetButtons = new JPanel();
+		jButtonOpen = new JButton();
 		jButtonBrowse = new JButton();
 		jButtonExplore = new JButton();
 		jButtonMetaData = new JButton();
@@ -233,6 +234,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		final JPanel aButtonPanel = new JPanel();
 		aButtonPanel.setLayout(new GridLayout(2, 2));
 
+		jButtonOpen = initButton(STD.OPEN_FILE);
+		aButtonPanel.add(jButtonOpen);
+		
 		jButtonBrowse = initButton(STD.BROWSE);
 		aButtonPanel.add(jButtonBrowse);
 
@@ -706,6 +710,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		removeAllMultiRegressionTargetsItems();
 
 		boolean fillMiscField = (aTargetType == TargetType.DOUBLE_REGRESSION) || (aTargetType == TargetType.DOUBLE_CORRELATION);
+		int defaultTargetAttributeItemIndex = -1;
+		int defaultSecondaryAttributeItemIndex = -1;
+		
 		// primary target and (optional) MiscField
 		for (Column c : itsTable.getColumns())
 		{
@@ -731,6 +738,20 @@ public class MiningWindow extends JFrame implements ActionListener
 				if (fillMiscField) {
 					addMiscFieldItem(c.getName());
 				}
+				
+				if ( (aTargetType == TargetType.DOUBLE_REGRESSION || aTargetType == TargetType.DOUBLE_CORRELATION)) {
+					if (c.getName().equals("x")) {
+						defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-1;
+					}
+					else if (c.getName().equals("y")) {
+						defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-1;
+					}
+				}
+				else if (aTargetType == TargetType.SINGLE_NOMINAL) {
+					if (c.getName().equals("class")) {
+						defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-1;
+					}
+				}
 			}
 		}
 		
@@ -751,11 +772,22 @@ public class MiningWindow extends JFrame implements ActionListener
 		}
 		else if (aTargetType == TargetType.DOUBLE_REGRESSION 
 				|| aTargetType == TargetType.DOUBLE_CORRELATION) {
-			selectTargetAttributeItem(getTargetAttributeItemCount()-2);
-			selectMiscFieldItem(getMiscFieldItemCount()-1);
+			
+			if (defaultTargetAttributeItemIndex == -1) {
+				defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-2;
+			}
+			if (defaultSecondaryAttributeItemIndex == -1) {
+				defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-1;
+			}
+			
+			selectTargetAttributeItem(defaultTargetAttributeItemIndex);
+			selectMiscFieldItem(defaultSecondaryAttributeItemIndex);
 		}
 		else {
-			selectTargetAttributeItem(getTargetAttributeItemCount()-1);
+			if (defaultTargetAttributeItemIndex == -1) {
+				defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-1;
+			}
+			selectTargetAttributeItem(defaultTargetAttributeItemIndex);
 		}
 
 		// Re-enable ActionEvents from these two ComboBoxes.
@@ -1891,6 +1923,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JLabel jLabelNrNumericsNr;
 	private JLabel jLabelNrBinariesNr;
 	private JPanel jPanelDataSetButtons;
+	private JButton jButtonOpen;
 	private JButton jButtonBrowse;
 	private JButton jButtonExplore;
 	private JButton jButtonMetaData;
