@@ -18,6 +18,8 @@ public class RegressionMeasure
 
 	private double itsSlope; //The slope-value of the regression function
 	private double itsIntercept;//The intercept-value of the regression function
+	private double itsComplementSlope; //The slope-value of the regression function
+	private double itsComplementIntercept;//The intercept-value of the regression function
 
 	private double itsCorrelation;
 
@@ -193,49 +195,68 @@ public class RegressionMeasure
 		double aComplementXSquaredSum = itsBase.getXSquaredSum()-itsXSquaredSum;
 		double aComplementXYSum = itsBase.getXYSum()-itsXYSum;
 		double aComplementSampleSize = itsBase.getSampleSize()-itsSampleSize;
+		double aComplementXMean = aComplementXSum / aComplementSampleSize;
+		double aComplementYMean = aComplementYSum / aComplementSampleSize;
 
 		//determine variance for the distribution
-		double aNumerator = getErrorTermVariance(itsErrorTermSquaredSum, itsSampleSize);
-		double aDenominator = itsXSquaredSum - 2*itsXSum*itsXSum/itsSampleSize + itsXSum*itsXSum/itsSampleSize;
-		double aVariance = aNumerator / aDenominator;
+		double aSubgroupNumerator = getErrorTermVariance(itsErrorTermSquaredSum, itsSampleSize);
+		double aSubgroupDenominator = itsXSquaredSum - 2*itsXSum*itsXSum/itsSampleSize + itsXSum*itsXSum/itsSampleSize;
+		double aSubgroupVariance = aSubgroupNumerator / aSubgroupDenominator;
 
 		//if we divided by zero along the way, we are considering a degenerate candidate subgroup, hence quality=0
-		if (itsSampleSize==0 || itsSampleSize==2 || aDenominator==0)
+		if (itsSampleSize==0 || itsSampleSize==2 || aSubgroupDenominator==0) {
 			return 0;
-		else if (itsSampleSize==1) {
-			return -1;
 		}
+		//else if (itsSampleSize==1) {
+		//	return -1;
+		//}
 
-		//determine variance for the complement distribution
-		aNumerator = getErrorTermVariance(itsComplementErrorTermSquaredSum, aComplementSampleSize);
-		aDenominator = aComplementXSquaredSum - 2*aComplementXSum*aComplementXSum/aComplementSampleSize + aComplementXSum*aComplementXSum/aComplementSampleSize;
-		double aComplementVariance = aNumerator/aDenominator;
-
-		//if we divided by zero along the way, we are considering a degenerate candidate subgroup complement, hence quality=0
-		if (aComplementSampleSize==0 || aComplementSampleSize==2 || aDenominator==0)
-			return 0;
-		else if (aComplementSampleSize==1) {
-			return -1;
-		}
 
 		//calculate the difference between slopes of this measure and its complement
 		double aSlope = getSlope(itsXSum, itsYSum, itsXSquaredSum, itsXYSum, itsSampleSize);
 		double aComplementSlope = getSlope(aComplementXSum, aComplementYSum, aComplementXSquaredSum, aComplementXYSum, aComplementSampleSize);
 		double aSlopeDifference = Math.abs(aComplementSlope - aSlope);
+		
+		itsComplementSlope = aComplementSlope;
+		itsComplementIntercept = getIntercept(aComplementXMean, aComplementYMean, itsComplementSlope);
+		updateComplementErrorTerms();
+		
+		//determine variance for the complement distribution
+		double aComplementNumerator = getErrorTermVariance(itsComplementErrorTermSquaredSum, aComplementSampleSize);
+		double aComplementDenominator = aComplementXSquaredSum - 2*aComplementXSum*aComplementXSum/aComplementSampleSize + aComplementXSum*aComplementXSum/aComplementSampleSize;
+		double aComplementVariance = aComplementNumerator/aComplementDenominator;
 
-		Log.logCommandLine("\n     whole slope: " + aSlope);
+		//if we divided by zero along the way, we are considering a degenerate candidate subgroup complement, hence quality=0
+		if (aComplementSampleSize==0 || aComplementSampleSize==2 || aComplementDenominator==0)
+			return 0;
+		else if (aComplementSampleSize==1) {
+			return -1;
+		}
+
+
+		//Log.logCommandLine("\n  itsSampleSize: " + itsSampleSize);
+		Log.logCommandLine("\n   subgroup slope: " + aSlope);
+		Log.logCommandLine("  subgroup variance: " + aSubgroupVariance);
+		
 		Log.logCommandLine("complement slope: " + aComplementSlope);
-		Log.logCommandLine("     whole variance: " + aVariance);
+		//Log.logCommandLine("complement itsComplementErrorTermSquaredSum: " + itsComplementErrorTermSquaredSum);
+		//Log.logCommandLine("complement aComplementSampleSize: " + aComplementSampleSize);
+		//Log.logCommandLine("complement aNumerator: " + aComplementNumerator);
+		//Log.logCommandLine("complement aDenominator: " + aComplementDenominator);
 		Log.logCommandLine("complement variance: " + aComplementVariance + "\n");
 
-		if (aVariance+aComplementVariance==0) {
+		if (aSubgroupVariance+aComplementVariance==0) {
 			return 0;
 		}
 		else {
 			//TODO turn this t-value into a p-value.
-			double t_value = aSlopeDifference / Math.sqrt(aVariance+aComplementVariance);
-			t_value = t_value + 1;
-			return t_value;
+			double aTStat = aSlopeDifference / Math.sqrt(aSubgroupVariance+aComplementVariance);
+			double aDFNumerator = (aSubgroupVariance+aSubgroupVariance)*(aSubgroupVariance+aSubgroupVariance);
+			double aDFDenominatorSubgroup = aSubgroupVariance*aSubgroupVariance/(itsSampleSize-2);
+			double aDFDenominatorComplement = aComplementVariance*aComplementVariance/(aComplementSampleSize-2);
+			double aDF = aDFNumerator / (aDFDenominatorSubgroup + aDFDenominatorComplement);
+			double pValue = SmileUtils.calcTTestPValue(aTStat, aDF);
+			return (1-pValue);
 		}
 	}
 
@@ -420,6 +441,10 @@ public class RegressionMeasure
 		double aDenominator = theXSquaredSum - 2*aXMean*theXSum + theXSum*aXMean;
 		return aNumerator/aDenominator;
 	}
+	
+	private double getIntercept(double aXMean, double aYMean, double aSlope) {
+		return aYMean - aSlope*aXMean;
+	}
 
 	/**
 	 * Add a new datapoint to this measure, where the Y-value is the target variable.
@@ -481,18 +506,44 @@ public class RegressionMeasure
 		}
 
 		//update the error terms of the complement of this measure, if present
+		/*
 		if(itsBase!=null)
 		{
 			itsComplementErrorTermSquaredSum=0;
 			for(int i=0; i<(itsBase.getSampleSize()-itsSampleSize); i++)
 			{
-				if(itsComplementData.size()!=itsBase.getSampleSize()-itsSampleSize)
+				if(itsComplementData.size()!=itsBase.getSampleSize()-itsSampleSize) {
 					System.err.println("incorrect computation of complement!");
-				double anErrorTerm = getErrorTerm(itsComplementData.get(i));
+				}
+				double anErrorTerm = getComplementErrorTerm(itsComplementData.get(i));
+				Log.logCommandLine("                   i: " + i);
+				Log.logCommandLine("                   itsComplementData: " + itsComplementData.get(i));
+				Log.logCommandLine("                   anErrorTerm: " + anErrorTerm);
 				itsComplementErrorTermSquaredSum += anErrorTerm*anErrorTerm;
 			}
 		}
-
+		*/
+	}
+	
+	/**
+	 * @author pudding 20180415
+	 */
+	private void updateComplementErrorTerms() {
+		itsComplementErrorTermSquaredSum=0;
+		if(itsBase!=null)
+		{	
+			for(int i=0; i<(itsBase.getSampleSize()-itsSampleSize); i++)
+			{
+				if(itsComplementData.size()!=itsBase.getSampleSize()-itsSampleSize) {
+					System.err.println("incorrect computation of complement!");
+				}
+				double anErrorTerm = getComplementErrorTerm(itsComplementData.get(i));
+				//Log.logCommandLine("                   i: " + i);
+				//Log.logCommandLine("                   itsComplementData: " + itsComplementData.get(i));
+				//Log.logCommandLine("                   anErrorTerm: " + anErrorTerm);
+				itsComplementErrorTermSquaredSum += anErrorTerm*anErrorTerm;
+			}
+		}
 	}
 
 	/**
@@ -515,6 +566,23 @@ public class RegressionMeasure
 	private double getErrorTermVariance(double theErrorTermSquaredSum, double theSampleSize)
 	{
 		return theErrorTermSquaredSum / (theSampleSize - 2 );
+	}
+	
+	/**
+	 * Determine the error term for a given point
+	 *
+	 * @param theX the x-value
+	 * @param theY the y-value
+	 * @return the error term
+	 */
+	private double getComplementErrorTerm(double theX, double theY)
+	{
+		return theY - (itsComplementSlope*theX+itsComplementIntercept);
+	}
+
+	private double getComplementErrorTerm(Point2D.Float theDataPoint)
+	{
+		return getComplementErrorTerm(theDataPoint.getX(), theDataPoint.getY());
 	}
 
 	private int getSampleSize()

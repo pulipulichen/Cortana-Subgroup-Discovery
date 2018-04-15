@@ -611,7 +611,6 @@ public class QualityMeasure
 			}
 			case T_TEST_P_VALUE :
 			{
-				// @TODO 20180415 fix t stat. to p-value
 				if(theCoverage <= 2) {
 					aReturn = 0.0f;
 				}

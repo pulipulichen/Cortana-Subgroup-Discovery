@@ -301,7 +301,7 @@ public class MiningWindow extends JFrame implements ActionListener
 
 		jComboBoxQualityMeasure = GUI.buildComboBox(new Object[0], QUALITY_MEASURE_BOX, this);
 		jPanelTargetConceptFields.add(jComboBoxQualityMeasure);
-
+		
 		jTextFieldQualityMeasureMinimum = GUI.buildTextField("0");
 		jPanelTargetConceptFields.add(jTextFieldQualityMeasureMinimum);
 
@@ -981,8 +981,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		jComboBoxQualityMeasure.removeActionListener(this);
 
 		removeAllQualityMeasureItems();
-		for (QM qm : QM.getQualityMeasures(itsTargetConcept.getTargetType()))
+		for (QM qm : QM.getQualityMeasures(itsTargetConcept.getTargetType())) {
 			addQualityMeasureItem(qm.GUI_TEXT);
+		}
 		initEvaluationMinimum();
 
 		jComboBoxQualityMeasure.addActionListener(this);
