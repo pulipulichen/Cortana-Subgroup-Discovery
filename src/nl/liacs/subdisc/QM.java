@@ -8,6 +8,7 @@ public enum QM implements EnumInterface
 	// ENUM		GUI text	default measure minimum	TargetType
 
 	// SINGLE_NOMINAL quality measures
+	//WRACC		("WRAcc",		"0.02",	TargetType.SINGLE_NOMINAL),
 	WRACC		("WRAcc",		"-1",	TargetType.SINGLE_NOMINAL),
 	ABSWRACC	("Abs WRAcc",		"0.02",	TargetType.SINGLE_NOMINAL),
 	CHI_SQUARED	("Chi-squared",		"50",	TargetType.SINGLE_NOMINAL),
@@ -38,9 +39,10 @@ public enum QM implements EnumInterface
 	MEAN_TEST	("Mean Test",		"0.01",	TargetType.SINGLE_NUMERIC),
 	INVERSE_MEAN_TEST("Inverse Mean Test",	"0.01",	TargetType.SINGLE_NUMERIC),
 	ABS_MEAN_TEST	("Abs Mean Test",	"0.01",	TargetType.SINGLE_NUMERIC),
-	T_TEST		("t-Test",		"1.0",	TargetType.SINGLE_NUMERIC),
-	INVERSE_T_TEST	("Inverse t-Test",	"1.0",	TargetType.SINGLE_NUMERIC),
-	ABS_T_TEST	("Abs t-Test",		"1.0",	TargetType.SINGLE_NUMERIC),
+	T_TEST		("t-Test (t stat.)",		"1.0",	TargetType.SINGLE_NUMERIC),
+	INVERSE_T_TEST	("Inverse t-Test (t stat.)",	"1.0",	TargetType.SINGLE_NUMERIC),
+	ABS_T_TEST	("Abs t-Test (t stat.)",		"1.0",	TargetType.SINGLE_NUMERIC),
+	T_TEST_P_VALUE		("t-Test (p-value)",		"-1.0",	TargetType.SINGLE_NUMERIC),
 	SQUARED_HELLINGER			("Squared Hellinger distance",		"0.0",	TargetType.SINGLE_NUMERIC),
 	SQUARED_HELLINGER_WEIGHTED		("Weighted Squared Hellinger distance",	"0.0",	TargetType.SINGLE_NUMERIC),
 	SQUARED_HELLINGER_WEIGHTED_ADJUSTED	("Adjusted Squared Hellinger distance",	"0.0",	TargetType.SINGLE_NUMERIC),
@@ -72,6 +74,7 @@ public enum QM implements EnumInterface
 	COSTS_WRACC		("Costs WRAcc",		"0.0",	TargetType.DOUBLE_CORRELATION),
 
 	// DOUBLE_REGRESSION quality measures
+	//LINEAR_REGRESSION	("Significance of Slope Difference", "0.0", TargetType.DOUBLE_REGRESSION),
 	LINEAR_REGRESSION	("Significance of Slope Difference", "-1.0", TargetType.DOUBLE_REGRESSION),
 	COOKS_DISTANCE		("Cook's Distance",	"0.0",	TargetType.DOUBLE_REGRESSION);
 
@@ -166,6 +169,7 @@ public enum QM implements EnumInterface
 			case T_TEST :		return SUM_SSD;
 			case INVERSE_T_TEST :	return SUM_SSD;
 			case ABS_T_TEST :	return SUM_SSD;
+			case T_TEST_P_VALUE :	return SUM_SSD;
 			case SQUARED_HELLINGER :		return PDF;
 			case SQUARED_HELLINGER_WEIGHTED :	return PDF;
 			case SQUARED_HELLINGER_WEIGHTED_ADJUSTED :	return PDF;

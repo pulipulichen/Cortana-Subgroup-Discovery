@@ -10,4 +10,8 @@ https://pulipulichen.github.io/Cortana-Subgroup-Discovery/release/start_cortana.
 
 1. Install Eclipse: https://www.eclipse.org/downloads/
 2. Create "New > Project" with the path of project.
-3. Run > Run (Ctrl + F11)
+3. Revise codes.
+4. Run > Run (Ctrl + F11)
+
+# Resources
+* Smile: https://haifengl.github.io/smile/

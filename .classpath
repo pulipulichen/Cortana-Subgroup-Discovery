@@ -6,5 +6,8 @@
 	<classpathentry kind="lib" path="libs/weka.jar"/>
 	<classpathentry kind="lib" path="libs/Jama-1.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="libs/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="libs/smile-interpolation-1.5.1.jar"/>
+	<classpathentry kind="lib" path="libs/smile-math-1.5.1.jar" sourcepath="libs/smile-math-1.5.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

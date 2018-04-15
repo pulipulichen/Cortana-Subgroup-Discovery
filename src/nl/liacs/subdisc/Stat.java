@@ -32,7 +32,7 @@ package nl.liacs.subdisc;
  */
 public enum Stat
 {
-	SUM,	// MEAN_TEST, Z-SCORE, T_TEST, AVERAGE, AUC, WMW_RANKS
+	SUM,	// MEAN_TEST, Z-SCORE, T_TEST, T_TEST_P_VALUE, AVERAGE, AUC, WMW_RANKS
 	SSD,	// T_TEST
 	MEDIAN,	// MMAD
 	MAD,	// MMAD

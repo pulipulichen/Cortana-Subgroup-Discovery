@@ -44,6 +44,10 @@ public class SubDisc
 //		"knime-base.jar",
 //		"org.eclipse.core.runtime_3.6.0.v20100505.jar",
 //		"org.knime.core.util_4.1.1.0034734.jar",
+		// For Smile
+		"slf4j-api-1.7.25.jar",
+		"smile-interpolation-1.5.1.jar",
+		"smile-math-1.5.1.jar",
 	};
 	
 	
@@ -66,10 +70,12 @@ public class SubDisc
 
 		if (XMLAutoRun.autoRunSetting(args))
 			return;
-
+		
 		// 20180414 Open the main window directly without open a file.
 		MiningWindow w = new MiningWindow();
 		w.actionPerformed("Open File");
+		
+		
 		/*
 		FileHandler aLoader = new FileHandler(Action.OPEN_FILE);
 		Table aTable = aLoader.getTable();

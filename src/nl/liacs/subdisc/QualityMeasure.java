@@ -609,6 +609,20 @@ public class QualityMeasure
 					aReturn = (float) (Math.abs((Math.sqrt(theCoverage) * (theSum/theCoverage - itsTotalAverage)) / Math.sqrt(theSSD/(theCoverage-1))));
 				break;
 			}
+			case T_TEST_P_VALUE :
+			{
+				// @TODO 20180415 fix t stat. to p-value
+				if(theCoverage <= 2) {
+					aReturn = 0.0f;
+				}
+				else {
+					double t = (double) ((Math.sqrt(theCoverage) * ((theSum/theCoverage) - itsTotalAverage)) / Math.sqrt(theSSD/(theCoverage-1)));
+					double df = itsNrRecords + theCoverage - 1;
+					double p = SmileUtils.calcTTestPValue(t, df);
+					aReturn = (float) (1 - p);
+				}
+				break;
+			}
 			//ORDINAL
 			case AUC :
 			{
