@@ -34,7 +34,6 @@ cd ..\libs\
 jar xvf jfreechart-1.0.14.jar
 jar xvf jcommon-1.0.17.jar
 jar xvf Jama-1.0.2.jar
-jar xvf smile-math-1.5.1.jar
 rmdir /s /q META-INF
 if exist ..\bin\com\ rmdir /s /q ..\bin\com\
 if exist ..\bin\org\ rmdir /s /q ..\bin\org\

@@ -15,7 +15,7 @@ https://pulipulichen.github.io/Cortana-Subgroup-Discovery/release/start_cortana.
 
 # How to package jar
 
-/batch/compile jar.bat
+/batch/compile_jar.bat
 
 # Resources
 * Smile: https://haifengl.github.io/smile/
