@@ -1054,8 +1054,9 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 		final int aSearchDepth = itsSearchParameters.getSearchDepth();
 
 		long theEndTime = theBeginTime + (((long) itsSearchParameters.getMaximumTime()) * 60 * 1000);
-		if (theEndTime <= theBeginTime)
+		if (theEndTime <= theBeginTime) {
 			theEndTime = Long.MAX_VALUE;
+		}
 
 		/*
 		 * essential multi-thread setup
@@ -1070,7 +1071,10 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 		{
 			// wait until a Thread becomes available
 			try { s.acquire(); }
-			catch (InterruptedException e) { e.printStackTrace(); }
+			catch (InterruptedException e) { 
+				e.printStackTrace(); 
+				JOptionPane.showMessageDialog(null, e.toString());
+			}
 
 			Candidate aCandidate = null;
 			/*
@@ -1094,39 +1098,59 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 			 * are thread save, we need a compound action here
 			 * so synchronized is still needed
 			 */
-			synchronized (itsCandidateQueue)
-			{
-				final int aTotalSize = itsCandidateQueue.size();
-				final boolean alone = (s.availablePermits() == theNrThreads-1);
-				// take off first Candidate from Queue
-				if (itsCandidateQueue.currentLevelQueueSize() > 0)
-					aCandidate = itsCandidateQueue.removeFirst();
-				// obviously (currentLevelQueueSize <= 0)
-				// take solely when this is only active thread
-				else if ((aTotalSize > 0) && alone)
-					aCandidate = itsCandidateQueue.removeFirst();
-				// no other thread can add new candidates
-				else if ((aTotalSize == 0) && alone)
-					break;
-
-				int aDepth = 1;
-				String aCurrent = new String("(empty)");
-				if (aCandidate != null)
+			try {
+				synchronized (itsCandidateQueue)
 				{
-					aDepth = aCandidate.getSubgroup().getDepth()+1;
-					aCurrent = aCandidate.getSubgroup().toString();
+					final int aTotalSize = itsCandidateQueue.size();
+					final boolean alone = (s.availablePermits() == theNrThreads-1);
+					// take off first Candidate from Queue
+					if (itsCandidateQueue.currentLevelQueueSize() > 0) {
+						aCandidate = itsCandidateQueue.removeFirst();
+					}
+					// obviously (currentLevelQueueSize <= 0)
+					// take solely when this is only active thread
+					else if ((aTotalSize > 0) && alone) {
+						aCandidate = itsCandidateQueue.removeFirst();
+					}
+					// no other thread can add new candidates
+					else if ((aTotalSize == 0) && alone) {
+						break;
+					}
+	
+					int aDepth = 1;
+					String aCurrent = new String("(empty)");
+					if (aCandidate != null)
+					{
+						aDepth = aCandidate.getSubgroup().getDepth()+1;
+						aCurrent = aCandidate.getSubgroup().toString();
+					}
+					if (itsMainWindow != null) {
+						itsMainWindow.setTitle(new StringBuilder(aCurrent.length() + 32).append("d=")
+														.append(aDepth)
+														.append(", cands=")
+														.append(itsCandidateCount.get())
+														.append(", refining ")
+														.append(aCurrent).toString());
+					}
 				}
-				if (itsMainWindow != null)
-					itsMainWindow.setTitle(new StringBuilder(aCurrent.length() + 32).append("d=")
-													.append(aDepth)
-													.append(", cands=")
-													.append(itsCandidateCount.get())
-													.append(", refining ")
-													.append(aCurrent).toString());
 			}
-
-			if (aCandidate != null)
-				es.execute(new Test(aCandidate, aSearchDepth, theEndTime, s));
+			catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, e.toString());
+			}
+			
+			if (aCandidate != null) {
+				try
+				{
+					//JOptionPane.showMessageDialog(null, "before excute");
+					es.execute(new Test(aCandidate, aSearchDepth, theEndTime, s));
+					//JOptionPane.showMessageDialog(null, es.isTerminated());
+				}
+				catch (Exception e) { 
+					e.printStackTrace();
+					//JOptionPane.showMessageDialog(null, e.toString());
+				}
+			}
 			// queue was empty, but other threads were running, they
 			// may be in the process of adding new Candidates
 			// wait until at least one finishes, or this one becomes
@@ -1145,8 +1169,17 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 						s.release(aNrFree+1);
 					//continue;
 				}
-				catch (InterruptedException e) { e.printStackTrace(); }
+				catch (InterruptedException e) { 
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, e.toString());
+				}
 			}
+
+
+			if (true) {
+				//break;
+			}
+
 		}
 		es.shutdown();
 		// wait for last active threads to complete

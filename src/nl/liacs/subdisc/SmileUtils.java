@@ -18,6 +18,7 @@ import smile.math.special.Beta;
  */
 public class SmileUtils {
 	public static double calcTTestPValue(double t, double df) {
-		return Beta.regularizedIncompleteBetaFunction(0.5 * df, 0.5, df / (df + t * t));
+		//return Beta.regularizedIncompleteBetaFunction(0.5 * df, 0.5, df / (df + t * t));
+		return 0;
 	}
 }

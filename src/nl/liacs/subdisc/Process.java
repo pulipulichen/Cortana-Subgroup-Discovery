@@ -61,7 +61,11 @@ public class Process
 			}
 			case DOUBLE_REGRESSION :
 			{
+				//JOptionPane.showMessageDialog(null, "before aSubgroupDiscovery");
+				
 				aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, true, theMainWindow);
+				
+				//JOptionPane.showMessageDialog(null, "after aSubgroupDiscovery");
 				break;
 			}
 			case DOUBLE_CORRELATION :
@@ -77,7 +81,10 @@ public class Process
 									aTargetType));
 			}
 		}
+		
+		//JOptionPane.showMessageDialog(null, "before mine");
 		aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
+		//JOptionPane.showMessageDialog(null, "after mine");
 		// if 2nd argument to above mine() is 0, you effectively run:
 		//aSubgroupDiscovery.mine(System.currentTimeMillis());
 
@@ -101,8 +108,9 @@ public class Process
 		if (showWindows)
 			new ResultWindow(theTable, aSubgroupDiscovery, theFold, theBitSet);
 
-		if (CAUC_LIGHT)
+		if (CAUC_LIGHT) {
 			caucLight(aSubgroupDiscovery, theBitSet);
+		}
 
 /*		// temporary bonus results for CAUC experimentation
 		SubgroupSet aSDResult = aSubgroupDiscovery.getResult();

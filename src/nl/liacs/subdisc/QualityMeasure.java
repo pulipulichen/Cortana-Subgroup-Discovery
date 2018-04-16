@@ -1,5 +1,7 @@
 package nl.liacs.subdisc;
 
+import javax.swing.*;
+
 // TODO MM put Contingency table here without screwing up package classes layout.
 /**
  * The QualityMeasure class includes all quality measures used
@@ -617,7 +619,7 @@ public class QualityMeasure
 				else {
 					double t = (double) ((Math.sqrt(theCoverage) * ((theSum/theCoverage) - itsTotalAverage)) / Math.sqrt(theSSD/(theCoverage-1)));
 					double df = itsNrRecords + theCoverage - 1;
-					double p = SmileUtils.calcTTestPValue(t, df);
+					double p = StatUtils.PValue(t, df);
 					aReturn = (float) (1 - p);
 				}
 				break;

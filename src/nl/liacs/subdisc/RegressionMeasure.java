@@ -255,8 +255,14 @@ public class RegressionMeasure
 			double aDFDenominatorSubgroup = aSubgroupVariance*aSubgroupVariance/(itsSampleSize-2);
 			double aDFDenominatorComplement = aComplementVariance*aComplementVariance/(aComplementSampleSize-2);
 			double aDF = aDFNumerator / (aDFDenominatorSubgroup + aDFDenominatorComplement);
-			double pValue = SmileUtils.calcTTestPValue(aTStat, aDF);
-			return (1-pValue);
+			try {
+				double pValue = StatUtils.PValue(aTStat, aDF);
+				//double pValue = SmileUtils.calcTTestPValue(aTStat, aDF);
+				return (1-pValue);
+			}
+			catch (Exception e) {
+				return 0;
+			}
 		}
 	}
 

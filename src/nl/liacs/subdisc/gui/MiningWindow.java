@@ -1534,8 +1534,13 @@ public class MiningWindow extends JFrame implements ActionListener
 
 	private void runSubgroupDiscovery(Table theTable, int theFold, BitSet theBitSet)
 	{
-		setupSearchParameters();
-		Process.runSubgroupDiscovery(theTable, theFold, theBitSet, itsSearchParameters, true, getNrThreads(), this);
+		try {
+			setupSearchParameters();
+			Process.runSubgroupDiscovery(theTable, theFold, theBitSet, itsSearchParameters, true, getNrThreads(), this);
+		}
+		catch (Exception e) {
+			
+		}
 	}
 
 	private void jButtonComputeThresholdActionPerformed()

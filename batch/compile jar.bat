@@ -34,6 +34,7 @@ cd ..\libs\
 jar xvf jfreechart-1.0.14.jar
 jar xvf jcommon-1.0.17.jar
 jar xvf Jama-1.0.2.jar
+jar xvf smile-math-1.5.1.jar
 rmdir /s /q META-INF
 if exist ..\bin\com\ rmdir /s /q ..\bin\com\
 if exist ..\bin\org\ rmdir /s /q ..\bin\org\
@@ -45,6 +46,7 @@ echo extracting external jars done...
 :NO_EXTRACT
 REM pause
 
+del ..\cortana.jar
 echo creating cortana.jar
 cd ..\bin\
 jar.exe cvfm cortana.jar cortana.mf nl org com Jama autorun.dtd cortana.jpg icon.jpg
@@ -54,4 +56,4 @@ echo creating jar done... Stored in Cortana folder (../)
 move cortana.jar ..\
 cd ..\batch
 echo finished!
-pause
+start "" "javaw" -jar ..\cortana.jar
