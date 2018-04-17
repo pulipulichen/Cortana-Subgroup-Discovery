@@ -81,9 +81,17 @@ public class EncodingUtil
 
     try
     {
-      result = URLEncoder.encode(s, "UTF-8")
-                         .replaceAll("\\+", "-")
-                         .toLowerCase();
+    	s = s.replace("(", "")
+    			.replace("(", "")
+    			.replace("[", "")
+    			.replace("]", "")
+    			.replace(".", "");
+	    result = URLEncoder.encode(s, "UTF-8")
+		                     .replaceAll("\\+", "-")
+		                     .replaceAll("%28", "")
+		                     .replaceAll("%29", "")
+		                     //.replaceAll(".", "")
+		                     .toLowerCase();
     }
 
     // This exception should never occur.

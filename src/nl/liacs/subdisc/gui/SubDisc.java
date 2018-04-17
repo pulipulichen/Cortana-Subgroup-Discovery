@@ -1,6 +1,7 @@
 package nl.liacs.subdisc.gui;
 
 import java.awt.*;
+
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -8,6 +9,11 @@ import java.util.List;
 import nl.liacs.subdisc.*;
 import nl.liacs.subdisc.FileHandler.Action;
 import nl.liacs.subdisc.gui.MiningWindow.*;
+
+//import org.apache.commons.math3.stat.inference.*;
+//import com.datumbox.framework.common.dataobjects.FlatDataCollection;
+//import com.datumbox.framework.common.dataobjects.TransposeDataCollection;
+//import com.datumbox.framework.core.statistics.parametrics.independentsamples.*;
 
 public class SubDisc
 {
@@ -67,7 +73,20 @@ public class SubDisc
 		if (XMLAutoRun.autoRunSetting(args))
 			return;
 		
-		//Log.logCommandLine("" + ChiSquareUtils.PValue(2.302, 17));
+		// --------------------------------
+		
+		//double[] sample1 = {5,4,3};
+		//double[] sample2 = {7,6,16,5,4,3};
+		//Log.logCommandLine("" + TestUtils.tTest(sample1,sample2));
+		
+		//TransposeDataCollection transposeDataCollection = new TransposeDataCollection();
+        //transposeDataCollection.put(0, new FlatDataCollection(Arrays.asList(new Object[]{5,4,3})));
+        //transposeDataCollection.put(1, new FlatDataCollection(Arrays.asList(new Object[]{7,6,16,5,4,3})));
+		
+		//Log.logCommandLine("" + LevenesIndependentSamples.testVariances(transposeDataCollection, 0.5));
+		
+		// --------------------------------
+		
 		
 		// 20180414 Open the main window directly without open a file.
 		MiningWindow w = new MiningWindow();

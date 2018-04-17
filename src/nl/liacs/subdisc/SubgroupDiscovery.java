@@ -1,5 +1,6 @@
 package nl.liacs.subdisc;
 
+import java.awt.geom.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -25,6 +26,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	//target concept type-specific information, including base models
 	private BitSet itsBinaryTarget;		//SINGLE_NOMINAL
 	private Column itsNumericTarget;	//SINGLE_NUMERIC
+	private float[] itsNumericTargetMembers;
 	private Column itsPrimaryColumn;	//DOUBLE_CORRELATION / DOUBLE_REGRESSION
 	private Column itsSecondaryColumn;	//DOUBLE_CORRELATION / DOUBLE_REGRESSION
 	private CorrelationMeasure itsBaseCM;	//DOUBLE_CORRELATION
@@ -197,7 +199,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	{
 		//make subgroup to start with, containing all elements
 		BitSet aBitSet = new BitSet(itsNrRows);
-		aBitSet.set(0, itsNrRows);
+		aBitSet.set(0, itsNrRows);		
 		Subgroup aStart = new Subgroup(null, aBitSet, itsResult);
 
 		itsCandidateQueue = new CandidateQueue(itsSearchParameters, new Candidate(aStart));
@@ -205,8 +207,9 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		int aSearchDepth = itsSearchParameters.getSearchDepth();
 
 		long theEndTime = theBeginTime + (((long) itsSearchParameters.getMaximumTime()) * 60 * 1000);
-		if (theEndTime <= theBeginTime)
+		if (theEndTime <= theBeginTime) {
 			theEndTime = Long.MAX_VALUE;
+		}
 
 		while ((itsCandidateQueue.size() > 0 ) && (System.currentTimeMillis() <= theEndTime))
 		{
@@ -715,14 +718,27 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				Set<Stat> aRequiredStats = QM.requiredStats(itsSearchParameters.getQualityMeasure());
 				//float[] aCounts = itsNumericTarget.getStatistics(aMembers, aRequiredStats);
 				float[] aCounts = itsNumericTarget.getStatistics(aMembers, itsSearchParameters.getQualityMeasure() == QM.MMAD);
+				
 				ProbabilityDensityFunction aPDF = null;
 				if (aRequiredStats.contains(Stat.PDF))
 				{
 					aPDF = new ProbabilityDensityFunction(itsQualityMeasure.getProbabilityDensityFunction(), aMembers);
 					aPDF.smooth();
 				}
-
-				aQuality = itsQualityMeasure.calculate(theNewSubgroup.getCoverage(), aCounts[0], aCounts[1], aCounts[2], aCounts[3], aPDF);
+				
+				switch (itsSearchParameters.getQualityMeasure()) {
+					case T_TEST_P_VALUE_O:
+					case T_TEST_P_VALUE_C:{
+						ArrayList<float[]> aMemberSet = itsNumericTarget.getFloatMemberSet(aMembers);
+						aQuality = itsQualityMeasure.calculate(aMemberSet, aPDF);
+						break;
+					}
+					default: {
+						aQuality = itsQualityMeasure.calculate(theNewSubgroup.getCoverage(), aCounts[0], aCounts[1], aCounts[2], aCounts[3], aPDF);
+					}
+				}
+				
+				
 				theNewSubgroup.setSecondaryStatistic(aCounts[0]/(double)theNewSubgroup.getCoverage()); //average
 				theNewSubgroup.setTertiaryStatistic(Math.sqrt(aCounts[1]/(double)theNewSubgroup.getCoverage())); // standard deviation
 				break;
@@ -1275,8 +1291,9 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 */
 	private void flushBuffer()
 	{
-		if (itsBuffer == null)
+		if (itsBuffer == null) {
 			return;
+		}
 		Iterator<Candidate> anIterator = itsBuffer.iterator();
 		while (anIterator.hasNext())
 		{

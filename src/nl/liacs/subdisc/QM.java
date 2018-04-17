@@ -14,7 +14,8 @@ public enum QM implements EnumInterface
 	CHI_SQUARED	("Chi-squared",		"50",	TargetType.SINGLE_NOMINAL),
 	INFORMATION_GAIN("Information gain",	"0.02",	TargetType.SINGLE_NOMINAL),
 	BINOMIAL	("Binomial test",	"0.05",	TargetType.SINGLE_NOMINAL),
-	ACCURACY	("Accuracy",		"0.0",	TargetType.SINGLE_NOMINAL),
+	//ACCURACY	("Accuracy",		"0.0",	TargetType.SINGLE_NOMINAL),
+	ACCURACY	("Accuracy",		"-1.0",	TargetType.SINGLE_NOMINAL),
 	PURITY		("Purity",		"0.5",	TargetType.SINGLE_NOMINAL),
 	JACCARD		("Jaccard",		"0.2",	TargetType.SINGLE_NOMINAL),
 	COVERAGE	("Coverage",		"10",	TargetType.SINGLE_NOMINAL),
@@ -31,9 +32,12 @@ public enum QM implements EnumInterface
 
 	// SINGLE_NUMERIC quality measures
 	// NOTE when adding a new SINGLE_NUMERIC QM -> add it to requiredStats()
+	T_TEST_P_VALUE_O		("t-Test (p-value)[O]",		"-1.0",	TargetType.SINGLE_NUMERIC),
+	T_TEST_P_VALUE_C		("t-Test (p-value)[C]",		"-1.0",	TargetType.SINGLE_NUMERIC),
+	ABS_Z_SCORE	("Abs Z-Score",		"1.0",	TargetType.SINGLE_NUMERIC),
 	Z_SCORE		("Z-Score",		"1.0",	TargetType.SINGLE_NUMERIC),
 	INVERSE_Z_SCORE	("Inverse Z-Score",	"1.0",	TargetType.SINGLE_NUMERIC),
-	ABS_Z_SCORE	("Abs Z-Score",		"1.0",	TargetType.SINGLE_NUMERIC),
+	
 	AVERAGE		("Average",		"0.0",	TargetType.SINGLE_NUMERIC),	// bogus minimum value, should come from data
 	INVERSE_AVERAGE	("Inverse Average",	"0.0",	TargetType.SINGLE_NUMERIC),	// bogus minimum value, should come from data
 	MEAN_TEST	("Mean Test",		"0.01",	TargetType.SINGLE_NUMERIC),
@@ -42,7 +46,6 @@ public enum QM implements EnumInterface
 	T_TEST		("t-Test (t stat.)",		"1.0",	TargetType.SINGLE_NUMERIC),
 	INVERSE_T_TEST	("Inverse t-Test (t stat.)",	"1.0",	TargetType.SINGLE_NUMERIC),
 	ABS_T_TEST	("Abs t-Test (t stat.)",		"1.0",	TargetType.SINGLE_NUMERIC),
-	T_TEST_P_VALUE		("t-Test (p-value)",		"-1.0",	TargetType.SINGLE_NUMERIC),
 	SQUARED_HELLINGER			("Squared Hellinger distance",		"0.0",	TargetType.SINGLE_NUMERIC),
 	SQUARED_HELLINGER_WEIGHTED		("Weighted Squared Hellinger distance",	"0.0",	TargetType.SINGLE_NUMERIC),
 	SQUARED_HELLINGER_WEIGHTED_ADJUSTED	("Adjusted Squared Hellinger distance",	"0.0",	TargetType.SINGLE_NUMERIC),
@@ -59,7 +62,7 @@ public enum QM implements EnumInterface
 	MMAD		("Median MAD metric",	"0",	TargetType.SINGLE_ORDINAL),
 
 	// MULTI_LABEL quality measures
-	WEED		("Wtd Ent Edit Dist",	"0",	TargetType.MULTI_LABEL),
+	WEED		("Wtd Ent Edit Dist.",	"0",	TargetType.MULTI_LABEL),
 	EDIT_DISTANCE	("Edit Distance",	"0",	TargetType.MULTI_LABEL),
 
 	// DOUBLE_CORRELATION  quality measures
@@ -75,7 +78,7 @@ public enum QM implements EnumInterface
 
 	// DOUBLE_REGRESSION quality measures
 	//LINEAR_REGRESSION	("Significance of Slope Difference", "0.0", TargetType.DOUBLE_REGRESSION),
-	LINEAR_REGRESSION	("Significance of Slope Difference", "-1.0", TargetType.DOUBLE_REGRESSION),
+	LINEAR_REGRESSION	("Sig. of Slope Diff. (C)", "-1.0", TargetType.DOUBLE_REGRESSION),
 	COOKS_DISTANCE		("Cook's Distance",	"0.0",	TargetType.DOUBLE_REGRESSION);
 
 	// to enforce implementation of SINGLE_NUMERIC and SINGLE_ORDINAL QMs
@@ -169,7 +172,8 @@ public enum QM implements EnumInterface
 			case T_TEST :		return SUM_SSD;
 			case INVERSE_T_TEST :	return SUM_SSD;
 			case ABS_T_TEST :	return SUM_SSD;
-			case T_TEST_P_VALUE :	return SUM_SSD;
+			case T_TEST_P_VALUE_O :	return SUM_SSD;
+			case T_TEST_P_VALUE_C :	return SUM_SSD;
 			case SQUARED_HELLINGER :		return PDF;
 			case SQUARED_HELLINGER_WEIGHTED :	return PDF;
 			case SQUARED_HELLINGER_WEIGHTED_ADJUSTED :	return PDF;

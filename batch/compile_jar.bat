@@ -34,6 +34,18 @@ cd ..\libs\
 jar xvf jfreechart-1.0.14.jar
 jar xvf jcommon-1.0.17.jar
 jar xvf Jama-1.0.2.jar
+jar xvf commons-math3-3.6.1.jar
+jar xvf commons-csv-1.2.jar
+jar xvf commons-lang3-3.4.jar
+jar xvf datumbox-framework-applications-0.7.0.jar
+jar xvf datumbox-framework-common-0.7.0.jar
+jar xvf datumbox-framework-core-0.7.0.jar
+jar xvf datumbox-framework-lib-0.7.0.jar
+jar xvf jdistlib-0.4.5-bin.jar
+jar xvf libsvm-3.21.jar
+jar xvf lpsolve-5.5.2.0.jar
+jar xvf mapdb-1.0.9.jar
+jar xvf slf4j-api-1.7.19.jar
 rmdir /s /q META-INF
 if exist ..\bin\com\ rmdir /s /q ..\bin\com\
 if exist ..\bin\org\ rmdir /s /q ..\bin\org\

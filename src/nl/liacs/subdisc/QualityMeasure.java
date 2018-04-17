@@ -1,6 +1,14 @@
 package nl.liacs.subdisc;
 
+import java.util.*;
+
 import javax.swing.*;
+
+import org.apache.commons.math3.stat.inference.*;
+
+import com.datumbox.framework.common.dataobjects.*;
+import com.datumbox.framework.common.dataobjects.FlatDataCollection;
+import com.datumbox.framework.core.statistics.parametrics.independentsamples.*;
 
 // TODO MM put Contingency table here without screwing up package classes layout.
 /**
@@ -511,6 +519,42 @@ public class QualityMeasure
 
 	//SINGLE_NUMERIC =======================================================
 
+	public float calculate(ArrayList<float[]> aMemberSet, ProbabilityDensityFunction thePDF)
+	{
+		float aReturn = Float.NEGATIVE_INFINITY;
+		switch (itsQualityMeasure)
+		{
+			case T_TEST_P_VALUE_O : {
+				
+				float[] theSubgroupMember = aMemberSet.get(1);
+				float[] theWholeMember = aMemberSet.get(0);
+				if (theWholeMember.length >= 2 && theSubgroupMember.length >= 2) {
+					boolean unequalVar = DatumboxUtils.LevenesIndependentSamplesTestVariances(theSubgroupMember, theWholeMember);
+					aReturn = ApacheMathUtils.tTest(theSubgroupMember, theWholeMember, unequalVar);
+			        aReturn = 1 - aReturn;
+				}
+				
+				break;
+			}
+			case T_TEST_P_VALUE_C : {
+				
+				float[] theSubgroupMember = aMemberSet.get(1);
+				float[] theComplementMember = aMemberSet.get(2);
+				if (theComplementMember.length >= 2 && theSubgroupMember.length >= 2) {
+					boolean unequalVar = DatumboxUtils.LevenesIndependentSamplesTestVariances(theSubgroupMember, theComplementMember);
+					aReturn = ApacheMathUtils.tTest(theSubgroupMember, theComplementMember, unequalVar);
+			        aReturn = 1 - aReturn;
+				}
+				
+				break;
+			}
+			default: {
+				// do nothing
+			}
+		}
+		return aReturn;
+	}
+	
 	/*
 	 * MEAN = sqrt(sampleSize)*(sampleAvg-dataAvg);
 	 * Z = MEAN / dataStdDev;
@@ -611,7 +655,7 @@ public class QualityMeasure
 					aReturn = (float) (Math.abs((Math.sqrt(theCoverage) * (theSum/theCoverage - itsTotalAverage)) / Math.sqrt(theSSD/(theCoverage-1))));
 				break;
 			}
-			case T_TEST_P_VALUE :
+			case T_TEST_P_VALUE_O :
 			{
 				if(theCoverage <= 2) {
 					aReturn = 0.0f;
@@ -624,6 +668,27 @@ public class QualityMeasure
 				}
 				break;
 			}
+			/*
+			case T_TEST_P_VALUE_C :
+			{
+				// @TODO The whole dataset is compared with. We need to fix it to compare with the complement.
+				
+				// the coverage is subgroup
+
+				if(theCoverage <= 2) {
+					aReturn = 0.0f;
+				}
+				else {
+					
+					double t = (double) ((Math.sqrt(theCoverage) * ((theSum/theCoverage) - itsTotalAverage)) / Math.sqrt(theSSD/(theCoverage-1)));
+					double df = itsNrRecords + theCoverage - 1;
+					
+					double p = StatUtils.PValue(t, df);
+					aReturn = (float) (1 - p);
+				}
+				break;
+			}
+			*/
 			//ORDINAL
 			case AUC :
 			{
@@ -862,4 +927,6 @@ public class QualityMeasure
 							nrEdits++;
 		return (float) nrEdits / (float) (itsNrNodes*(itsNrNodes-1)/2); // Actually n choose 2, but this boils down to the same...
 	}
+	
+	
 }

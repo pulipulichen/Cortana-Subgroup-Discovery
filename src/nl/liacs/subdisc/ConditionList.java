@@ -11,8 +11,9 @@ public class ConditionList extends ArrayList<Condition> implements Comparable<Co
 	public ConditionList copy()
 	{
 		ConditionList aNewConditionList = new ConditionList();
-		for(Condition aCondition : this)
+		for(Condition aCondition : this) {
 			aNewConditionList.addCondition(aCondition.copy());
+		}
 		return aNewConditionList;
 	}
 

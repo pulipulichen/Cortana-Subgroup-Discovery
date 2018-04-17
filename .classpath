@@ -7,5 +7,16 @@
 	<classpathentry kind="lib" path="libs/Jama-1.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/commons-csv-1.2.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/datumbox-framework-applications-0.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/datumbox-framework-common-0.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/datumbox-framework-core-0.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/datumbox-framework-lib-0.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/jdistlib-0.4.5-bin.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/libsvm-3.21.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/lpsolve-5.5.2.0.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/mapdb-1.0.9.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/slf4j-api-1.7.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

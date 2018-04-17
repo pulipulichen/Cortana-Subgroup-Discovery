@@ -29,8 +29,9 @@ public class CandidateQueue
 	public CandidateQueue(SearchParameters theSearchParameters, Candidate theRootCandidate)
 	{
 		itsSearchStrategy = theSearchParameters.getSearchStrategy();
-		if (itsSearchStrategy == SearchStrategy.BEAM)
+		if (itsSearchStrategy == SearchStrategy.BEAM) {
 			itsNextQueue = new TreeSet<Candidate>();
+		}
 		if (itsSearchStrategy == SearchStrategy.COVER_BASED_BEAM_SELECTION)
 		{
 			// initialise now, avoids nullPointerException later

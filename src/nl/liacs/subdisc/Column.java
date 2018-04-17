@@ -1,5 +1,6 @@
 package nl.liacs.subdisc;
 
+import java.awt.geom.*;
 import java.util.*;
 
 import nl.liacs.subdisc.gui.*;
@@ -172,6 +173,56 @@ public class Column implements XMLNodeInterface
 			}
 		}
 	}
+	
+	public float[] getFloatMembers () {
+		return itsFloatz.clone();
+	}
+	
+	public float[] getFloatMembers (BitSet theMembers) {
+		float[] itsData = new float[theMembers.cardinality()];
+		int j = 0;
+		for (int i=0; i<itsFloatz.length; i++)
+		{
+			Float anObservation = itsFloatz[i];
+			if (theMembers.get(i)) {
+				itsData[j] = anObservation;
+				j++;
+			}
+		}
+		return itsData;
+	}
+	
+	public ArrayList<float[]> getFloatMemberSet (BitSet theMembers) {
+		float[] itsSubgroupData = new float[theMembers.cardinality()];
+		float[] itsComplementData = new float[(itsFloatz.length - theMembers.cardinality())];
+		
+		int iS = 0;
+		int iC = 0;
+		for (int i=0; i<itsFloatz.length; i++)
+		{
+			Float anObservation = itsFloatz[i];
+			if (theMembers.get(i)) {
+				itsSubgroupData[iS] = anObservation;
+				iS++;
+			}
+			else {
+				itsComplementData[iC] = anObservation;
+				iC++;
+			}
+		}
+		
+		ArrayList<float[]> aReturn = new ArrayList<float[]>();
+		aReturn.add(itsFloatz);
+		aReturn.add(itsSubgroupData);
+		aReturn.add(itsComplementData);
+		
+		return aReturn;
+	}
+	
+	public List<String> getNominalMembers () {
+		return ((List<String>) ((ArrayList<String>) itsNominals).clone());
+	}
+	
 
 	/**
 	 *
