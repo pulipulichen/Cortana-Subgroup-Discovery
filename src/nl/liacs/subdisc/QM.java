@@ -32,8 +32,8 @@ public enum QM implements EnumInterface
 
 	// SINGLE_NUMERIC quality measures
 	// NOTE when adding a new SINGLE_NUMERIC QM -> add it to requiredStats()
-	T_TEST_P_VALUE_O		("t-Test (p-value)[O]",		"-1.0",	TargetType.SINGLE_NUMERIC),
-	T_TEST_P_VALUE_C		("t-Test (p-value)[C]",		"-1.0",	TargetType.SINGLE_NUMERIC),
+	T_TEST_P_VALUE_O		("t-Test (1-p)[O]",		"-1.0",	TargetType.SINGLE_NUMERIC),
+	T_TEST_P_VALUE_C		("t-Test (1-p)[C]",		"-1.0",	TargetType.SINGLE_NUMERIC),
 	ABS_Z_SCORE	("Abs Z-Score",		"1.0",	TargetType.SINGLE_NUMERIC),
 	Z_SCORE		("Z-Score",		"1.0",	TargetType.SINGLE_NUMERIC),
 	INVERSE_Z_SCORE	("Inverse Z-Score",	"1.0",	TargetType.SINGLE_NUMERIC),

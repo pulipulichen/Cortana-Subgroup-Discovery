@@ -73,19 +73,7 @@ public class SubDisc
 		if (XMLAutoRun.autoRunSetting(args))
 			return;
 		
-		// --------------------------------
-		
-		//double[] sample1 = {5,4,3};
-		//double[] sample2 = {7,6,16,5,4,3};
-		//Log.logCommandLine("" + TestUtils.tTest(sample1,sample2));
-		
-		//TransposeDataCollection transposeDataCollection = new TransposeDataCollection();
-        //transposeDataCollection.put(0, new FlatDataCollection(Arrays.asList(new Object[]{5,4,3})));
-        //transposeDataCollection.put(1, new FlatDataCollection(Arrays.asList(new Object[]{7,6,16,5,4,3})));
-		
-		//Log.logCommandLine("" + LevenesIndependentSamples.testVariances(transposeDataCollection, 0.5));
-		
-		// --------------------------------
+		TestUtil.start();
 		
 		
 		// 20180414 Open the main window directly without open a file.

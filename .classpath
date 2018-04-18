@@ -18,5 +18,7 @@
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/lpsolve-5.5.2.0.jar"/>
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/mapdb-1.0.9.jar"/>
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/slf4j-api-1.7.19.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/REngine.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/RserveEngine.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

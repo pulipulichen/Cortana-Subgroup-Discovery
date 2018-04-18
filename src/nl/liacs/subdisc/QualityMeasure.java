@@ -528,11 +528,9 @@ public class QualityMeasure
 				
 				float[] theSubgroupMember = aMemberSet.get(1);
 				float[] theWholeMember = aMemberSet.get(0);
-				if (theWholeMember.length >= 2 && theSubgroupMember.length >= 2) {
-					boolean unequalVar = DatumboxUtils.LevenesIndependentSamplesTestVariances(theSubgroupMember, theWholeMember);
-					aReturn = ApacheMathUtils.tTest(theSubgroupMember, theWholeMember, unequalVar);
-			        aReturn = 1 - aReturn;
-				}
+				boolean unequalVar = DatumboxUtils.LevenesIndependentSamplesTestVariances(theSubgroupMember, theWholeMember);
+				aReturn = ApacheMathUtils.tTest(theSubgroupMember, theWholeMember, unequalVar);
+		        aReturn = 1 - aReturn;
 				
 				break;
 			}
@@ -540,11 +538,9 @@ public class QualityMeasure
 				
 				float[] theSubgroupMember = aMemberSet.get(1);
 				float[] theComplementMember = aMemberSet.get(2);
-				if (theComplementMember.length >= 2 && theSubgroupMember.length >= 2) {
-					boolean unequalVar = DatumboxUtils.LevenesIndependentSamplesTestVariances(theSubgroupMember, theComplementMember);
-					aReturn = ApacheMathUtils.tTest(theSubgroupMember, theComplementMember, unequalVar);
-			        aReturn = 1 - aReturn;
-				}
+				boolean unequalVar = DatumboxUtils.LevenesIndependentSamplesTestVariances(theSubgroupMember, theComplementMember);
+				aReturn = ApacheMathUtils.tTest(theSubgroupMember, theComplementMember, unequalVar);
+		        aReturn = 1 - aReturn;
 				
 				break;
 			}
