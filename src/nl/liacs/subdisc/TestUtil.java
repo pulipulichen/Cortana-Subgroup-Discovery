@@ -25,7 +25,7 @@ public class TestUtil { //calculate a p-value based on an array
 		
 		//Log.logCommandLine("" + LevenesIndependentSamples.testVariances(transposeDataCollection, 0.5));
 		
-		
+    	/*
 		RConnection connection = null;
 		try {
             connection = new RConnection();
@@ -33,7 +33,7 @@ public class TestUtil { //calculate a p-value based on an array
             String vector = "c(1,2,3,4)";
             connection.eval("meanVal=mean(" + vector + ")");
             double mean = connection.eval("meanVal").asDouble();
-            Log.logCommandLine("The mean of given vector is=" + mean);
+            Log.logCommandLine("The mean of given vector is = " + mean);
         } catch (RserveException e) {
             //e.printStackTrace();            
         } catch (REXPMismatchException e) {
@@ -43,6 +43,7 @@ public class TestUtil { //calculate a p-value based on an array
         		connection.close();
         	}
         }
+		*/
 		
 		// --------------------------------
     }

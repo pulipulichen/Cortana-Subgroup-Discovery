@@ -301,11 +301,13 @@ public class QualityMeasure
 
 	public static float calculateEntropy(float bodySupport, float headBodySupport)
 	{
-		if (bodySupport == 0)
+		if (bodySupport == 0) {
 			return 0.0f; //special case that should never occur
+		}
 
-		if (headBodySupport==0 || bodySupport==headBodySupport)
+		if (headBodySupport==0 || bodySupport==headBodySupport) {
 			return 0.0f; // by definition
+		}
 
 		float pj = headBodySupport/bodySupport;
 		return -1.0f*pj*lg(pj) - (1-pj)*lg(1-pj);

@@ -46,6 +46,8 @@ jar xvf libsvm-3.21.jar
 jar xvf lpsolve-5.5.2.0.jar
 jar xvf mapdb-1.0.9.jar
 jar xvf slf4j-api-1.7.19.jar
+jar xvf REngine.jar
+jar xvf RserveEngine.jar
 rmdir /s /q META-INF
 if exist ..\bin\com\ rmdir /s /q ..\bin\com\
 if exist ..\bin\org\ rmdir /s /q ..\bin\org\
