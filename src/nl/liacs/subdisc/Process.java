@@ -88,9 +88,11 @@ public class Process
 		switch (theMeasure) {
 			case CHI_SQUARE_TEST_O:
 			case CHI_SQUARE_TEST_C:
+				RserveUtil.startup();
 				RserveUtil.connect();
 				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
 				RserveUtil.disconnect();
+				RserveUtil.shutdown();
 				break;
 			default:
 				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);

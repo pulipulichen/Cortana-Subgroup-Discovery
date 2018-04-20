@@ -1,6 +1,8 @@
 package nl.liacs.subdisc;
 
 
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 import javax.swing.*;
@@ -18,9 +20,47 @@ import java.util.HashMap;
  */
 public class RserveUtil
 {
+	private static String RPath = "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe";
 	private static RConnection connection;
 	
+	public static void startup() {
+		try (Socket ignored = new Socket("localhost", 6311)) {
+	        //return false;
+	    } catch (IOException ignored) {
+	        return;
+	    }
+		
+		if (connection != null) {
+			return;
+		}
+		
+		final Runtime rt = Runtime.getRuntime();
+		try {
+			rt.exec(RPath + " -e \"library(Rserve);Rserve()\"");
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	public static void shutdown() {
+		if (connection == null) {
+			return;
+		}
+		
+		final Runtime rt = Runtime.getRuntime();
+		try {
+			rt.exec(RPath + " -e \"library(RSclient);RSshutdown(RSconnect())\"");
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
 	public static void connect() {
+		if (connection != null) {
+			return;
+		}
 		try {
 			connection = new RConnection();
 		}
@@ -60,13 +100,15 @@ public class RserveUtil
 		}
 		
 		try {
-
+			/*
 			if (chiSquareTestCount % 10 == 9 && false) {
 				chiSquareTestCount = 0;
 				disconnect();
 				//Thread.sleep(1000);
 				connect();
 			}
+			*/
+			Thread.sleep(100);	
 			
 			
 			String rScript = "data <- c("+key+");" 
@@ -82,7 +124,20 @@ public class RserveUtil
 		//} catch (REXPMismatchException e) {
 			//e.printStackTrace();
 		} catch (Exception e) {
+			e.printStackTrace();
 			
+			try {
+				Thread.sleep(1000);
+				disconnect();
+				shutdown();
+				Thread.sleep(1000);
+				startup();
+				connect();
+				return chiSquareTest(sample1True, sample1False, sample2True, sample2False);
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
 		} finally {
 	        //Log.logCommandLine("" + chiSquareTestRScript);
 			return aReturn;

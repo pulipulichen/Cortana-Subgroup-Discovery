@@ -76,6 +76,13 @@ public class TestUtil { //calculate a p-value based on an array
 	    
 	    Log.logCommandLine("histval$mids:" + xvalExp + " histval$counts:" + yvalExp);
 		*/
+    	
+    	//RserveUtil.startup();
+    	//RserveUtil.connect();
+    	//Log.logCommandLine("" + RserveUtil.chiSquareTest(2, 0, 2, 2));
+    	//RserveUtil.disconnect();
+    	//RserveUtil.shutdown();
+    	
 		// --------------------------------
     }
 
