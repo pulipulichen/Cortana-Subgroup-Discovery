@@ -1176,6 +1176,14 @@ public class MiningWindow extends JFrame implements ActionListener
 						"About Cortana",
 						JOptionPane.INFORMATION_MESSAGE);
 	}
+	
+	// MiningWindow.showMessageBox("test");
+	public static void showMessageBox(String message) {
+		JOptionPane.showMessageDialog(new JFrame(),
+				message,
+				"About Cortana",
+				JOptionPane.INFORMATION_MESSAGE);
+	}
 
 	/* DATASET BUTTONS */
 	//not on Event Dispatching Thread, may take a long time to load

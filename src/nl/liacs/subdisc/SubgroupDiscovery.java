@@ -210,7 +210,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		if (theEndTime <= theBeginTime) {
 			theEndTime = Long.MAX_VALUE;
 		}
-
+		
 		while ((itsCandidateQueue.size() > 0 ) && (System.currentTimeMillis() <= theEndTime))
 		{
 			Candidate aCandidate = itsCandidateQueue.removeFirst(); // take off first Candidate from Queue
@@ -235,8 +235,9 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				}
 			}
 
-			if (itsCandidateQueue.size() == 0)
+			if (itsCandidateQueue.size() == 0) {
 				flushBuffer();
+			}
 		}
 		Log.logCommandLine("number of candidates: " + itsCandidateCount.get());
 		if (itsSearchParameters.getQualityMeasure() == QM.COOKS_DISTANCE)

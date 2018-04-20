@@ -266,8 +266,9 @@ public class MetaDataWindow extends JFrame implements ActionListener
 										aColumn.getName(),
 										aColumn.getType());
 					}
-					else
+					else {
 						anIndicator = "some attributes. \nThey are of an incompatible type. See selection.";
+					}
 					JOptionPane.showMessageDialog(null,
 										String.format(
 											"'%s' is not a valid value for %s",

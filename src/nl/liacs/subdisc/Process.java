@@ -17,8 +17,9 @@ public class Process
 	{
 		TargetType aTargetType = theSearchParameters.getTargetConcept().getTargetType();
 
-		if (!TargetType.isImplemented(aTargetType))
+		if (!TargetType.isImplemented(aTargetType)) {
 			return null;
+		}
 
 		SubgroupDiscovery aSubgroupDiscovery = null;
 		echoMiningStart();
@@ -82,9 +83,22 @@ public class Process
 			}
 		}
 		
-		//JOptionPane.showMessageDialog(null, "before mine");
-		aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
-		//JOptionPane.showMessageDialog(null, "after mine");
+		QM theMeasure = theSearchParameters.getQualityMeasure();
+		
+		switch (theMeasure) {
+			case CHI_SQUARE_TEST_O:
+			case CHI_SQUARE_TEST_C:
+				RserveUtil.connect();
+				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
+				RserveUtil.disconnect();
+				break;
+			default:
+				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
+		}
+		
+		
+		
+		
 		// if 2nd argument to above mine() is 0, you effectively run:
 		//aSubgroupDiscovery.mine(System.currentTimeMillis());
 

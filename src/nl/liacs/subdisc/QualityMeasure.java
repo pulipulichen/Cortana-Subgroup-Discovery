@@ -113,14 +113,33 @@ public class QualityMeasure
 	 */
 	public  static float calculate(QM theMeasure, int theTotalCoverage, float theTotalTargetCoverage, float theCountHeadBody, float theCoverage)
 	{
+		
 		float aCountNotHeadBody			= theCoverage - theCountHeadBody;
 		float aTotalTargetCoverageNotBody	= theTotalTargetCoverage - theCountHeadBody;
 		float aCountNotHeadNotBody		= theTotalCoverage - (theTotalTargetCoverage + aCountNotHeadBody);
 		float aCountBody			= aCountNotHeadBody + theCountHeadBody;
+		
+		//Log.logCommandLine("" + aCountNotHeadBody + "," + aTotalTargetCoverageNotBody + "," + aCountNotHeadNotBody + "," + aCountBody + "," + theTotalTargetCoverage + "," + theCoverage + "," + theTotalCoverage);
+		//Log.logCommandLine("SG: T " + theCountHeadBody);
+		//Log.logCommandLine("SG: F " + aCountNotHeadBody);
+		//Log.logCommandLine("Co: T " + aTotalTargetCoverageNotBody);
+		//Log.logCommandLine("Co: F " + aCountNotHeadNotBody);
+		//Log.logCommandLine("To: T " + theTotalTargetCoverage);
+		//Log.logCommandLine("To: F " + (theTotalCoverage - theTotalTargetCoverage));
 
 		float returnValue = -10f; // FIXME MM Bad measure value for default
 		switch (theMeasure)
 		{
+			case CHI_SQUARE_TEST_O:
+			{
+				returnValue = RserveUtil.chiSquareTest(theCountHeadBody, aCountNotHeadBody, theTotalTargetCoverage, (theTotalCoverage - theTotalTargetCoverage));
+				break;
+			}
+			case CHI_SQUARE_TEST_C:
+			{
+				returnValue = RserveUtil.chiSquareTest(theCountHeadBody, aCountNotHeadBody, aTotalTargetCoverageNotBody, aCountNotHeadNotBody);
+				break;
+			}
 			case WRACC:
 			{
 				returnValue = (theCountHeadBody/theTotalCoverage)-(theTotalTargetCoverage/theTotalCoverage)*(aCountBody/theTotalCoverage);

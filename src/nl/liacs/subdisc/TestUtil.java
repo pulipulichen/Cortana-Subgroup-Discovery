@@ -8,6 +8,8 @@ import java.lang.*;
 import org.rosuda.REngine.*;
 import org.rosuda.REngine.Rserve.*;
 
+import nl.liacs.subdisc.gui.*;
+
 
 public class TestUtil { //calculate a p-value based on an array
 	    
@@ -44,6 +46,11 @@ public class TestUtil { //calculate a p-value based on an array
         	}
         }
 		*/
+    	
+    	//int[] sample1 = new int[]{2,0};
+    	//int[] sample2 = new int[]{2,2};
+    	//Log.logCommandLine("" + RserveUtil.chiSquareTest(sample1, sample2));
+    	//MiningWindow.showMessageBox("test");
 		
 		// --------------------------------
     }
