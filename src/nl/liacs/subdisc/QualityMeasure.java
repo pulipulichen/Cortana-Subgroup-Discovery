@@ -120,12 +120,12 @@ public class QualityMeasure
 		float aCountBody			= aCountNotHeadBody + theCountHeadBody;
 		
 		//Log.logCommandLine("" + aCountNotHeadBody + "," + aTotalTargetCoverageNotBody + "," + aCountNotHeadNotBody + "," + aCountBody + "," + theTotalTargetCoverage + "," + theCoverage + "," + theTotalCoverage);
-		//Log.logCommandLine("SG: T " + theCountHeadBody);
-		//Log.logCommandLine("SG: F " + aCountNotHeadBody);
+		Log.logCommandLine("SG: T " + theCountHeadBody);
+		Log.logCommandLine("SG: F " + aCountNotHeadBody);
 		//Log.logCommandLine("Co: T " + aTotalTargetCoverageNotBody);
 		//Log.logCommandLine("Co: F " + aCountNotHeadNotBody);
-		//Log.logCommandLine("To: T " + theTotalTargetCoverage);
-		//Log.logCommandLine("To: F " + (theTotalCoverage - theTotalTargetCoverage));
+		Log.logCommandLine("To: T " + theTotalTargetCoverage);
+		Log.logCommandLine("To: F " + (theTotalCoverage - theTotalTargetCoverage));
 
 		float returnValue = -10f; // FIXME MM Bad measure value for default
 		switch (theMeasure)

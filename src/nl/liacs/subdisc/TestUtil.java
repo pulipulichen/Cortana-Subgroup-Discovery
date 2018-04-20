@@ -5,8 +5,11 @@ package nl.liacs.subdisc;
 //import java.lang.Math;
 import java.lang.*;
 
+import org.rosuda.JRI.*;
+import org.rosuda.JRI.REXP;
 import org.rosuda.REngine.*;
 import org.rosuda.REngine.Rserve.*;
+
 
 import nl.liacs.subdisc.gui.*;
 
@@ -51,7 +54,28 @@ public class TestUtil { //calculate a p-value based on an array
     	//int[] sample2 = new int[]{2,2};
     	//Log.logCommandLine("" + RserveUtil.chiSquareTest(sample1, sample2));
     	//MiningWindow.showMessageBox("test");
-		
+    	/*
+    	Rengine r = new Rengine(new String[]{"--no-save"}, false, null);
+		System.out.println("Rengine created, waiting for R");
+		 
+        // the engine creates R is a new thread, so we should wait until it's
+        // ready
+        if (!r.waitForR()) {
+            System.out.println("Cannot load R");
+        }
+	    r.eval("library(Hmisc)");
+	    r.eval("yy <- describe(rnorm(200))");
+	    REXP exp = r.eval("zz <- yy$counts[5:11]");
+	    REXP names = r.eval("names(zz)");
+	    String[] strExp = exp.asStringArray();
+	    System.out.println("result:" + exp);
+	 
+	    r.eval("histval <- hist(rnorm(100), plot=FALSE)");
+	    REXP xvalExp = r.eval("histval$mids");
+	    REXP yvalExp = r.eval("histval$counts");
+	    
+	    Log.logCommandLine("histval$mids:" + xvalExp + " histval$counts:" + yvalExp);
+		*/
 		// --------------------------------
     }
 

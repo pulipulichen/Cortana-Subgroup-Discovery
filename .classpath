@@ -20,5 +20,7 @@
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/slf4j-api-1.7.19.jar"/>
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/REngine.jar"/>
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/RserveEngine.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/JRI.jar"/>
+	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/JRIEngine.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
