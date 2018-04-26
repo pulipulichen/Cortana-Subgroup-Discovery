@@ -147,5 +147,31 @@ if (reg.interaction > 0.05) {
     pairwise.result <- paste(ancova.compare.summary$contrast, collapse = "\n");
     
 } else {
+    iv.levels <- levels(factor(input[,"iv"]));
+    library(gtools);
+    iv.comb <- combinations(n=as.integer(summary(iv.levels)["Length"]), r=2, v=iv.levels, repeats.allowed=F);
+    iv.comb <- cbind(iv.comb, c(rep("=",count(iv.comb)$freq)));
+    iv.comb <- cbind(iv.comb, c(rep.int(NA,count(iv.comb)$freq)));
+    iv.comb <- cbind(iv.comb, c(rep("",count(iv.comb)$freq)));
 
+    library(fANCOVA);
+    p.value <- 1;
+    for (i in 1:count(iv.comb)$freq) {
+        comb <- iv.comb[i,];
+        input.comb <- input[input$iv %in% comb, ];
+        Taov.result <- T.aov(input.comb[,"cov"], input.comb[,"dv"], input.comb[,"iv"], plot=TRUE, data.points=TRUE);
+        iv.comb[i,3] <- Taov.result$p.value;
+        p.value <- ifelse(Taov.result$p.value < p.value, Taov.result$p.value, p.value);
+        
+        if (Taov.result$fit[[1]]$enp > Taov.result$fit[[2]]$enp) {
+            iv.comb[i,4] <- ">";
+        } else if (Taov.result$fit[[1]]$enp < Taov.result$fit[[2]]$enp) {
+            iv.comb[i,4] <- "<";
+        } else {
+            iv.comb[i,4] <- "=";
+        }
+        iv.comb[i,5] <- trimws(paste(iv.comb[i,1], iv.comb[i,4], iv.comb[i,2], ifelse(iv.comb[i,3] < 0.05, "*", "")));
+    }
+
+    pairwise.result <- iv.comb[,5];
 };
