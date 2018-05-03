@@ -189,8 +189,9 @@ public class FileLoaderTXT implements FileLoaderInterface
 				// check number of columns for each line in the File
 				while ((aLine = aReader.readLine()) != null)
 				{
-					if (aLine.isEmpty())
+					if (aLine.isEmpty()) {
 						continue;
+					}
 
 					++aNrRows;
 
@@ -214,12 +215,12 @@ public class FileLoaderTXT implements FileLoaderInterface
 			 * determine AttributeType of each column
 			 * create Table and Columns
 			 */
-			else
-			{
+			else {
 				while ((aLine = aReader.readLine()) != null)
 				{
-					if (aLine.isEmpty())
+					if (aLine.isEmpty()) {
 						continue;
+					}
 
 					++aNrRows;
 
@@ -250,12 +251,14 @@ public class FileLoaderTXT implements FileLoaderInterface
 						{
 							Float.parseFloat(aCell);
 							//numeric could be binary also
-							if (!aCell.equals("0") && !aCell.equals("1"))
+							if (!aCell.equals("0") && !aCell.equals("1")) {
 								aNotZeroOne.set(i);
+							}
 						}
 						// if not a float
 						catch (NumberFormatException anException)
 						{
+							//Log.logCommandLine("i exception: " + i);
 							aNominals.set(i);
 						}
 					}
@@ -287,8 +290,8 @@ public class FileLoaderTXT implements FileLoaderInterface
 										AttributeType.BINARY,
 										i,
 										aNrRows));
-				}
-			}
+				}	// for (int i = 0; i < aNrColumns; i++)
+			}	// else {
 		}
 		catch (IOException e)
 		{

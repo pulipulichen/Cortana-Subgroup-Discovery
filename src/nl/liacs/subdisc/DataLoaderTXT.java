@@ -75,10 +75,12 @@ public class DataLoaderTXT implements FileLoaderInterface
 	{
 		// this will get two BufferedReaders, prevents TOCTOE bugs
 		// analyse establishes the number of data lines and delimiter
-		if (!analyse(theFile))
+		if (!analyse(theFile)) {
 			return;
+		}
 
 		BufferedReader aReader = null;
+		BufferedReader aReaderTotal = null;
 		try
 		{
 			// 20180414 Open file with UTF-8 encoding
@@ -87,13 +89,20 @@ public class DataLoaderTXT implements FileLoaderInterface
 			//aReader = new BufferedReader(new FileReader(theFile));
 			InputStreamReader isr = new InputStreamReader(new FileInputStream(theFile), "UTF-8");
 			aReader = new BufferedReader(isr);
+			InputStreamReader isrTotal = new InputStreamReader(new FileInputStream(theFile), "UTF-8");
+			aReaderTotal = new BufferedReader(isrTotal);
 			
 			String aHeaderLine = null;
 			String aLine;
 			int aLineNr = 0;
 			final boolean aMissingBinary = Boolean.parseBoolean(AttributeType.BINARY.DEFAULT_MISSING_VALUE);
-			final float aMissingNumeric = Float.parseFloat(AttributeType.NUMERIC.DEFAULT_MISSING_VALUE);
+			//final float aMissingNumeric = Float.parseFloat(AttributeType.NUMERIC.DEFAULT_MISSING_VALUE);
+			final float aMissingNumeric = Float.NaN;
 
+
+			String aSingleLine;
+			ArrayList<String[]> aLineArrayList = new ArrayList<String[]>();
+			
 			// skip header, make sure line is not empty/ null
 			while ((aLine = aReader.readLine()) != null)
 			{
@@ -104,6 +113,17 @@ public class DataLoaderTXT implements FileLoaderInterface
 					break;
 				}
 			}
+			
+			
+			aReaderTotal.readLine();
+			while ((aSingleLine = aReaderTotal.readLine()) != null)
+			{
+				if (!aSingleLine.isEmpty())
+				{
+					Log.logCommandLine("aSingleLine: " + aSingleLine);
+					aLineArrayList.add(aSingleLine.split(itsDelimiter));
+				}
+			}
 
 			// used for XML sanity check later
 			AttributeType[] anOriginalTypes = null;
@@ -112,8 +132,9 @@ public class DataLoaderTXT implements FileLoaderInterface
 			{
 				anOriginalTypes = checkXMLTable(aHeaderLine, theFile);
 				// something is seriously wrong
-				if (anOriginalTypes == null)
+				if (anOriginalTypes == null) {
 					return;
+				}
 			}
 			else
 			{
@@ -123,7 +144,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 					++aLineNr;
 					if (!aLine.isEmpty())
 					{
-						createTable(theFile, aHeaderLine, aLine);
+						createTable(theFile, aHeaderLine, aLine, aLineArrayList);
 						break;
 					}
 				}
@@ -138,10 +159,12 @@ public class DataLoaderTXT implements FileLoaderInterface
 
 			for (int i = 0, j = aNrColumns; i < j; ++i)
 			{
-				if (AttributeType.BINARY == aColumns.get(i).getType())
+				if (AttributeType.BINARY == aColumns.get(i).getType()) {
 					aBinaries.set(i);
-				else if (AttributeType.NUMERIC == aColumns.get(i).getType())
+				}
+				else if (AttributeType.NUMERIC == aColumns.get(i).getType()) {
 					aFloats.set(i);
+				}
 				// no use case yet
 				//else if (aColumns.get(i).isOrdinalType())
 				//	aFloats.set(i);
@@ -152,8 +175,9 @@ public class DataLoaderTXT implements FileLoaderInterface
 			while ((aLine = aReader.readLine()) != null)
 			{
 				++aLineNr;
-				if (aLine.isEmpty())
+				if (aLine.isEmpty()) {
 					continue;
+				}
 
 				/*
 				 * Scanner is faster for long lines, but it is
@@ -174,19 +198,26 @@ public class DataLoaderTXT implements FileLoaderInterface
 					if (aBinaries.get(aColumn))
 					{
 						// TODO set itsMissing
-						if (isEmptyString(s))
-						{
+						if (s.equals(Column.DEFAULT_MISSING_VALUE)) {
 							aColumns.get(aColumn).add(aMissingBinary);
+							continue;
+						}
+						else if (isEmptyString(s))
+						{
+							//aColumns.get(aColumn).add(aMissingBinary);
+							aColumns.get(aColumn).add(aMissingNumeric);
 							continue;
 						}
 						else if (AttributeType.isValidBinaryValue(s))
 						{
 							boolean aValue = AttributeType.isValidBinaryTrueValue(s);
 							aColumns.get(aColumn).add(aValue);
-							if (aValue) //this was true
+							if (aValue) { //this was true {
 								aTrueBinaryValues[aColumn] = s;
-							else
+							}
+							else {
 								aFalseBinaryValues[aColumn] = s;
+							}
 							continue;
 						}
 
@@ -204,8 +235,12 @@ public class DataLoaderTXT implements FileLoaderInterface
 						try
 						{
 							// TODO set itsMissing
-							if (isEmptyString(s))
+							if (s.equals(Column.DEFAULT_MISSING_VALUE)) {
+								aColumns.get(aColumn).add(Float.NaN);
+							}
+							else if (isEmptyString(s)) {
 								aColumns.get(aColumn).add(aMissingNumeric);
+							}
 							else
 							{
 								float f = Float.parseFloat(s);
@@ -228,15 +263,19 @@ public class DataLoaderTXT implements FileLoaderInterface
 					// NO USE CASE YET
 
 					// it is nominal
-					if (isEmptyString(s))
+					if (isEmptyString(s)) {
 						aColumns.get(aColumn).add(AttributeType.NOMINAL.DEFAULT_MISSING_VALUE);
-					else
+					}
+					else {
 						aColumns.get(aColumn).add(s);
+					}
 				}
-				if (aColumn != aNrColumns-1)
+				if (aColumn != aNrColumns-1) {
 					message("loadFile", "error on line " + aLineNr);
-				if (aLineNr % 1000 == 0)
+				}
+				if (aLineNr % 1000 == 0) {
 					message("loadFile", aLineNr + " lines read");
+				}
 			}
 
 			// one final check about the validity of the XML file
@@ -416,15 +455,16 @@ public class DataLoaderTXT implements FileLoaderInterface
 	}
 
 	// create Table Columns using HeaderLine names, base Type on DataLine
-	private void createTable(File theFile, String aHeaderLine, String aDataLine)
+	private void createTable(File theFile, String aHeaderLine, String aDataLine, ArrayList<String[]> aLineArrayList)
 	{
 		message("createTable", "creating Table");
 		String[] aHeaders = aHeaderLine.split(itsDelimiter);
 		String[] aData = aDataLine.split(itsDelimiter);
 
 		// for-each loop might not work for data changes
-		for (String s : aHeaders)
+		for (String s : aHeaders) {
 			removeQuotes(s);
+		}
 
 		// create Table and Columns
 		itsTable = new Table(theFile, itsNrLines, aHeaders.length);
@@ -433,23 +473,19 @@ public class DataLoaderTXT implements FileLoaderInterface
 		for (int i = 0, j = aHeaders.length; i < j; ++i)
 		{
 			String s = aData[i];
+			String originalS = s;
+			boolean isMissingValue = false;
+			int r = 0;
+			while (s.equals(Column.DEFAULT_MISSING_VALUE) && (r+1) < aLineArrayList.size()) {
+				r++;
+				s = aLineArrayList.get(r)[i];
+				isMissingValue = true;
+			}
+			
+			Log.logCommandLine(i + ": " + s);
 			removeQuotes(s);
 
-			// is it binary (or empty String)
-			// TODO set itsMissing
-			if (AttributeType.isValidBinaryValue(s) || isEmptyString(s))
-			{
-				aColumns.add(new Column(aHeaders[i],
-							null,
-							AttributeType.BINARY,
-							i,
-							itsNrLines));
-				if (isEmptyString(s))
-					aColumns.get(i).add(Boolean.parseBoolean(AttributeType.BINARY.DEFAULT_MISSING_VALUE));
-				else
-					aColumns.get(i).add(AttributeType.isValidBinaryTrueValue(s));
-				continue;
-			}
+			// --------------------------
 
 			// is it numeric
 			try
@@ -461,10 +497,47 @@ public class DataLoaderTXT implements FileLoaderInterface
 							AttributeType.NUMERIC,
 							i,
 							itsNrLines));
-				aColumns.get(i).add(f);
+				
+				if (isMissingValue == true) {
+					aColumns.get(i).add(Float.NaN);
+				}
+				else {
+					aColumns.get(i).add(f);					
+				}
+				
+				
+				Log.logCommandLine(i + "is numeric ");
 				continue;
 			}
 			catch (NumberFormatException e) {}
+
+			// -------------------------------------
+			
+			// is it binary (or empty String)
+			// TODO set itsMissing
+			if (AttributeType.isValidBinaryValue(s) || isEmptyString(s))
+			{
+				aColumns.add(new Column(aHeaders[i],
+							null,
+							AttributeType.BINARY,
+							i,
+							itsNrLines));
+				
+				if (isMissingValue == true) {
+					s = originalS;
+				}
+				
+				if (isEmptyString(s)) {
+					aColumns.get(i).add(Boolean.parseBoolean(AttributeType.BINARY.DEFAULT_MISSING_VALUE));
+				}
+				else {
+					aColumns.get(i).add(AttributeType.isValidBinaryTrueValue(s));
+				}
+				Log.logCommandLine(i + "is binary ");
+				continue;
+			}
+			
+			// --------------------------
 
 			// is it ordinal
 			// NO USE CASE YET
@@ -475,8 +548,14 @@ public class DataLoaderTXT implements FileLoaderInterface
 						AttributeType.NOMINAL,
 						i,
 						itsNrLines));
+			if (isMissingValue == true) {
+				s = originalS;
+			}
 			aColumns.get(i).add(s);
-		}
+			Log.logCommandLine(i + "is nominal ");
+			
+		}	// for (int i = 0, j = aHeaders.length; i < j; ++i)
+		
 	}
 
 	// NOTE null is never passed as input parameter
@@ -504,14 +583,16 @@ public class DataLoaderTXT implements FileLoaderInterface
 
 	private void evaluateXMLLoading(AttributeType[] theOriginalTypes, File theFile)
 	{
-		for (int i = 0, j = theOriginalTypes.length; i < j; ++i)
-			if (itsTable.getColumn(i).getType() != theOriginalTypes[i])
+		for (int i = 0, j = theOriginalTypes.length; i < j; ++i) {
+			if (itsTable.getColumn(i).getType() != theOriginalTypes[i]) {
 				message("evaluateXMLLoading",
 					String.format("WARNING Column '%s'%n\tXML declared AttributeType: '%s'%n\tAttributeType after parsing File '%s': '%s'",
 							itsTable.getColumn(i).getName(),
 							theOriginalTypes[i].toString(),
 							theFile.getAbsolutePath(),
 							itsTable.getColumn(i).getType()));
+			}
+		}
 	}
 
 	@Override

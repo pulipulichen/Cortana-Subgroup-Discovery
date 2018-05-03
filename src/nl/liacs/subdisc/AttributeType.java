@@ -11,7 +11,7 @@ public enum AttributeType implements EnumInterface
 	NUMERIC("0.0"),
 	ORDINAL("0.0"),
 	BINARY("0");
-
+	
 	// used for FileLoading/Column setMissingValue
 	private static final Set<String> BOOLEAN_POSITIVES =
 		new HashSet<String>(Arrays.asList(new String[] { "1", "true", "t", "yes" }));

@@ -131,12 +131,14 @@ public class Gnuplot
 	// NOTE script could use the less portable: 'set datafile missing = "?"'
 	private static String getDatum(int theIndex, List<Float> theStats)
 	{
-		if (theStats.size() <= theIndex)
+		if (theStats.size() <= theIndex) {
 			return getDatum(theStats.get(0), 1.0f, 1.0f);
-		else
+		}
+		else {
 			return getDatum(theStats.get(0),
 					theStats.get(theIndex),
 					theStats.get(++theIndex));
+		}
 	}
 
 	private static String getDatum(float theThreshold, float theFPR, float theTPR)

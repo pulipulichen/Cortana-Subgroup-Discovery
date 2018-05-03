@@ -58,6 +58,8 @@ public class Column implements XMLNodeInterface
 
 	public static final int FIRST_TARGET_STATUS = NONE;
 	public static final int LAST_TARGET_STATUS = TERTIARY;
+	
+	public static final String DEFAULT_MISSING_VALUE = "?";
 
 	/**
 	 * Create a Column with the specified name, short name,
@@ -1096,7 +1098,7 @@ public class Column implements XMLNodeInterface
 	 */
 	public String getMissingValue()
 	{
-		return itsMissing.isEmpty() ? "" : itsMissingValue;
+		return itsMissing.isEmpty() ? DEFAULT_MISSING_VALUE : itsMissingValue;
 	}
 
 	/**

@@ -601,6 +601,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		{
 			for (String aValue : aCondition.getColumn().getDomain())
 			{
+				Log.logCommandLine("missing values: "  + aCondition.getColumn().getMissingValue());
 				if (aValue.equals(aCondition.getColumn().getMissingValue())) {
 					continue;
 				}

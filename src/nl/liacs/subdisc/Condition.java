@@ -447,8 +447,4 @@ public class Condition implements Comparable<Condition>
 			}
 		}
 	}
-	
-	public boolean hasMissingValue() {
-		return this.getValue().equals("?");
-	}
 }
