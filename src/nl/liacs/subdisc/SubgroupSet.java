@@ -82,8 +82,9 @@ public class SubgroupSet extends TreeSet<Subgroup>
 		itsTotalCoverage = theTotalCoverage;
 		itsBinaryTarget = theBinaryTarget;
 
-		if (theTotalCoverage <= 0)
+		if (theTotalCoverage <= 0) {
 			Log.logCommandLine("SubgroupSet<init>: theTotalCoverage = " + theTotalCoverage + ", but can not be <= 0");
+		}
 	}
 
 	/**
@@ -144,14 +145,16 @@ public class SubgroupSet extends TreeSet<Subgroup>
 	@Override
 	public boolean add(Subgroup theSubgroup)
 	{
-		if (theSubgroup == null)
+		if (theSubgroup == null) {
 			return false;
+		}
 		// avoid log(n) of TreeMap.put() (called by TreeSet.add())
 		// NOTE itsLowestScore is un-synchronized / non-volatile
 		// so some of these tests may succeed erroneously and the else
 		// below is run, this may be faster than synchronized/ volatile
-		else if (theSubgroup.getMeasureValue() < itsLowestScore)
+		else if (theSubgroup.getMeasureValue() < itsLowestScore) {
 			return false;
+		}
 		else
 		{
 			/*
@@ -187,8 +190,9 @@ public class SubgroupSet extends TreeSet<Subgroup>
 			 * good way (access to massive concurrent systems) to
 			 * test this
 			 */
-			if (QUEUE.size() >= MAX_QUEUE_SIZE)
+			if (QUEUE.size() >= MAX_QUEUE_SIZE) {
 				update();
+			}
 
 			return true;
 		}

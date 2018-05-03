@@ -58,13 +58,16 @@ public class CandidateQueue
 	 */
 	public boolean add(Candidate theCandidate)
 	{
-		if (itsSearchStrategy == SearchStrategy.BEAM)
+		if (itsSearchStrategy == SearchStrategy.BEAM) {
 			return addToQueue(itsNextQueue, theCandidate);
-		else if (itsSearchStrategy == SearchStrategy.COVER_BASED_BEAM_SELECTION)
+		}
+		else if (itsSearchStrategy == SearchStrategy.COVER_BASED_BEAM_SELECTION) {
 			//simply add candidate, regardless of the current size of itsTempQueue
 			synchronized (itsTempQueue) { return itsTempQueue.add(theCandidate); }
-		else
+		}
+		else {
 			return addToQueue(itsQueue, theCandidate);
+		}
 	}
 
 	//add candidate and trim queue to specified size itsMaximumQueueSize
@@ -153,8 +156,9 @@ public class CandidateQueue
 
 			Log.logCommandLine("========================================================");
 			Log.logCommandLine("used: " + aUsed.toString());
-			for (Candidate aCandidate : itsQueue)
+			for (Candidate aCandidate : itsQueue) {
 				Log.logCommandLine("priority: " + aCandidate.getPriority());
+			}
 
 			itsNextQueue = new TreeSet<Candidate>();
 			itsTempQueue = new TreeSet<Candidate>();
@@ -178,12 +182,15 @@ public class CandidateQueue
 	{
 		synchronized (itsQueue)
 		{
-			if (itsSearchStrategy == SearchStrategy.BEAM)
+			if (itsSearchStrategy == SearchStrategy.BEAM) {
 				synchronized (itsNextQueue) { return itsQueue.size() + itsNextQueue.size(); }
-			else if (itsSearchStrategy == SearchStrategy.COVER_BASED_BEAM_SELECTION)
+			}
+			else if (itsSearchStrategy == SearchStrategy.COVER_BASED_BEAM_SELECTION) {
 				synchronized (itsTempQueue) { return itsQueue.size() + itsTempQueue.size(); }
-			else
+			}
+			else {
 				return itsQueue.size();
+			}
 		}
 	}
 

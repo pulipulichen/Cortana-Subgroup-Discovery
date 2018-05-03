@@ -15,16 +15,20 @@ public class Candidate implements Comparable<Candidate>
 	@Override
 	public int compareTo(Candidate theCandidate)
 	{
-		if (this == theCandidate)
+		if (this == theCandidate) {
 			return 0;
-		else if (itsPriority > theCandidate.itsPriority)
+		}
+		else if (itsPriority > theCandidate.itsPriority) {
 			return -1;
-		else if (itsPriority < theCandidate.itsPriority)
+		}
+		else if (itsPriority < theCandidate.itsPriority) {
 			return 1;
+		}
 		//equal priorities
 		int aTest = itsSubgroup.compareTo(theCandidate.getSubgroup());
-		if (aTest != 0)
+		if (aTest != 0) {
 			return aTest;
+		}
 
 		return 1; // ?
 	}

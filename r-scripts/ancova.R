@@ -128,14 +128,23 @@ Taov.result <- T.aov(data[,"cov"], data[,"dv"], data[,"iv"], plot=TRUE, data.poi
 Taov.result$p.value
 Taov.result$fit
 
+lapply(ancova.model$fitted.values, function(x) write.table( data.frame(x), 'test.csv'  , append= T, sep=',' ))
+
 // --------------------------
 if(!require(lsmeans)){install.packages("lsmeans")}
 
 
 #input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/violate_reg.csv", header = TRUE, sep = ",");
-input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/homogeneity_reg.csv", header = TRUE, sep = ",");
+
 input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/violate_reg.csv", header = TRUE, sep = ",");
 input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/violate_reg2.csv", header = TRUE, sep = ",");
+input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/violate_reg3.csv", header = TRUE, sep = ",");
+
+
+input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/homogeneity_reg.csv", header = TRUE, sep = ",");
+input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/homogeneity_reg_a.csv", header = TRUE, sep = ",");
+
+input <- read.table("D:/Desktop/20180413 測試cortana的貝氏網路/共變數分析/violate_reg.csv", header = TRUE, sep = ",");
 
 reg.model <- aov(dv~iv*cov,data=input);
 reg.interaction <- summary(reg.model)[[1]][["Pr(>F)"]][3];
@@ -156,6 +165,7 @@ if (reg.interaction > 0.05) {
     print("violate assumption");
     iv.levels <- levels(factor(input[,"iv"]));
     library(gtools);
+    library(plyr);
     iv.comb <- combinations(n=as.integer(summary(iv.levels)["Length"]), r=2, v=iv.levels, repeats.allowed=F);
     iv.comb.freq <- sum(count(iv.comb)$freq);
     iv.comb <- cbind(iv.comb, c(rep("=",iv.comb.freq)));
@@ -199,3 +209,5 @@ if (reg.interaction > 0.05) {
 
     pairwise.result <- iv.comb[,5];
 };
+p.value;
+pairwise.result;

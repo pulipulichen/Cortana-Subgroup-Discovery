@@ -601,6 +601,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		{
 			for (String aValue : aCondition.getColumn().getDomain())
 			{
+				if (aValue.equals(aCondition.getColumn().getMissingValue())) {
+					continue;
+				}
+				
 				Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(aValue);
 				checkAndLog(aNewSubgroup, anOldCoverage);
 			}
@@ -624,10 +628,12 @@ public class SubgroupDiscovery extends MiningAlgorithm
 			theSubgroup.setMeasureValue(aQuality);
 
 			//if the quality is enough, or should be ignored, ...
-			if (ignoreQualityMinimum || aQuality > itsQualityMeasureMinimum)
+			if (ignoreQualityMinimum || aQuality > itsQualityMeasureMinimum) {
 				//...and, the coverage is not too high
-				if (aNewCoverage <= itsMaximumCoverage)
+				if (aNewCoverage <= itsMaximumCoverage) {
 					itsResult.add(theSubgroup);
+				}
+			}
 
 			itsCandidateQueue.add(new Candidate(theSubgroup));
 

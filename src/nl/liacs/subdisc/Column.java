@@ -2034,4 +2034,5 @@ public class Column implements XMLNodeInterface
 
 		return aResult;
 	}
+	
 }
