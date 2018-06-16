@@ -53,6 +53,7 @@ public class ResultTableModel extends AbstractTableModel
 					case SINGLE_NUMERIC : return "Average";
 					case DOUBLE_CORRELATION : return "Correlation";
 					case DOUBLE_REGRESSION : return "Slope";
+					case TRIPLE_ANCOVA : return "Pairwise Comparison";
 					case MULTI_LABEL : return "Edit Distance";
 					default : return "";
 				}
@@ -63,6 +64,7 @@ public class ResultTableModel extends AbstractTableModel
 					case SINGLE_NUMERIC : return "St. Dev.";
 					case DOUBLE_CORRELATION : return "Distance";
 					case DOUBLE_REGRESSION : return "Intercept";
+					case TRIPLE_ANCOVA : return "(null)";
 					case MULTI_LABEL : return "Entropy";
 					default : return "";
 				}
@@ -92,6 +94,7 @@ public class ResultTableModel extends AbstractTableModel
 				anIterator.next();
 		}
 		Subgroup aSubgroup = anIterator.next();
+		
 
 		switch(theColumnIndex)
 		{
@@ -99,7 +102,13 @@ public class ResultTableModel extends AbstractTableModel
 			case 1: return aSubgroup.getNrConditions();
 			case 2: return aSubgroup.getCoverage();
 			case 3: return RendererNumber.FORMATTER.format(aSubgroup.getMeasureValue());
-			case 4: return RendererNumber.FORMATTER.format(aSubgroup.getSecondaryStatistic());
+			case 4: 
+				switch (itsTargetType) {
+					case TRIPLE_ANCOVA : 
+						return aSubgroup.getDescription();
+					default:
+						return RendererNumber.FORMATTER.format(aSubgroup.getSecondaryStatistic());						
+				}
 			case 5: return RendererNumber.FORMATTER.format(aSubgroup.getTertiaryStatistic());
 			case 6:
 			{

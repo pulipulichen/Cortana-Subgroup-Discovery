@@ -940,9 +940,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				
 				AncovaMeasure aAncova = new AncovaMeasure(itsBaseAncovaMeasure, theIVdata, theCOVdata, theDVdata);
 				aQuality = (float) aAncova.getFstatPvalInvert();
-				
-				//theNewSubgroup.setSecondaryStatistic(0); //slope
-				//theNewSubgroup.setTertiaryStatistic(0); //intercept
+				theNewSubgroup.setDescription(aAncova.getPairwiseComparison()); //correlation
 				
 				break;
 			}

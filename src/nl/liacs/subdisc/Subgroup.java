@@ -27,6 +27,7 @@ public class Subgroup implements Comparable<Subgroup>
 	private double itsMeasureValue;
 	private double itsSecondaryStatistic = 0;
 	private double itsTertiaryStatistic = 0;
+	private String itsDescription = "";
 	int itsDepth;
 	private final SubgroupSet itsParentSet;
 	// XXX not strictly needed when setting itsPValue to NaN
@@ -159,6 +160,8 @@ public class Subgroup implements Comparable<Subgroup>
 	public void setSecondaryStatistic(double theSecondaryStatistic) { itsSecondaryStatistic = theSecondaryStatistic; }
 	public double getTertiaryStatistic() { return itsTertiaryStatistic; }
 	public void setTertiaryStatistic(double theTertiaryStatistic) { itsTertiaryStatistic = theTertiaryStatistic; }
+	public String getDescription() { return itsDescription; }
+	public void setDescription(String theDescription) { itsDescription = theDescription; }
 
 	public void setDAG(DAG theDAG) { itsDAG = theDAG; }
 	public DAG getDAG() { return itsDAG; }
