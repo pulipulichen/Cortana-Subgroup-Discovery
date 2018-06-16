@@ -24,9 +24,11 @@ public class RserveUtil
 	private static RConnection connection;
 	
 	public static void startup() {
+		
 		try (Socket ignored = new Socket("localhost", 6311)) {
 	        //return false;
 	    } catch (IOException ignored) {
+	    	Log.logCommandLine("RserveUtil.startup() Socket failed: " + ignored.getMessage());
 	        return;
 	    }
 		
@@ -37,10 +39,13 @@ public class RserveUtil
 		final Runtime rt = Runtime.getRuntime();
 		try {
 			String RPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
-			rt.exec(RPath + " -e \"library(Rserve);Rserve()\"");
+			rt.exec("\"" + RPath + "\" -e \"library(Rserve);Rserve()\"");
+			Log.logCommandLine("RserveUtil.startup(): " + RPath + " -e \"library(Rserve);Rserve()\"");
+			
+			connect();
 		}
 		catch (Exception e) {
-			
+			Log.logCommandLine("RserveUtil.startup() failed: " + e.getMessage());
 		}
 	}
 	
@@ -52,7 +57,8 @@ public class RserveUtil
 		final Runtime rt = Runtime.getRuntime();
 		try {
 			String RPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
-			rt.exec(RPath + " -e \"library(RSclient);RSshutdown(RSconnect())\"");
+			rt.exec("\"" + RPath + "\" -e \"library(RSclient);RSshutdown(RSconnect())\"");
+			connection = null;
 		}
 		catch (Exception e) {
 			
@@ -79,6 +85,8 @@ public class RserveUtil
 			connection = null;
 		}
 	}
+	
+	// -------------------------------------
 	
 	private static HashMap<String, Float> chiSquareTestCache;
 	private static int chiSquareTestCount;
@@ -143,11 +151,62 @@ public class RserveUtil
 		} finally {
 	        //Log.logCommandLine("" + chiSquareTestRScript);
 			return aReturn;
-			
 		}
 	}
 
 	public static float chiSquareTest(float sample1True, float sample1False, float sample2True, float sample2False) {
 		return chiSquareTest((int) sample1True, (int) sample1False, (int) sample2True, (int) sample2False);
+	}
+	
+	// --------------------
+	
+	
+	private static HashMap<String, String> runScriptCache =  new HashMap<String, String>();
+	private static int runScriptConnectCount = 0;
+	
+	@SuppressWarnings("finally")
+	public static String runScript(String aScriptKey, String aDataKey, String aScript) {
+		String aReturn = null;
+		String key = aScriptKey + "_" + aDataKey;
+		
+		if (runScriptCache.containsKey(key)) {
+			return runScriptCache.get(key);
+		}
+		
+		// ------------------------------------
+		
+		if (connection == null) {
+			Log.logCommandLine("No connection. Please excute RserveUtil.startup() first.");
+			return aReturn;
+		}
+		
+		try {
+			Thread.sleep(100);	
+			
+			runScriptConnectCount++;
+			Log.logCommandLine("Conntect: " + runScriptConnectCount);
+          
+			aReturn = (String) connection.eval(aScript).asString();
+			runScriptCache.put(key, aReturn);
+			return aReturn;
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			try {
+				Thread.sleep(1000);
+				disconnect();
+				shutdown();
+				Thread.sleep(1000);
+				startup();
+				connect();
+				return runScript(aScriptKey, aDataKey, aScript);
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		} finally {
+	        //Log.logCommandLine("" + chiSquareTestRScript);
+			return aReturn;
+		}
 	}
 }

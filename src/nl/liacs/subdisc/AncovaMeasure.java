@@ -56,7 +56,15 @@ public class AncovaMeasure
 
 		// 20180616 we have to init ANCOVA result based on theIVColumn, theCOVColumn, and the DVColumn
 		itsPairwiseComparison.add("A > B*");
-		itsPairwiseComparison.add("B > C");
+		
+		RserveUtil.startup();
+		RserveUtil.connect();
+		String aReturn = RserveUtil.runScript("test", "1,2", "print(paste(1+2,3+4, sep=','))");
+		RserveUtil.disconnect();
+		RserveUtil.shutdown();
+		//RserveUtil.shutdown();
+		Log.logCommandLine("File writer error: " + aReturn);
+		itsPairwiseComparison.add("B > C ");
 		
 		/*
 		itsSampleSize = theIVColumn.size();
