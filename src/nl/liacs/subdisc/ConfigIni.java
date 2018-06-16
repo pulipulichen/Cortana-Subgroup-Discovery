@@ -47,6 +47,20 @@ public class ConfigIni
 		return (result != null ? result: aDefaultValue );
 	}
 	
+	public static boolean getBoolean(String aHeader, String aKey) {
+		loadIni();
+		String aValue = (String) itsIni.get(aHeader, aKey);
+		if (null == aValue) {
+			return false;
+		}
+		else {
+			aValue = aValue.toLowerCase().trim();
+			return (aValue.equals("true") || aValue.equals("t")  
+					|| aValue.equals("yes") || aValue.equals("y")
+					||aValue.equals("1"));
+		}
+	}
+	
 	
 	public static int getInt(String aHeader, String aKey, int aDefaultValue) {
 		loadIni();
