@@ -78,6 +78,8 @@ public class SubDisc
 		
 		// 20180414 Open the main window directly without open a file.
 		MiningWindow w = new MiningWindow();
+		
+		// 20180616 開啟Cortana並且讀取檔案
 		w.actionPerformed("Open File");
 		
 		

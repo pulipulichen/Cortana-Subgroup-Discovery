@@ -568,11 +568,16 @@ public class MiningWindow extends JFrame implements ActionListener
 
 			if (TargetType.hasTargetValue(aTargetType))
 			{
-				if (aTargetType == TargetType.SINGLE_NOMINAL)
+				if (aTargetType == TargetType.SINGLE_NOMINAL) {
 					aMiscField = itsTargetConcept.getTargetValue();
+				}
 				else if (aTargetType == TargetType.DOUBLE_REGRESSION ||
-						aTargetType == TargetType.DOUBLE_CORRELATION)
+						aTargetType == TargetType.DOUBLE_CORRELATION) {
 					aMiscField = itsTargetConcept.getSecondaryTarget().getName();
+				}
+				else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
+					aMiscField = itsTargetConcept.getSecondaryTarget().getName();
+				}
 			}
 		}
 		aQualityMeasure = itsSearchParameters.getQualityMeasure().GUI_TEXT;
@@ -596,6 +601,11 @@ public class MiningWindow extends JFrame implements ActionListener
 				}
 				else if (aTargetType == TargetType.DOUBLE_REGRESSION ||
 						aTargetType == TargetType.DOUBLE_CORRELATION)
+				{
+					setMiscFieldName(aMiscField);
+					itsTargetConcept.setSecondaryTarget(itsTable.getColumn(aMiscField));
+				}
+				else if (aTargetType == TargetType.TRIPLE_ANCOVA)
 				{
 					setMiscFieldName(aMiscField);
 					itsTargetConcept.setSecondaryTarget(itsTable.getColumn(aMiscField));
@@ -716,9 +726,10 @@ public class MiningWindow extends JFrame implements ActionListener
 		removeAllMultiTargetsItems();
 		removeAllMultiRegressionTargetsItems();
 
-		boolean fillMiscField = (aTargetType == TargetType.DOUBLE_REGRESSION) || (aTargetType == TargetType.DOUBLE_CORRELATION);
+		boolean fillMiscField = (aTargetType == TargetType.DOUBLE_REGRESSION) || (aTargetType == TargetType.DOUBLE_CORRELATION) || (aTargetType == TargetType.TRIPLE_ANCOVA);
 		int defaultTargetAttributeItemIndex = -1;
 		int defaultSecondaryAttributeItemIndex = -1;
+		int defaultThirdAttributeItemIndex = -1;
 		
 		// primary target and (optional) MiscField
 		for (Column c : itsTable.getColumns())
@@ -728,6 +739,7 @@ public class MiningWindow extends JFrame implements ActionListener
 				(aTargetType == TargetType.SINGLE_NOMINAL && anAttributeType == AttributeType.BINARY) ||
 				(aTargetType == TargetType.SINGLE_NUMERIC && anAttributeType == AttributeType.NUMERIC) ||
 				(aTargetType == TargetType.SINGLE_ORDINAL && anAttributeType == AttributeType.NUMERIC) ||
+				(aTargetType == TargetType.TRIPLE_ANCOVA && (anAttributeType == AttributeType.NUMERIC || anAttributeType == AttributeType.NOMINAL)) ||
 				(aTargetType == TargetType.DOUBLE_REGRESSION && anAttributeType == AttributeType.NUMERIC) ||
 				(aTargetType == TargetType.DOUBLE_CORRELATION && anAttributeType == AttributeType.NUMERIC) ||
 				(aTargetType == TargetType.MULTI_LABEL && anAttributeType == AttributeType.NUMERIC) ||
@@ -746,12 +758,29 @@ public class MiningWindow extends JFrame implements ActionListener
 					addMiscFieldItem(c.getName());
 				}
 				
-				if ( (aTargetType == TargetType.DOUBLE_REGRESSION || aTargetType == TargetType.DOUBLE_CORRELATION)) {
+				if ( aTargetType == TargetType.DOUBLE_REGRESSION || aTargetType == TargetType.DOUBLE_CORRELATION) {
 					if (c.getName().equals("x")) {
 						defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-1;
 					}
 					else if (c.getName().equals("y")) {
 						defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-1;
+					}
+					else if (c.getName().equals("iv")) {
+						defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-1;
+					}
+					else if (c.getName().equals("dv")) {
+						defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-1;
+					}
+				}
+				else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
+					if (c.getName().equals("iv")) {
+						defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-1;
+					}
+					else if (c.getName().equals("dv")) {
+						defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-1;
+					}
+					else if (c.getName().equals("cov")) {
+						defaultThirdAttributeItemIndex = getMiscFieldItemCount()-1;
 					}
 				}
 				else if (aTargetType == TargetType.SINGLE_NOMINAL) {
@@ -956,6 +985,14 @@ public class MiningWindow extends JFrame implements ActionListener
 										aFormatter.format(aRM.getSlope())));
 				break;
 			}
+			case TRIPLE_ANCOVA :
+			{
+				//Column aPrimaryColumn = itsTargetConcept.getPrimaryTarget();
+				//Column aSecondaryColumn = itsTargetConcept.getSecondaryTarget();
+				//Column aThirdColumn = itsTargetConcept.getThirdTarget();
+
+				break;
+			}
 			case DOUBLE_CORRELATION :
 			{
 				Column aPrimaryColumn = itsTargetConcept.getPrimaryTarget();
@@ -1018,8 +1055,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		jComboBoxNumericStrategy.removeActionListener(this);
 
 		// if SINGLE_NOMINAL add INTERVALS, else remove it
-		if (itsTargetConcept.getTargetType() == TargetType.SINGLE_NOMINAL)
+		if (itsTargetConcept.getTargetType() == TargetType.SINGLE_NOMINAL) {
 			jComboBoxNumericStrategy.addItem(NumericStrategy.NUMERIC_INTERVALS.GUI_TEXT);
+		}
 		else
 		{
 			// assumes first normal value is not INTERVALS
@@ -1076,8 +1114,9 @@ public class MiningWindow extends JFrame implements ActionListener
 			enableTableDependentComponents(true);
 
 			// loaded from regular file
-			if (aSearchParameters == null)
+			if (aSearchParameters == null) {
 				initGuiComponents();
+			}
 			// loaded from XML
 			else
 			{
@@ -1274,12 +1313,19 @@ public class MiningWindow extends JFrame implements ActionListener
 		boolean hasMiscField = TargetType.hasMiscField(aTargetType);
 		jComboBoxMiscField.setVisible(hasMiscField);
 		jLabelMiscField.setVisible(hasMiscField);
-		if (aTargetType == TargetType.SINGLE_NOMINAL)
+		if (aTargetType == TargetType.SINGLE_NOMINAL) {
 			jLabelMiscField.setText("target value");
-		else if (aTargetType == TargetType.DOUBLE_REGRESSION || aTargetType == TargetType.DOUBLE_CORRELATION)
+		}
+		else if (aTargetType == TargetType.DOUBLE_REGRESSION 
+				|| aTargetType == TargetType.DOUBLE_CORRELATION) {
 			jLabelMiscField.setText("<html><u>s</u>econdary target");
-		else
+		}
+		else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
+			jLabelMiscField.setText("<html><u>s</u>econdary target");
+		}
+		else {
 			jLabelMiscField.setText("");
+		}
 
 		// only valid for nominal targets
 		jCheckBoxSetValuedNominals.setEnabled(aTargetType == TargetType.SINGLE_NOMINAL);
@@ -1351,7 +1397,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		 */
 		TargetType aTargetType = itsTargetConcept.getTargetType();
 		if (aTargetType != TargetType.DOUBLE_REGRESSION &&
-				aTargetType != TargetType.DOUBLE_CORRELATION)
+				aTargetType != TargetType.DOUBLE_CORRELATION &&
+				aTargetType != TargetType.TRIPLE_ANCOVA)
 			initTargetValues();
 
 		/*
@@ -1387,6 +1434,11 @@ public class MiningWindow extends JFrame implements ActionListener
 				break;
 			}
 			case DOUBLE_CORRELATION :
+			{
+				itsTargetConcept.setSecondaryTarget(itsTable.getColumn(getMiscFieldName()));
+				break;
+			}
+			case TRIPLE_ANCOVA :
 			{
 				itsTargetConcept.setSecondaryTarget(itsTable.getColumn(getMiscFieldName()));
 				break;
@@ -1504,6 +1556,11 @@ public class MiningWindow extends JFrame implements ActionListener
 				new ModelWindow(itsTargetConcept.getPrimaryTarget(), itsTargetConcept.getSecondaryTarget(), null, null); //no trendline, no subset
 				break;
 			}
+			case TRIPLE_ANCOVA :
+			{
+				new ModelWindow(itsTargetConcept.getPrimaryTarget(), itsTargetConcept.getSecondaryTarget(), null, null); //no trendline, no subset
+				break;
+			}
 			case MULTI_LABEL :
 			{
 				List<Column> aList = itsTargetConcept.getMultiTargets();
@@ -1593,6 +1650,11 @@ public class MiningWindow extends JFrame implements ActionListener
 				break;
 			}
 			case DOUBLE_CORRELATION :
+			{
+				aQualityMeasure = null;
+				break;
+			}
+			case TRIPLE_ANCOVA :
 			{
 				aQualityMeasure = null;
 				break;
@@ -1751,11 +1813,13 @@ public class MiningWindow extends JFrame implements ActionListener
 			itsTargetConcept.setSecondaryTarget(null);
 
 		// are already set when needed, remove possible old values
-		if (!TargetType.hasMultiTargets(aType))
+		if (!TargetType.hasMultiTargets(aType)) {
 			itsTargetConcept.setMultiTargets(new ArrayList<Column>(0));
+		}
 		// assumes COOKS_DISTANCE is only valid for DOUBLE_REGRESSION
-		if (QM.COOKS_DISTANCE.GUI_TEXT.equals(getQualityMeasureName()))
+		if (QM.COOKS_DISTANCE.GUI_TEXT.equals(getQualityMeasureName())) {
 			itsTargetConcept.setMultiRegressionTargets(new ArrayList<Column>(0));
+		}
 
 		/*
 		 * SEARCH PARAMETERS

@@ -20,3 +20,8 @@ https://pulipulichen.github.io/Cortana-Subgroup-Discovery/release/start_cortana.
 
 # Resources
 * Smile: https://haifengl.github.io/smile/
+
+# Code snippet
+````java
+Log.logCommandLine("File writer error: " + e.getMessage());
+````

@@ -470,6 +470,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 		itsTable = new Table(theFile, itsNrLines, aHeaders.length);
 		List<Column> aColumns = itsTable.getColumns();
 
+		// 20180616 這邊是在解析每個欄位的資料類型
 		for (int i = 0, j = aHeaders.length; i < j; ++i)
 		{
 			String s = aData[i];

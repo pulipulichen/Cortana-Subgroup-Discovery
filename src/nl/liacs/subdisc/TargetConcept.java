@@ -22,11 +22,14 @@ public class TargetConcept implements XMLNodeInterface
 	private Column		itsPrimaryTarget;
 	private String		itsTargetValue;
 	private Column		itsSecondaryTarget;
+	private Column		itsThirdTarget;
 	private List<Column>	itsMultiRegressionTargets;
 	private List<Column>	itsMultiTargets;
 	// for double regression code:
 	private List<Column>	itsSecondaryTargets;
 	private List<Column>	itsTertiaryTargets;
+	// for triple ANCOVA code:
+	private List<Column>	itsThirdTargets;
 	private boolean		itsInterceptRelevance;
 	private String		itsGlobalRegressionModel;
 
@@ -93,6 +96,7 @@ public class TargetConcept implements XMLNodeInterface
 	public void setTargetValue(String theTargetValue) { itsTargetValue = theTargetValue; }
 
 	public Column getSecondaryTarget() { return itsSecondaryTarget; }
+	public Column getThirdTarget() { return itsThirdTarget; }
 	public void setSecondaryTarget(Column theSecondaryTarget) { itsSecondaryTarget = theSecondaryTarget; }
 
 	public List<Column> getMultiTargets() { return itsMultiTargets; }
@@ -108,9 +112,14 @@ public class TargetConcept implements XMLNodeInterface
 	}
 
 	public List<Column> getSecondaryTargets() { return itsSecondaryTargets; }
+	public List<Column> getThirdTargets() { return itsThirdTargets; }
 	public void setSecondaryTargets(List<Column> theSecondaryTargets)
 	{
 		itsSecondaryTargets = theSecondaryTargets;
+	}
+	public void setThirdTargets(List<Column> theThirdTargets)
+	{
+		itsThirdTargets = theThirdTargets;
 	}
 
 	public List<Column> getTertiaryTargets() { return itsTertiaryTargets; }

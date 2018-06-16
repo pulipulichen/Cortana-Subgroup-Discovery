@@ -29,6 +29,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	private float[] itsNumericTargetMembers;
 	private Column itsPrimaryColumn;	//DOUBLE_CORRELATION / DOUBLE_REGRESSION
 	private Column itsSecondaryColumn;	//DOUBLE_CORRELATION / DOUBLE_REGRESSION
+	private Column itsThirdColumn;	//TRIPLE_ANCOVA
 	private CorrelationMeasure itsBaseCM;	//DOUBLE_CORRELATION
 	private RegressionMeasure itsBaseRM;	//DOUBLE_REGRESSION
 	private BinaryTable itsBinaryTable;	//MULTI_LABEL

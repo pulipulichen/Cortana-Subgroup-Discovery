@@ -81,7 +81,9 @@ public enum QM implements EnumInterface
 	// DOUBLE_REGRESSION quality measures
 	//LINEAR_REGRESSION	("Significance of Slope Difference", "0.0", TargetType.DOUBLE_REGRESSION),
 	LINEAR_REGRESSION	("Sig. of Slope Diff. (C)", "-1.0", TargetType.DOUBLE_REGRESSION),
-	COOKS_DISTANCE		("Cook's Distance",	"0.0",	TargetType.DOUBLE_REGRESSION);
+	COOKS_DISTANCE		("Cook's Distance",	"0.0",	TargetType.DOUBLE_REGRESSION),
+	
+	ANCOVA	("F-value (p.val)", "-1.0", TargetType.TRIPLE_ANCOVA);
 
 	// to enforce implementation of SINGLE_NUMERIC and SINGLE_ORDINAL QMs
 	static { requiredStatsTest(); };

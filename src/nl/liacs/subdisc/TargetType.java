@@ -13,7 +13,8 @@ public enum TargetType implements EnumInterface
 	SINGLE_NUMERIC("single numeric"),
 	SINGLE_ORDINAL("single ordinal"),
 	DOUBLE_REGRESSION("double regression"),
-	DOUBLE_CORRELATION("double correlation"),
+	DOUBLE_CORRELATION("double correlation"),	
+	TRIPLE_ANCOVA("triple ANCOVA"),
 	MULTI_LABEL("multi-label"),
 	MULTI_BINARY_CLASSIFICATION("multi binary classification");
 
@@ -82,6 +83,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return true;
 			case MULTI_BINARY_CLASSIFICATION: return false;
 			default :
@@ -102,6 +104,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;
 			default :
@@ -111,6 +114,27 @@ public enum TargetType implements EnumInterface
 			}
 		}
 	}
+	
+	// used by XMLNodeTargetConcept
+		public static boolean hasThirdTarget(TargetType theType)
+		{
+			switch (theType)
+			{
+				case SINGLE_NOMINAL		: return false;
+				case SINGLE_NUMERIC		: return false;
+				case SINGLE_ORDINAL		: return false;
+				case DOUBLE_REGRESSION		: return false;
+				case DOUBLE_CORRELATION		: return false;
+				case TRIPLE_ANCOVA		: return true;
+				case MULTI_LABEL		: return false;
+				case MULTI_BINARY_CLASSIFICATION: return false;
+				default :
+				{
+					unknownTargetType("hasThirdTarget", theType);
+					return false;
+				}
+			}
+		}
 
 	// used by MiningWindow.jComboBoxTargetAttributeActionPerformed()
 	public static boolean hasMultiTargets(TargetType theType)
@@ -122,6 +146,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return false;
 			case DOUBLE_CORRELATION		: return false;
+			case TRIPLE_ANCOVA		: return false;
 			case MULTI_LABEL		: return true;
 			case MULTI_BINARY_CLASSIFICATION: return true;
 			default :
@@ -142,6 +167,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return false;
+			case TRIPLE_ANCOVA		: return false;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;
 			default :
@@ -162,6 +188,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return true;
 			default :
@@ -182,6 +209,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return true;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;	// TODO true?
 			default :
@@ -203,6 +231,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;	// TODO true?
 			default :
@@ -224,6 +253,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case TRIPLE_ANCOVA		: return false;
 			case MULTI_LABEL		: return true;
 			case MULTI_BINARY_CLASSIFICATION: return false;	// TODO true?
 			default :

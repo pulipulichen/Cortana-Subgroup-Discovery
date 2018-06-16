@@ -428,6 +428,8 @@ public class Table implements XMLNodeInterface
 		//find all targets
 		switch (aType)
 		{
+			case TRIPLE_ANCOVA :
+				aTargets.add(theTC.getThirdTarget());
 			case DOUBLE_REGRESSION : // deliberate fall-through
 			case DOUBLE_CORRELATION :
 				aTargets.add(theTC.getSecondaryTarget());

@@ -3,9 +3,6 @@ input[,"am"] <- ifelse(input[,"am"]==1, "A", "B")
 
 input[,"am"] <- ifelse(input[,"am"]="A", 0, 1)
 
-
-
-
 result2 <- aov(mpg~as.factor(hp)+am,data=mtcars);
 
 result1 <- aov(mpg~hp*am,data=mtcars);
@@ -151,6 +148,8 @@ reg.interaction <- summary(reg.model)[[1]][["Pr(>F)"]][3];
 reg.interaction
 
 if (reg.interaction > 0.05) {
+	# 沒有違反迴歸係數同質性檢定的情況
+
     ancova.model <- aov(dv~as.factor(iv)+cov,data=input);
     p.value <- summary(ancova.model)[[1]][["Pr(>F)"]][2];
 
@@ -162,6 +161,8 @@ if (reg.interaction > 0.05) {
     pairwise.result <- ancova.compare.summary$contrast;
     
 } else {
+	# 沒有違反迴歸係數同質性檢定的情況
+
     print("violate assumption");
     iv.levels <- levels(factor(input[,"iv"]));
     library(gtools);
