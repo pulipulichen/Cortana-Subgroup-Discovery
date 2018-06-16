@@ -1,5 +1,8 @@
-csv_file_path = file.choose()
-input <- read.table(csv_file_path, header = TRUE, sep = ",");
+input <- data.frame(
+    iv = c(1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2),
+    cov = c(11,12,19,13,17,15,17,14,13,16,11,14,10,12,12,13,10,15,14,11),
+    dv = c(21,23,25,23,23,24,24,20,22,24,21,24,21,20,23,24,23,21,25,24)
+);
 
 reg.model <- aov(dv~iv*cov,data=input);
 reg.interaction <- summary(reg.model)[[1]][["Pr(>F)"]][3];
@@ -71,3 +74,4 @@ if (reg.interaction > 0.05) {
 };
 p.value;
 pairwise.result;
+paste(p.value, pairwise.result, sep=",")
