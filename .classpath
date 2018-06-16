@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/RserveEngine.jar"/>
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/JRI.jar"/>
 	<classpathentry kind="lib" path="D:/xampp/htdocs/[Java-Projects]/Cortana-Subgroup-Discovery/libs/JRIEngine.jar"/>
+	<classpathentry kind="lib" path="libs/ini4j-0.5.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

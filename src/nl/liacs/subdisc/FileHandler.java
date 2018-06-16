@@ -17,7 +17,7 @@ public class FileHandler
 	// 20180616 預設的檔案路徑
 	//private String aTestFilePath = null;
 	//private String aTestFilePath = "reg.csv";
-	private String aTestFilePath = "anvoca_sm_ancova.csv";
+	//private String aTestFilePath = "anvoca_sm_ancova.csv";
 	
 	
 	public static enum Action
@@ -234,12 +234,13 @@ public class FileHandler
 		aChooser.addChoosableFileFilter(new FileTypeFilter(FileType.XML));
 		aChooser.setFileFilter(new FileTypeFilter(FileType.ALL_DATA_FILES));
 
-		if (aTestFilePath != null) {
+		String aDefaultLoadFile = ConfigIni.get("global", "DefaultLoadFile");
+		if (aDefaultLoadFile != null) {
 			try {
 				String aJarPath = new File(FileHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 				//Log.logCommandLine("FileHandle showFileChooser() error: " + aJarPath);
 				//return;
-				itsFile = new File(aJarPath + "/" + aTestFilePath);
+				itsFile = new File(aJarPath + "/" + aDefaultLoadFile);
 				itsLastFileLocation = itsFile.getParent();
 				return;
 			}

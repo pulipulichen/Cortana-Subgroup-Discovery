@@ -20,7 +20,7 @@ import java.util.HashMap;
  */
 public class RserveUtil
 {
-	private static String RPath = "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe";
+	//private static String RPath = "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe";
 	private static RConnection connection;
 	
 	public static void startup() {
@@ -36,6 +36,7 @@ public class RserveUtil
 		
 		final Runtime rt = Runtime.getRuntime();
 		try {
+			String RPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
 			rt.exec(RPath + " -e \"library(Rserve);Rserve()\"");
 		}
 		catch (Exception e) {
@@ -50,6 +51,7 @@ public class RserveUtil
 		
 		final Runtime rt = Runtime.getRuntime();
 		try {
+			String RPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
 			rt.exec(RPath + " -e \"library(RSclient);RSshutdown(RSconnect())\"");
 		}
 		catch (Exception e) {

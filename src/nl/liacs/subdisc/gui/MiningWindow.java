@@ -278,7 +278,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		jLabelQualityMeasureMinimum = initJLabel("measure minimum");
 		jPanelTargetConceptLabels.add(jLabelQualityMeasureMinimum);
 
-		jLabelTargetAttribute = initJLabel("<html><u>p</u>rimary target");
+		jLabelTargetAttribute = initJLabel("<html><u>p</u>rimary target</html>");
 		jPanelTargetConceptLabels.add(jLabelTargetAttribute);
 
 		// used for target value or secondary target
@@ -1074,8 +1074,10 @@ public class MiningWindow extends JFrame implements ActionListener
 
 				RegressionMeasure aRM =
 					new RegressionMeasure(QM.LINEAR_REGRESSION, aPrimaryColumn, aSecondaryColumn);
+				
 				NumberFormat aFormatter = NumberFormat.getNumberInstance();
 				aFormatter.setMaximumFractionDigits(2);
+				
 				jLabelTargetInfo.setText(" regression");
 				jLabelTargetInfoText.setText(String.format("<html><u>s</u> = %s + %s * <u>p</u></html>",
 										aFormatter.format(aRM.getIntercept()),
@@ -1084,11 +1086,21 @@ public class MiningWindow extends JFrame implements ActionListener
 			}
 			case TRIPLE_ANCOVA :
 			{
-				//Column aPrimaryColumn = itsTargetConcept.getPrimaryTarget();
-				//Column aSecondaryColumn = itsTargetConcept.getSecondaryTarget();
-				//Column aThirdColumn = itsTargetConcept.getThirdTarget();
-				jLabelTargetInfo.setText("");
-				jLabelTargetInfoText.setText("");
+				// 讓我們先來做一次看看吧，基本的
+			
+				Column aIVColumn = itsTargetConcept.getPrimaryTarget();
+				Column aCOVColumn = itsTargetConcept.getSecondaryTarget();
+				Column aDVColumn = itsTargetConcept.getThirdTarget();
+				
+				AncovaMeasure aANCOVA =
+						new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
+				
+				NumberFormat aFormatter = NumberFormat.getNumberInstance();
+				aFormatter.setMaximumFractionDigits(2);
+				
+				jLabelTargetInfo.setText(" ANCOVA pairwise comparison");
+				jLabelTargetInfoText.setText(String.format("<html>%s</html>",
+						aANCOVA.getPairwiseComparison()));
 				break;
 			}
 			case DOUBLE_CORRELATION :
@@ -1139,12 +1151,15 @@ public class MiningWindow extends JFrame implements ActionListener
 		if (aName == null)
 			return;
 
-		if (QM.AVERAGE.GUI_TEXT.equals(aName))
+		if (QM.AVERAGE.GUI_TEXT.equals(aName)) {
 			setQualityMeasureMinimum(Float.toString(itsTargetAverage));
-		else if (QM.INVERSE_AVERAGE.GUI_TEXT.equals(aName))
+		}
+		else if (QM.INVERSE_AVERAGE.GUI_TEXT.equals(aName)) {
 			setQualityMeasureMinimum(Float.toString(-itsTargetAverage));
-		else
+		}
+		else {
 			setQualityMeasureMinimum(QM.fromString(getQualityMeasureName()).MEASURE_DEFAULT);
+		}
 	}
 
 	// see jComboBoxTargetTypeActionPerformed
@@ -1422,23 +1437,23 @@ public class MiningWindow extends JFrame implements ActionListener
 		
 		
 		if (aTargetType == TargetType.SINGLE_NOMINAL) {
-			jLabelTargetAttribute.setText("<html><u>p</u>rimary target");
+			jLabelTargetAttribute.setText("<html><u>p</u>rimary target</html>");
 			jLabelMiscField.setText("target value");
 			jLabelThirdTargetField.setText("");
 		}
 		else if (aTargetType == TargetType.DOUBLE_REGRESSION 
 				|| aTargetType == TargetType.DOUBLE_CORRELATION) {
-			jLabelTargetAttribute.setText("<html><u>p</u>rimary target");
-			jLabelMiscField.setText("<html><u>s</u>econdary target");
+			jLabelTargetAttribute.setText("<html><u>p</u>rimary target</html>");
+			jLabelMiscField.setText("<html><u>s</u>econdary target</html>");
 			jLabelThirdTargetField.setText("");
 		}
 		else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
-			jLabelTargetAttribute.setText("<html><u>i</u>ndependent <u>v</u>ariable");
-			jLabelMiscField.setText("<html><u>d</u>ependent <u>v</u>ariable");
-			jLabelThirdTargetField.setText("<html><u>cov</u>ariance");
+			jLabelTargetAttribute.setText("<html><u>i</u>ndependent <u>v</u>ariable</html>");
+			jLabelMiscField.setText("<html><u>d</u>ependent <u>v</u>ariable</html>");
+			jLabelThirdTargetField.setText("<html><u>cov</u>ariance</html>");
 		}
 		else {
-			jLabelTargetAttribute.setText("<html><u>p</u>rimary target");
+			jLabelTargetAttribute.setText("<html><u>p</u>rimary target</html>");
 			jLabelMiscField.setText("");
 			jLabelThirdTargetField.setText("");
 		}
@@ -1557,6 +1572,7 @@ public class MiningWindow extends JFrame implements ActionListener
 			case TRIPLE_ANCOVA :
 			{
 				itsTargetConcept.setSecondaryTarget(itsTable.getColumn(getMiscFieldName()));
+				itsTargetConcept.setThirdTarget(itsTable.getColumn(getThirdTargetName()));
 				break;
 			}
 			case MULTI_BINARY_CLASSIFICATION :

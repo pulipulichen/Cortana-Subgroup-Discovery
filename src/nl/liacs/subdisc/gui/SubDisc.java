@@ -82,6 +82,7 @@ public class SubDisc
 		// 20180616 開啟Cortana並且讀取檔案
 		w.actionPerformed("Open File");
 		
+		//Log.logCommandLine("" + ConfigIni.getInt("global", "RPathQw", 1));
 		
 		/*
 		FileHandler aLoader = new FileHandler(Action.OPEN_FILE);
