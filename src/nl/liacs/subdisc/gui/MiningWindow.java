@@ -1084,25 +1084,6 @@ public class MiningWindow extends JFrame implements ActionListener
 										aFormatter.format(aRM.getSlope())));
 				break;
 			}
-			case TRIPLE_ANCOVA :
-			{
-				// 讓我們先來做一次看看吧，基本的
-			
-				Column aIVColumn = itsTargetConcept.getPrimaryTarget();
-				Column aCOVColumn = itsTargetConcept.getSecondaryTarget();
-				Column aDVColumn = itsTargetConcept.getThirdTarget();
-				
-				AncovaMeasure aANCOVA =
-						new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
-				
-				NumberFormat aFormatter = NumberFormat.getNumberInstance();
-				aFormatter.setMaximumFractionDigits(2);
-				
-				jLabelTargetInfo.setText(" ANCOVA pairwise comparison");
-				jLabelTargetInfoText.setText(String.format("<html>%s</html>",
-						aANCOVA.getPairwiseComparison()));
-				break;
-			}
 			case DOUBLE_CORRELATION :
 			{
 				Column aPrimaryColumn = itsTargetConcept.getPrimaryTarget();
@@ -1112,6 +1093,30 @@ public class MiningWindow extends JFrame implements ActionListener
 					new CorrelationMeasure(QM.CORRELATION_R, aPrimaryColumn, aSecondaryColumn);
 				jLabelTargetInfo.setText(" correlation");
 				jLabelTargetInfoText.setText(Double.toString(aCM.getEvaluationMeasureValue()));
+				break;
+			}
+			case TRIPLE_ANCOVA :
+			{
+				// 讓我們先來做一次看看吧，基本的
+			
+				Column aIVColumn = itsTargetConcept.getPrimaryTarget();
+				Column aCOVColumn = itsTargetConcept.getSecondaryTarget();
+				Column aDVColumn = itsTargetConcept.getThirdTarget();
+				
+
+				RserveUtil.startup();
+				RserveUtil.connect();
+				AncovaMeasure aANCOVA =
+						new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
+				RserveUtil.disconnect();
+				RserveUtil.shutdown();
+				
+				NumberFormat aFormatter = NumberFormat.getNumberInstance();
+				aFormatter.setMaximumFractionDigits(2);
+				
+				jLabelTargetInfo.setText(" ANCOVA pairwise comparison");
+				jLabelTargetInfoText.setText(String.format("%s (%s)",
+						aANCOVA.getPairwiseComparison(), aANCOVA.getFstatPval() ));
 				break;
 			}
 			case MULTI_LABEL :

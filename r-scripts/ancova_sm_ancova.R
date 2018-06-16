@@ -1,4 +1,6 @@
-csv_file_path = file.choose()
+#csv_file_path = file.choose()
+
+csv_file_path = "D:\\20180226~20180628 政大圖檔所博士班第七年 第二學期\\[DLLL實驗室]\\20180413 測試cortana的貝氏網路\\共變數分析\\homogeneity_reg2.csv"
 input <- read.table(csv_file_path, header = TRUE, sep = ",");
 
 reg.model <- aov(dv~iv*cov,data=input);
@@ -15,8 +17,7 @@ if (reg.interaction > 0.05) {
     ancova.compare.summary <- summary((emmeans(ancova.model, pairwise ~ iv, adjust = "tukey"))$contrasts);
     ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$estimate > 0, gsub(" - ", " > ", ancova.compare.summary$contrast), ifelse(ancova.compare.summary$estimate < 0, gsub(" - ", " < ", ancova.compare.summary$contrast), gsub(" - ", " = ", ancova.compare.summary$contrast)));
     ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$p.value < 0.05, paste0(ancova.compare.summary$contrast, "*"), ancova.compare.summary$contrast);
-    #pairwise.result <- paste(ancova.compare.summary$contrast, collapse = "\n");
-	p.value <- ancova.compare.summary$p.value
+    #p.value <- ancova.compare.summary$p.value
     pairwise.result <- ancova.compare.summary$contrast;
     
 } else {
@@ -71,3 +72,5 @@ if (reg.interaction > 0.05) {
 };
 p.value;
 pairwise.result;
+
+paste(sprintf("%.5f", p.value), paste(pairwise.result, collapse=";"), sep=",");
