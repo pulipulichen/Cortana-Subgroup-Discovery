@@ -16,7 +16,8 @@ public class FileHandler
 {
 	// 20180616 預設的檔案路徑
 	//private String aTestFilePath = null;
-	private String aTestFilePath = "reg.csv";
+	//private String aTestFilePath = "reg.csv";
+	private String aTestFilePath = "anvoca_sm_ancova.csv";
 	
 	
 	public static enum Action

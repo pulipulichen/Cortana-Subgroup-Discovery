@@ -98,6 +98,7 @@ public class TargetConcept implements XMLNodeInterface
 	public Column getSecondaryTarget() { return itsSecondaryTarget; }
 	public Column getThirdTarget() { return itsThirdTarget; }
 	public void setSecondaryTarget(Column theSecondaryTarget) { itsSecondaryTarget = theSecondaryTarget; }
+	public void setThirdTarget(Column theThirdTarget) { itsThirdTarget = theThirdTarget; }
 
 	public List<Column> getMultiTargets() { return itsMultiTargets; }
 	public void setMultiTargets(List<Column> theMultiTargets)

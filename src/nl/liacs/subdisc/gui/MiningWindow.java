@@ -264,7 +264,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		jPanelTargetConcept.setBorder(GUI.buildBorder("Target Concept"));
 
 		// TARGET CONCEPT - labels
-		jPanelTargetConceptLabels.setLayout(new GridLayout(10, 1));
+		jPanelTargetConceptLabels.setLayout(new GridLayout(11, 1));
 
 		jLabelTargetType = initJLabel("target type");
 		jPanelTargetConceptLabels.add(jLabelTargetType);
@@ -284,6 +284,10 @@ public class MiningWindow extends JFrame implements ActionListener
 		// used for target value or secondary target
 		jLabelMiscField = initJLabel("");
 		jPanelTargetConceptLabels.add(jLabelMiscField);
+		
+		//jLabelThirdTargetField = initJLabel("<html><u>cov</u>ariance");
+		jLabelThirdTargetField = initJLabel("");
+		jPanelTargetConceptLabels.add(jLabelThirdTargetField);
 
 		jLabelMultiRegressionTargets = initJLabel("secondary/tertiary targets");
 		jPanelTargetConceptLabels.add(jLabelMultiRegressionTargets);
@@ -293,12 +297,12 @@ public class MiningWindow extends JFrame implements ActionListener
 		jLabelMultiTargets = initJLabel("targets and settings");
 		jPanelTargetConceptLabels.add(jLabelMultiTargets);
 
-		jLabelTargetInfo = initJLabel("");;
+		jLabelTargetInfo = initJLabel("");
 		jPanelTargetConceptLabels.add(jLabelTargetInfo);
 		jPanelTargetConcept.add(jPanelTargetConceptLabels);
 
 		// TARGET CONCEPT - fields
-		jPanelTargetConceptFields.setLayout(new GridLayout(10, 1));
+		jPanelTargetConceptFields.setLayout(new GridLayout(11, 1));
 
 		jComboBoxTargetType = GUI.buildComboBox(new Object[0], TARGET_TYPE_BOX, this);
 		jPanelTargetConceptFields.add(jComboBoxTargetType);
@@ -319,6 +323,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		// note in cui setting this is often to small
 		jComboBoxMiscField = GUI.buildComboBox(new Object[0], MISC_FIELD_BOX, this);
 		jPanelTargetConceptFields.add(jComboBoxMiscField);
+		
+		jComboBoxThirdTarget = GUI.buildComboBox(new Object[0], THIRD_TARGET_BOX, this);
+		jPanelTargetConceptFields.add(jComboBoxThirdTarget);
 
 		jButtonMultiRegressionTargets = initButton(STD.SECONDARY_TERTIARY_TARGETS);
 		jPanelTargetConceptFields.add(jButtonMultiRegressionTargets);
@@ -559,6 +566,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		 */
 		String aPrimaryTarget = null;
 		String aMiscField = null;
+		String aThirdTarget = null;
 		String aQualityMeasure = null;
 		float aQualityMeasureMinimum = Float.NaN;
 
@@ -577,6 +585,7 @@ public class MiningWindow extends JFrame implements ActionListener
 				}
 				else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
 					aMiscField = itsTargetConcept.getSecondaryTarget().getName();
+					aThirdTarget = itsTargetConcept.getThirdTarget().getName();
 				}
 			}
 		}
@@ -609,6 +618,9 @@ public class MiningWindow extends JFrame implements ActionListener
 				{
 					setMiscFieldName(aMiscField);
 					itsTargetConcept.setSecondaryTarget(itsTable.getColumn(aMiscField));
+					
+					setThirdTargetName(aThirdTarget);
+					itsTargetConcept.setThirdTarget(itsTable.getColumn(aThirdTarget));
 				}
 			}
 		}
@@ -635,27 +647,82 @@ public class MiningWindow extends JFrame implements ActionListener
 		{
 			jLabelTargetTableName.setText(itsTable.getName());
 			jLabelNrExamplesNr.setText(String.valueOf(itsTable.getNrRows()));
+			//Log.logCommandLine("jLabelTargetTableName: " + itsTable.getName());
 
+			
 			int[][] aCounts = itsTable.getTypeCounts();
 			int[] aTotals = { itsTable.getNrColumns(), 0 };
-			for (int[] ia : aCounts)
+			for (int[] ia : aCounts) {
 				aTotals[1] += ia[1];
+				//Log.logCommandLine("aCounts: " + Arrays.toString(ia));
+				//Log.logCommandLine("aTotals[0]: " + aTotals[0]);
+			}
 			jLabelNrColumnsNr.setText(initGuiComponentsDataSetHelper(aTotals));
 			jLabelNrNominalsNr.setText(initGuiComponentsDataSetHelper(aCounts[0]));
 			jLabelNrNumericsNr.setText(initGuiComponentsDataSetHelper(aCounts[1]));
 //			jLFieldNrOrdinals.setText(initGuiComponentsDataSetHelper(aCounts[2]));
 			jLabelNrBinariesNr.setText(initGuiComponentsDataSetHelper(aCounts[3]));
-
-			if (aCounts[0][0] != 0)
+			
+			// 20180618 這是原本開啟檔案、設定檔案類型的邏輯
+			/*
+			if (aCounts[0][0] != 0) {
 				setTargetTypeName(TargetType.SINGLE_NOMINAL.GUI_TEXT);
-			else if (aCounts[1][0] != 0)
+			}
+			else if (aCounts[1][0] != 0) {
 				setTargetTypeName(TargetType.SINGLE_NUMERIC.GUI_TEXT);
-			else if (aCounts[2][0] != 0)
+			}
+			else if (aCounts[2][0] != 0) {
 				setTargetTypeName(TargetType.SINGLE_ORDINAL.GUI_TEXT);
-			else if (aCounts[3][0] != 0)
+			}
+			else if (aCounts[3][0] != 0) {
 				setTargetTypeName(TargetType.MULTI_LABEL.GUI_TEXT);
-			else
+			}
+			else {
 				throw new AssertionError();
+			}
+			*/
+			
+			//Log.logCommandLine("hasColumnName: " + itsTable.getColumnType("dv").toString());
+			
+			if (itsTable.hasColumnName("x", "numeric") 
+					&& itsTable.hasColumnName("y", "numeric")) {
+				setTargetTypeName(TargetType.DOUBLE_REGRESSION.GUI_TEXT);
+			}
+			else if ( itsTable.hasColumnName("iv", "nominal")
+					&& (itsTable.hasColumnName("cov", "numeric") || itsTable.hasColumnName("pre", "numeric")) 
+					&& (itsTable.hasColumnName("dv", "numeric") || itsTable.hasColumnName("post", "numeric")) ) {
+				setTargetTypeName(TargetType.TRIPLE_ANCOVA.GUI_TEXT);
+			}
+			else if (itsTable.hasColumnName("dv", "numeric")
+					&& itsTable.hasColumnName("iv", "numeric")) {
+				setTargetTypeName(TargetType.DOUBLE_REGRESSION.GUI_TEXT);
+			}
+			else {
+				// 20180616 用最後一欄作為決定類型的邏輯
+				switch(itsTable.getLastColumnType())
+				{
+					case NOMINAL :
+					{
+						setTargetTypeName(TargetType.SINGLE_NOMINAL.GUI_TEXT);
+						break;
+					}
+					case NUMERIC :
+					{
+						setTargetTypeName(TargetType.SINGLE_NUMERIC.GUI_TEXT);
+						break;
+					}
+					case ORDINAL :
+					{
+						setTargetTypeName(TargetType.SINGLE_ORDINAL.GUI_TEXT);
+						break;
+					}
+					default :
+					{
+						throw new AssertionError();
+					}
+				}
+			}
+				
 		}
 	}
 
@@ -726,7 +793,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		removeAllMultiTargetsItems();
 		removeAllMultiRegressionTargetsItems();
 
-		boolean fillMiscField = (aTargetType == TargetType.DOUBLE_REGRESSION) || (aTargetType == TargetType.DOUBLE_CORRELATION) || (aTargetType == TargetType.TRIPLE_ANCOVA);
+		boolean fillMiscField = (aTargetType == TargetType.DOUBLE_REGRESSION) || (aTargetType == TargetType.DOUBLE_CORRELATION);
+		boolean fillThirdTarget = (aTargetType == TargetType.TRIPLE_ANCOVA);
 		int defaultTargetAttributeItemIndex = -1;
 		int defaultSecondaryAttributeItemIndex = -1;
 		int defaultThirdAttributeItemIndex = -1;
@@ -746,8 +814,6 @@ public class MiningWindow extends JFrame implements ActionListener
 				(aTargetType == TargetType.MULTI_BINARY_CLASSIFICATION && anAttributeType == AttributeType.BINARY) ||
 				(aTargetType == TargetType.MULTI_BINARY_CLASSIFICATION && anAttributeType == AttributeType.NOMINAL))
 			{
-				addTargetAttributeItem(c.getName());
-
 				/*
 				 * might be considered TargetValue / MiscField
 				 * functionality, but the entries should not be
@@ -755,7 +821,22 @@ public class MiningWindow extends JFrame implements ActionListener
 				 * see initTargetValues()
 				 */
 				if (fillMiscField) {
-					addMiscFieldItem(c.getName());
+					if (anAttributeType == AttributeType.NUMERIC) {
+						addTargetAttributeItem(c.getName());
+						addMiscFieldItem(c.getName());
+					}
+				}
+				else if (fillThirdTarget) {
+					if (anAttributeType == AttributeType.NOMINAL) {
+						addTargetAttributeItem(c.getName());
+					}
+					else if (anAttributeType == AttributeType.NUMERIC) {
+						addMiscFieldItem(c.getName());
+						addThirdTargetItem(c.getName());
+					}	
+				}
+				else {
+					addTargetAttributeItem(c.getName());
 				}
 				
 				if ( aTargetType == TargetType.DOUBLE_REGRESSION || aTargetType == TargetType.DOUBLE_CORRELATION) {
@@ -776,10 +857,10 @@ public class MiningWindow extends JFrame implements ActionListener
 					if (c.getName().equals("iv")) {
 						defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-1;
 					}
-					else if (c.getName().equals("dv")) {
+					else if (c.getName().equals("cov") || c.getName().equals("pre")) {
 						defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-1;
 					}
-					else if (c.getName().equals("cov")) {
+					else if (c.getName().equals("dv") || c.getName().equals("post")) {
 						defaultThirdAttributeItemIndex = getMiscFieldItemCount()-1;
 					}
 				}
@@ -818,6 +899,22 @@ public class MiningWindow extends JFrame implements ActionListener
 			
 			selectTargetAttributeItem(defaultTargetAttributeItemIndex);
 			selectMiscFieldItem(defaultSecondaryAttributeItemIndex);
+		}
+		else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
+			
+			if (defaultTargetAttributeItemIndex == -1) {
+				defaultTargetAttributeItemIndex = getTargetAttributeItemCount()-3;
+			}
+			if (defaultSecondaryAttributeItemIndex == -1) {
+				defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-2;
+			}
+			if (defaultThirdAttributeItemIndex == -1) {
+				defaultThirdAttributeItemIndex = getMiscFieldItemCount()-1;
+			}
+			
+			selectTargetAttributeItem(defaultTargetAttributeItemIndex);
+			selectMiscFieldItem(defaultSecondaryAttributeItemIndex);
+			selectThirdTargetItem(defaultThirdAttributeItemIndex);
 		}
 		else {
 			if (defaultTargetAttributeItemIndex == -1) {
@@ -990,7 +1087,8 @@ public class MiningWindow extends JFrame implements ActionListener
 				//Column aPrimaryColumn = itsTargetConcept.getPrimaryTarget();
 				//Column aSecondaryColumn = itsTargetConcept.getSecondaryTarget();
 				//Column aThirdColumn = itsTargetConcept.getThirdTarget();
-
+				jLabelTargetInfo.setText("");
+				jLabelTargetInfoText.setText("");
 				break;
 			}
 			case DOUBLE_CORRELATION :
@@ -1101,9 +1199,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		
 		//Log.logCommandLine("AAA" + Action.OPEN_FILE);
 		FileHandler aFileHandler =  new FileHandler(Action.OPEN_FILE);
-		Log.logCommandLine("jMenuItemOpenFileActionPerformed");
-		if (true) { return; }
-
+		
 		Table aTable = aFileHandler.getTable();
 		SearchParameters aSearchParameters = aFileHandler.getSearchParameters();
 
@@ -1316,18 +1412,35 @@ public class MiningWindow extends JFrame implements ActionListener
 		boolean hasMiscField = TargetType.hasMiscField(aTargetType);
 		jComboBoxMiscField.setVisible(hasMiscField);
 		jLabelMiscField.setVisible(hasMiscField);
+		
+		boolean hasThirdTagetField = TargetType.hasThirdTarget(aTargetType);
+		jComboBoxThirdTarget.setVisible(hasThirdTagetField);
+		jLabelThirdTargetField.setVisible(hasThirdTagetField);
+		
+		boolean hasBaseModel = TargetType.hasBaseModel(aTargetType);
+		jButtonBaseModel.setVisible(hasBaseModel);
+		
+		
 		if (aTargetType == TargetType.SINGLE_NOMINAL) {
+			jLabelTargetAttribute.setText("<html><u>p</u>rimary target");
 			jLabelMiscField.setText("target value");
+			jLabelThirdTargetField.setText("");
 		}
 		else if (aTargetType == TargetType.DOUBLE_REGRESSION 
 				|| aTargetType == TargetType.DOUBLE_CORRELATION) {
+			jLabelTargetAttribute.setText("<html><u>p</u>rimary target");
 			jLabelMiscField.setText("<html><u>s</u>econdary target");
+			jLabelThirdTargetField.setText("");
 		}
 		else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
-			jLabelMiscField.setText("<html><u>s</u>econdary target");
+			jLabelTargetAttribute.setText("<html><u>i</u>ndependent <u>v</u>ariable");
+			jLabelMiscField.setText("<html><u>d</u>ependent <u>v</u>ariable");
+			jLabelThirdTargetField.setText("<html><u>cov</u>ariance");
 		}
 		else {
+			jLabelTargetAttribute.setText("<html><u>p</u>rimary target");
 			jLabelMiscField.setText("");
+			jLabelThirdTargetField.setText("");
 		}
 
 		// only valid for nominal targets
@@ -1891,6 +2004,14 @@ public class MiningWindow extends JFrame implements ActionListener
 	private int getMiscFieldItemCount() { return jComboBoxMiscField.getItemCount(); }
 	private String getMiscFieldName() { return (String) jComboBoxMiscField.getSelectedItem(); }
 	private void setMiscFieldName(String aValue) { jComboBoxMiscField.setSelectedItem(aValue); }
+	
+	// target concept - third target field (for TRIPLE_ANCOVA)
+	private void addThirdTargetItem(String anItem) { jComboBoxThirdTarget.addItem(anItem); }
+	private void removeAllThirdTargetItems() { jComboBoxThirdTarget.removeAllItems(); }
+	private void selectThirdTargetItem(int selectedIndex) { jComboBoxThirdTarget.setSelectedIndex(selectedIndex); }
+	private int getThirdTargetItemCount() { return jComboBoxThirdTarget.getItemCount(); }
+	private String getThirdTargetName() { return (String) jComboBoxThirdTarget.getSelectedItem(); }
+	private void setThirdTargetName(String aValue) { jComboBoxThirdTarget.setSelectedItem(aValue); }
 
 	// target concept - jList secondary targets
 	private void addMultiTargetsItem(String theItem) { ((DefaultListModel) jListMultiTargets.getModel()).addElement(theItem); }
@@ -2032,6 +2153,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JLabel jLabelTargetAttribute;
 	private JLabel jLabelMiscField;	// also for secondary target
 	private JLabel jLabelMiscSecondaryField;	// also for secondary target
+	private JLabel jLabelThirdTargetField;	// for TRIPLE_ANCOVA
 	private JLabel jLabelMultiRegressionTargets;
 	private JLabel jLabelMultiTargets;
 	private JLabel jLabelTargetInfo;
@@ -2043,6 +2165,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JTextField jTextFieldQualityMeasureMinimum;
 	private JComboBox jComboBoxTargetAttribute;
 	private JComboBox jComboBoxMiscField;
+	private JComboBox jComboBoxThirdTarget;
 	private JButton jButtonMultiRegressionTargets;
 	private JList jListMultiRegressionTargets; // maintain list of targets
 	private JButton jButtonMultiTargets;
@@ -2169,6 +2292,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private static final String TARGET_TYPE_BOX = "target type box";
 	private static final String QUALITY_MEASURE_BOX = "quality measure box";
 	private static final String MISC_FIELD_BOX = "misc field box";
+	private static final String THIRD_TARGET_BOX = "third target box";
 	private static final String TARGET_ATTRIBUTE_BOX = "target attribute box";
 	private static final String SEARCH_TYPE_BOX = "search type box";
 	private static final String NUMERIC_STRATEGY_BOX = "numeric strategy box";
@@ -2188,6 +2312,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		ADD_TO_AUTORUN_FILE(	"Add to Autorun File",	KeyEvent.VK_A,	true),
 		LOAD_SAMPLED_SUBGROUPS(	"Load Sampled Subgroups", KeyEvent.VK_L, true),
 		EXIT(			"Exit",			KeyEvent.VK_X,	true),
+		//EXIT2(			"Exit",			KeyEvent.VK_W,	true),
 		ENRICHMENT(		"Enrichment",		KeyEvent.VK_N,	false),
 		ADD_CUI_DOMAIN(		"Add CUI Domain",	KeyEvent.VK_C,	false),
 		ADD_GO_DOMAIN(		"Add GO Domain",	KeyEvent.VK_G,	false),

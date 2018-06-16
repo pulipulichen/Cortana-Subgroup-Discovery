@@ -116,25 +116,25 @@ public enum TargetType implements EnumInterface
 	}
 	
 	// used by XMLNodeTargetConcept
-		public static boolean hasThirdTarget(TargetType theType)
+	public static boolean hasThirdTarget(TargetType theType)
+	{
+		switch (theType)
 		{
-			switch (theType)
+			case SINGLE_NOMINAL		: return false;
+			case SINGLE_NUMERIC		: return false;
+			case SINGLE_ORDINAL		: return false;
+			case DOUBLE_REGRESSION		: return false;
+			case DOUBLE_CORRELATION		: return false;
+			case TRIPLE_ANCOVA		: return true;
+			case MULTI_LABEL		: return false;
+			case MULTI_BINARY_CLASSIFICATION: return false;
+			default :
 			{
-				case SINGLE_NOMINAL		: return false;
-				case SINGLE_NUMERIC		: return false;
-				case SINGLE_ORDINAL		: return false;
-				case DOUBLE_REGRESSION		: return false;
-				case DOUBLE_CORRELATION		: return false;
-				case TRIPLE_ANCOVA		: return true;
-				case MULTI_LABEL		: return false;
-				case MULTI_BINARY_CLASSIFICATION: return false;
-				default :
-				{
-					unknownTargetType("hasThirdTarget", theType);
-					return false;
-				}
+				unknownTargetType("hasThirdTarget", theType);
+				return false;
 			}
 		}
+	}
 
 	// used by MiningWindow.jComboBoxTargetAttributeActionPerformed()
 	public static boolean hasMultiTargets(TargetType theType)

@@ -18,6 +18,7 @@ public class Table implements XMLNodeInterface
 	private int itsNrRows;
 	private int itsNrColumns;
 	private ArrayList<Column> itsColumns = new ArrayList<Column>();
+	private ArrayList<String> itsColumnNames = new ArrayList<String>();
 //	private int itsNrNominals = 0;
 //	private int itsNrNumerics = 0;
 //	private int itsNrOrdinals = 0;
@@ -81,8 +82,11 @@ public class Table implements XMLNodeInterface
 				itsName = aSetting.getTextContent();
 			else if ("source".equalsIgnoreCase(aNodeName))
 				itsSource = aSetting.getTextContent();
-			else if ("column".equalsIgnoreCase(aNodeName))
-				itsColumns.add(new Column(aSetting));
+			else if ("column".equalsIgnoreCase(aNodeName)) {
+				Column aColumn = new Column(aSetting); 
+				itsColumns.add(aColumn);
+				itsColumnNames.add(aColumn.getName());
+			}
 		}
 		/*
 		 * now all columns are know, check if data (Columns) is valid by
@@ -278,6 +282,54 @@ public class Table implements XMLNodeInterface
 			}
 		}
 		return aCounts;
+	}
+	
+	public AttributeType getLastColumnType()
+	{
+		return itsColumns.get(itsColumns.size()-1).getType();
+	}
+	
+	public int getColumnNameIndex(String name) {
+		if (itsColumnNames.size() == 0) {
+			for(Column c : itsColumns)
+			{
+				itsColumnNames.add(c.getName());
+				//Log.logCommandLine(name + " c.getName(): " + c.getName());
+			}
+		}
+		return itsColumnNames.indexOf(name);
+	}
+	
+	public boolean hasColumnName(String name) {
+		return (getColumnNameIndex(name) > -1);
+	}
+	
+	public boolean hasColumnName(String name, String type) {
+		boolean hasColumn = (getColumnNameIndex(name) > -1);
+		//Log.logCommandLine(name + " getColumnNameIndex(): " + hasColumn);
+		if (false == hasColumn) {
+			return false;
+		}
+ 		boolean matchType = false;
+		if (type.toLowerCase().equals("nominal")) {
+			matchType = getColumnTypeNominal(name);
+		}
+		else {
+			matchType = getColumnTypeNumeric(name);
+		}
+		return (hasColumn && matchType);
+	}
+	
+	public AttributeType getColumnType(String name) {
+		return itsColumns.get(getColumnNameIndex(name)).getType();
+	}
+	
+	public boolean getColumnTypeNominal(String name) {
+		return getColumnType(name).toString().equals("nominal");
+	}
+	
+	public boolean getColumnTypeNumeric(String name) {
+		return getColumnType(name).toString().equals("numeric");
 	}
 
 
