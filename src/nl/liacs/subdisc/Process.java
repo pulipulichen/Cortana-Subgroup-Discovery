@@ -69,6 +69,25 @@ public class Process
 				//JOptionPane.showMessageDialog(null, "after aSubgroupDiscovery");
 				break;
 			}
+			case TRIPLE_ANCOVA :
+			{
+				//JOptionPane.showMessageDialog(null, "before aSubgroupDiscovery");
+				//TargetConcept aTargetConcept = theSearchParameters.getTargetConcept();
+				//Log.logCommandLine("GO TRIPLE_ANCOVA ");
+				//RserveUtil.startup();
+				//RserveUtil.connect();
+				try {
+					aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, aTargetType, theMainWindow);
+					//RserveUtil.disconnect();
+					//RserveUtil.shutdown();
+				}
+				catch (Exception e) {
+					Log.logCommandLine("error: " + e.getMessage());
+				}
+				Log.logCommandLine("OK");
+				//JOptionPane.showMessageDialog(null, "after aSubgroupDiscovery");
+				break;
+			}
 			case DOUBLE_CORRELATION :
 			{
 				aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, false, theMainWindow);
@@ -121,8 +140,9 @@ public class Process
 
 		echoMiningEnd(anEnd - aBegin, aSubgroupDiscovery.getNumberOfSubgroups());
 
-		if (showWindows)
+		if (showWindows) {
 			new ResultWindow(theTable, aSubgroupDiscovery, theFold, theBitSet);
+		}
 
 		if (CAUC_LIGHT) {
 			caucLight(aSubgroupDiscovery, theBitSet);

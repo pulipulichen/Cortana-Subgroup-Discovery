@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.*;
 
 import javax.swing.*;
 
+import nl.liacs.subdisc.Process;
+
 public class SubgroupDiscovery extends MiningAlgorithm
 {
 	private final Table itsTable;
@@ -32,6 +34,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	private Column itsThirdColumn;	//TRIPLE_ANCOVA
 	private CorrelationMeasure itsBaseCM;	//DOUBLE_CORRELATION
 	private RegressionMeasure itsBaseRM;	//DOUBLE_REGRESSION
+	private AncovaMeasure itsBaseAncovaMeasure;	//TRIPLE_ANCOVA
 	private BinaryTable itsBinaryTable;	//MULTI_LABEL
 	private List<Column> itsTargets;	//MULTI_LABEL
 
@@ -153,6 +156,41 @@ public class SubgroupDiscovery extends MiningAlgorithm
 
 		itsResult = new SubgroupSet(itsSearchParameters.getMaximumSubgroups());
 	}
+	
+	//DOUBLE_CORRELATION and DOUBLE_REGRESSION
+		public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, TargetType aTargetType, JFrame theMainWindow)
+		{
+			super(theSearchParameters);
+
+			itsTable = theTable;
+			itsNrRows = itsTable.getNrRows();
+			itsMainWindow = theMainWindow;
+			itsMinimumCoverage = itsSearchParameters.getMinimumCoverage();
+			itsMaximumCoverage = (int) (itsNrRows * itsSearchParameters.getMaximumCoverageFraction());
+			itsQualityMeasure = new QualityMeasure(itsSearchParameters.getQualityMeasure(), itsNrRows, 100); //TODO
+			itsQualityMeasureMinimum = itsSearchParameters.getQualityMeasureMinimum();
+
+
+			Log.logCommandLine("SubgroupDiscovery aTargetType" + aTargetType);
+			TargetConcept aTC = itsSearchParameters.getTargetConcept();
+	// TODO for stable jar, initiated here, SubgroupDiscovery revision 893 moved this to else below
+			itsPrimaryColumn = aTC.getPrimaryTarget();
+			itsSecondaryColumn = aTC.getSecondaryTarget();
+			switch (aTargetType)
+			{
+				case TRIPLE_ANCOVA:
+					itsThirdColumn = aTC.getThirdTarget();
+					itsBaseAncovaMeasure = new AncovaMeasure(itsSearchParameters.getQualityMeasure(), itsPrimaryColumn, itsSecondaryColumn, itsThirdColumn);
+					break;
+				default:
+					throw new AssertionError(String.format("%s: %s '%s' not implemented",
+							Process.class.getName(),
+							TargetType.class.getName(),
+							aTargetType));
+			}
+
+			itsResult = new SubgroupSet(itsSearchParameters.getMaximumSubgroups());
+		}
 
 	//MULTI_LABEL
 	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, JFrame theMainWindow)
@@ -874,6 +912,38 @@ public class SubgroupDiscovery extends MiningAlgorithm
 					}
 */
 				}
+				break;
+			}
+			case TRIPLE_ANCOVA :
+			{
+				//List itsData = new ArrayList(theNewSubgroup.getMembers().cardinality());
+				//final BitSet aMembers = theNewSubgroup.getMembers();
+				int[] theMembersIndex = theNewSubgroup.getMembersIndex();
+				int theMembersLength = theMembersIndex.length;
+				
+				String[] theIVdata = new String[theMembersLength];
+				float[] theCOVdata = new float[theMembersLength];
+				float[] theDVdata = new float[theMembersLength];
+				
+				TargetConcept aTC = itsSearchParameters.getTargetConcept();
+				Column aIVcolumn = aTC.getPrimaryTarget();
+				Column aCOVcolumn = aTC.getSecondaryTarget();
+				Column aDVcolumn = aTC.getThirdTarget();
+				
+				for (int i = 0; i < theMembersLength; i++) {
+					theIVdata[i] = aIVcolumn.getString(theMembersIndex[i]);
+					theCOVdata[i] = aCOVcolumn.getFloat(theMembersIndex[i]);
+					theDVdata[i] = aDVcolumn.getFloat(theMembersIndex[i]);
+				}
+				
+				//Log.logCommandLine("GO case TRIPLE_ANCOVA " + itsSearchParameters.getTargetConcept().getPrimaryTarget().getString(0));
+				
+				AncovaMeasure aAncova = new AncovaMeasure(itsBaseAncovaMeasure, theIVdata, theCOVdata, theDVdata);
+				aQuality = (float) aAncova.getFstatPvalInvert();
+				
+				//theNewSubgroup.setSecondaryStatistic(0); //slope
+				//theNewSubgroup.setTertiaryStatistic(0); //intercept
+				
 				break;
 			}
 			case DOUBLE_CORRELATION :

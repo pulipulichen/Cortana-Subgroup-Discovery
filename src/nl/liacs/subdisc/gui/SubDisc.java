@@ -83,8 +83,11 @@ public class SubDisc
 		w.actionPerformed("Open File");
 		
 		if (ConfigIni.get("global", "DefaultLoadFile") != null
-				&& ConfigIni.getBoolean("global", "SubgroupDiscoveryAutoStart")) {
+				&& ConfigIni.getBoolean("global", "AutoStartSubgroupDiscovery")) {
 			w.actionPerformed("Subgroup Discovery");
+		}
+		if (ConfigIni.getBoolean("global", "AutoExit")) {
+			w.actionPerformed("Exit");
 		}
 		
 		//Log.logCommandLine("" + ConfigIni.getBoolean("global", "SubgroupDiscoveryAutoStart"));

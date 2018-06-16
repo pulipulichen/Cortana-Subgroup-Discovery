@@ -1,13 +1,13 @@
 input <- data.frame(
-    iv = c(1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2),
-    cov = c(11,12,19,13,17,15,17,14,13,16,11,14,10,12,12,13,10,15,14,11),
-    dv = c(21,23,25,23,23,24,24,20,22,24,21,24,21,20,23,24,23,21,25,24)
+    iv = c('C','C','C','C','E'),cov = c(11.0,13.0,13.0,16.0,14.0),dv = c(21.0,23.0,22.0,24.0,25.0)
 );
 
 reg.model <- aov(dv~iv*cov,data=input);
 reg.interaction <- summary(reg.model)[[1]][["Pr(>F)"]][3];
 
-if (reg.interaction > 0.05) {
+if (is.null(reg.interaction) || is.na(reg.interaction) ) {
+    p.value <- 1;
+} else if (reg.interaction > 0.05) {
     ancova.model <- aov(dv~as.factor(iv)+cov,data=input);
     library(car);
     ancova.model.type3 <- Anova(ancova.model, type=3);

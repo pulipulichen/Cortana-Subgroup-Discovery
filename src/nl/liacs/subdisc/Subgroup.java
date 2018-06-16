@@ -133,6 +133,20 @@ public class Subgroup implements Comparable<Subgroup>
 	 * @return a BitSet representing this Subgroups members.
 	 */
 	public BitSet getMembers() { return (BitSet) itsMembers.clone(); }
+	
+	public int[] getMembersIndex() {
+		BitSet aMembers = getMembers();
+		ArrayList<Integer> indexList = new ArrayList<Integer>();
+		for (int i = aMembers.nextSetBit(0); i >= 0; i = aMembers.nextSetBit(i + 1)) {
+			indexList.add(i);
+		}
+		
+		int[] aIndexList = new int[indexList.size()];
+		for (int i = 0; i < indexList.size(); i++) {
+			aIndexList[i] = indexList.get(i);
+		}
+		return aIndexList; 
+	}
 
 	public boolean covers(int theRow) { return itsMembers.get(theRow); }
 
