@@ -1099,7 +1099,10 @@ public class MiningWindow extends JFrame implements ActionListener
 	{
 		initGuiComponents();
 		
+		//Log.logCommandLine("AAA" + Action.OPEN_FILE);
 		FileHandler aFileHandler =  new FileHandler(Action.OPEN_FILE);
+		Log.logCommandLine("jMenuItemOpenFileActionPerformed");
+		if (true) { return; }
 
 		Table aTable = aFileHandler.getTable();
 		SearchParameters aSearchParameters = aFileHandler.getSearchParameters();

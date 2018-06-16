@@ -23,5 +23,5 @@ https://pulipulichen.github.io/Cortana-Subgroup-Discovery/release/start_cortana.
 
 # Code snippet
 ````java
-Log.logCommandLine("File writer error: " + e.getMessage());
+Log.logCommandLine("File writer error: " + "message");
 ````

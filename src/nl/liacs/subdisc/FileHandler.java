@@ -14,6 +14,11 @@ import nl.liacs.subdisc.gui.*;
 
 public class FileHandler
 {
+	// 20180616 預設的檔案路徑
+	//private String aTestFilePath = null;
+	private String aTestFilePath = "reg.csv";
+	
+	
 	public static enum Action
 	{
 		OPEN_FILE, OPEN_DATABASE, SAVE
@@ -89,6 +94,7 @@ public class FileHandler
 
 	private void openFile()
 	{
+		Log.logCommandLine("openFile()");
 		if (itsFile == null || !itsFile.exists())
 		{
 			ErrorLog.log(itsFile, new FileNotFoundException());
@@ -99,9 +105,11 @@ public class FileHandler
 		Timer aTimer = new Timer();
 
 		JFrame aLoaderDialog = null;
-		if (!GraphicsEnvironment.isHeadless() && aFileType != FileType.XML)
+		if (!GraphicsEnvironment.isHeadless() && aFileType != FileType.XML) {
 			aLoaderDialog = showFileLoaderDialog(itsFile);
+		}
 
+		Log.logCommandLine("File type: " + aFileType);
 		switch (aFileType)
 		{
 			case TXT :
@@ -149,8 +157,9 @@ public class FileHandler
 							itsFile.getPath(),
 							aTimer.getElapsedTimeString()));
 		printLoadingInfo();
-		if (aLoaderDialog != null)
+		if (aLoaderDialog != null) {
 			aLoaderDialog.setVisible(false);
+		}
 	}
 
 	private void openDatabase()
@@ -224,17 +233,34 @@ public class FileHandler
 		aChooser.addChoosableFileFilter(new FileTypeFilter(FileType.XML));
 		aChooser.setFileFilter(new FileTypeFilter(FileType.ALL_DATA_FILES));
 
+		if (aTestFilePath != null) {
+			try {
+				String aJarPath = new File(FileHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				//Log.logCommandLine("FileHandle showFileChooser() error: " + aJarPath);
+				//return;
+				itsFile = new File(aJarPath + "/" + aTestFilePath);
+				itsLastFileLocation = itsFile.getParent();
+				return;
+			}
+			catch (Exception e) {
+				Log.logCommandLine("FileHandle showFileChooser() error: " + e.getMessage());
+			}
+		}
+		
 		int theOption = -1;
 
 		if (theAction == Action.OPEN_FILE)
 			theOption = aChooser.showOpenDialog(aFrame);
 		else if (theAction == Action.SAVE)
 			theOption = aChooser.showSaveDialog(aFrame);
-
+		
 		if (theOption == JFileChooser.APPROVE_OPTION)
 		{
-			itsFile = aChooser.getSelectedFile();
+			itsFile = new File("D:\\xampp\\htdocs\\[Java-Projects]\\Cortana-Subgroup-Discovery\\anvoca_sm_ancova.csv");
+			//itsFile = aChooser.getSelectedFile();
+			Log.logCommandLine("itsFile: " + itsFile);
 			itsLastFileLocation = itsFile.getParent();
+			Log.logCommandLine("itsLastFileLocation: " + itsLastFileLocation);
 		}
 	}
 
