@@ -70,10 +70,25 @@ public class SubDisc
 			}
 		}
 
-		if (XMLAutoRun.autoRunSetting(args))
+		if (XMLAutoRun.autoRunSetting(args)) {
 			return;
+		}
 		
 		TestUtil.start();
+		
+		BufferedReader txtReader = new BufferedReader(new InputStreamReader((new SubDisc()).getClass().getResourceAsStream("/test.txt")));
+		
+		StringBuffer sb = new StringBuffer();
+		String s;
+		try {
+		    while ((s=txtReader.readLine())!=null) {
+		            sb.append(s);
+		            //sb.append('\n'); //if you want the newline
+		    }
+		}
+		catch (Exception e) {} 
+
+	    System.out.println(sb.toString());
 		
 		
 		// 20180414 Open the main window directly without open a file.

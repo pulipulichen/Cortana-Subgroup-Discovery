@@ -258,8 +258,7 @@ public class FileHandler
 		
 		if (theOption == JFileChooser.APPROVE_OPTION)
 		{
-			itsFile = new File("D:\\xampp\\htdocs\\[Java-Projects]\\Cortana-Subgroup-Discovery\\anvoca_sm_ancova.csv");
-			//itsFile = aChooser.getSelectedFile();
+			itsFile = aChooser.getSelectedFile();
 			Log.logCommandLine("itsFile: " + itsFile);
 			itsLastFileLocation = itsFile.getParent();
 			Log.logCommandLine("itsLastFileLocation: " + itsLastFileLocation);
