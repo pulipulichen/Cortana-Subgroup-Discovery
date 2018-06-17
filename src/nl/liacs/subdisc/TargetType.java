@@ -263,6 +263,48 @@ public enum TargetType implements EnumInterface
 			}
 		}
 	}
+	
+	// used by MiningWindow.jComboBoxTargetAttributeActionPerformed()
+		// used by ResultWindow.initComponents()
+		public static int getBaseSubgroupsMaximun(TargetType theType)
+		{
+			switch (theType)
+			{
+				case SINGLE_NOMINAL		: return 100;
+				case SINGLE_NUMERIC		: return 100;
+				case SINGLE_ORDINAL		: return 100;
+				case DOUBLE_REGRESSION		: return 100;
+				case DOUBLE_CORRELATION		: return 100;
+				case TRIPLE_ANCOVA		: return 100;
+				case MULTI_LABEL		: return 100;
+				case MULTI_BINARY_CLASSIFICATION: return 100;	// TODO true?
+				default :
+				{
+					unknownTargetType("hasBaseModel", theType);
+					return 100;
+				}
+			}
+		}
+
+		public static double getBaseSearchTimeMaximum(TargetType theType)
+		{
+			switch (theType)
+			{
+				case SINGLE_NOMINAL		: return 0.5;
+				case SINGLE_NUMERIC		: return 0.5;
+				case SINGLE_ORDINAL		: return 0.5;
+				case DOUBLE_REGRESSION		: return 0.5;
+				case DOUBLE_CORRELATION		: return 0.5;
+				case TRIPLE_ANCOVA		: return 0.1;
+				case MULTI_LABEL		: return 0.5;
+				case MULTI_BINARY_CLASSIFICATION: return 0.5;	// TODO true?
+				default :
+				{
+					unknownTargetType("hasBaseModel", theType);
+					return 0.5;
+				}
+			}
+		}
 /*
 	public static boolean isEMM(TargetType theType)
 	{

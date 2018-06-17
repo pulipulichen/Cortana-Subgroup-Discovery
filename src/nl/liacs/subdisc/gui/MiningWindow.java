@@ -512,13 +512,23 @@ public class MiningWindow extends JFrame implements ActionListener
 	{
 		//dataset
 		initGuiComponentsDataSet();
-
+		
+		TargetType aTargetType = itsTargetConcept.getTargetType();
+		
 		// search conditions
 		setSearchDepthMaximum("1");
 		setSearchCoverageMinimum("1");
 		setSearchCoverageMaximum("1.0");
-		setSubgroupsMaximum("100");
-		setSearchTimeMaximum("0.5");
+		
+		int aBaseSubgroupsMaximun = TargetType.getBaseSubgroupsMaximun(aTargetType);
+		double aBaseSearchTimeMaximum = TargetType.getBaseSearchTimeMaximum(aTargetType);
+		if (null != itsTable) {
+			aBaseSubgroupsMaximun = aBaseSubgroupsMaximun * itsTable.getNrColumns();
+			aBaseSearchTimeMaximum = aBaseSearchTimeMaximum * itsTable.getNrColumns();
+		}
+		setSubgroupsMaximum("" + aBaseSubgroupsMaximun);
+		
+		setSearchTimeMaximum("" + aBaseSearchTimeMaximum);
 
 		// search strategy
 		setStrategyWidth("100");
@@ -1454,8 +1464,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		}
 		else if (aTargetType == TargetType.TRIPLE_ANCOVA) {
 			jLabelTargetAttribute.setText("<html><u>i</u>ndependent <u>v</u>ariable</html>");
-			jLabelMiscField.setText("<html><u>d</u>ependent <u>v</u>ariable</html>");
-			jLabelThirdTargetField.setText("<html><u>cov</u>ariance</html>");
+			jLabelMiscField.setText("<html><u>cov</u>ariance</html>");
+			jLabelThirdTargetField.setText("<html><u>d</u>ependent <u>v</u>ariable</html>");
 		}
 		else {
 			jLabelTargetAttribute.setText("<html><u>p</u>rimary target</html>");
