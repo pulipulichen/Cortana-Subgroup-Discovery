@@ -20,6 +20,7 @@ public class FileHandler
 	//private String aTestFilePath = "anvoca_sm_ancova.csv";
 	
 	
+	
 	public static enum Action
 	{
 		OPEN_FILE, OPEN_DATABASE, SAVE
@@ -221,6 +222,8 @@ public class FileHandler
 			itsLastFileLocation = itsFile.getParent();
 		}
 	}
+	
+	private static boolean hasDefaultLoaded = false;
 
 	private void showFileChooser(Action theAction)
 	{
@@ -235,13 +238,14 @@ public class FileHandler
 		aChooser.setFileFilter(new FileTypeFilter(FileType.ALL_DATA_FILES));
 
 		String aDefaultLoadFile = ConfigIni.get("global", "DefaultLoadFile");
-		if (aDefaultLoadFile != null) {
+		if (null != aDefaultLoadFile && false == FileHandler.hasDefaultLoaded) {
 			try {
 				String aJarPath = new File(FileHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 				//Log.logCommandLine("FileHandle showFileChooser() error: " + aJarPath);
 				//return;
 				itsFile = new File(aJarPath + "/" + aDefaultLoadFile);
 				itsLastFileLocation = itsFile.getParent();
+				FileHandler.hasDefaultLoaded = true;
 				return;
 			}
 			catch (Exception e) {

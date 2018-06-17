@@ -1,59 +1,23 @@
 package nl.liacs.subdisc;
 
-import java.awt.geom.*;
 import java.util.*;
-import Jama.*;
 
 public class AncovaMeasure
 {
 	private int itsSampleSize;
-	private double itsXSum; //The sum of all X-values
-	private double itsYSum; // The sum of all Y-values
-	private double itsXYSum;// SUM(x*y)
-	private double itsXSquaredSum;// SUM(x*x)
-	private double itsYSquaredSum;// SUM(y*y)
-
-	private double itsErrorTermSquaredSum;//Sum of all the squared error terms, changes whenever the regression function is updated
-	private double itsComplementErrorTermSquaredSum;//Sum of all the squared error terms of this complement, changes whenever the regression function is updated
-
-	private double itsSlope; //The slope-value of the regression function
-	private double itsIntercept;//The intercept-value of the regression function
-	private double itsComplementSlope; //The slope-value of the regression function
-	private double itsComplementIntercept;//The intercept-value of the regression function
-
-	private double itsCorrelation;
-
-	private List<Point2D.Float> itsData;//Stores all the datapoints for this measure
-	private List<Point2D.Float> itsComplementData = new ArrayList<Point2D.Float>();//Stores all the datapoints for the complement
-
 	public static QM itsQualityMeasure; // FIXME MM this should not be static
-	private AncovaMeasure itsBase = null;
-
-	private Matrix itsDataMatrix;
-	private Matrix itsBetaHat;
-	private Matrix itsHatMatrix;
-	private Matrix itsResidualMatrix;
-
-	private double itsP;
-	private double itsSSquared;
-	private double[] itsRSquared;
-	private double[] itsT;
-	private double[] itsSVP;
-
-	private int itsBoundSevenCount;
-	private int itsBoundSixCount;
-	private int itsBoundFiveCount;
-	private int itsBoundFourCount;
-	private int itsRankDefCount;
 	
-	private String itsRscriptHead = "input <- data.frame(";
-	private String itsRscriptFoot = ");reg.model <- aov(dv~iv*cov,data=input);reg.interaction <- summary(reg.model)[[1]][[\"Pr(>F)\"]][3];if (is.null(reg.interaction) || is.na(reg.interaction)) {    p.value <- 1;} else if (reg.interaction > 0.05) {    ancova.model <- aov(dv~as.factor(iv)+cov,data=input);    library(car);    ancova.model.type3 <- Anova(ancova.model, type=3);    p.value <- ancova.model.type3[\"Pr(>F)\"][[1]][2];    library(emmeans);    ancova.compare.summary <- summary((emmeans(ancova.model, pairwise ~ iv, adjust = \"none\"))$contrasts);    ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$estimate > 0, gsub(\" - \", \" > \", ancova.compare.summary$contrast), ifelse(ancova.compare.summary$estimate < 0, gsub(\" - \", \" < \", ancova.compare.summary$contrast), gsub(\" - \", \" = \", ancova.compare.summary$contrast)));    ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$p.value < 0.05, paste0(ancova.compare.summary$contrast, \"*\"), ancova.compare.summary$contrast);    pairwise.result <- ancova.compare.summary$contrast;    } else {        library(gtools);    library(plyr);    iv.comb <- combinations(n=as.integer(summary(iv.levels)[\"Length\"]), r=2, v=iv.levels, repeats.allowed=F);    iv.comb.freq <- sum(count(iv.comb)$freq);    iv.comb <- cbind(iv.comb, c(rep(\"=\",iv.comb.freq)));    iv.comb <- cbind(iv.comb, c(rep.int(NA,iv.comb.freq)));    iv.comb <- cbind(iv.comb, c(rep(\"\",iv.comb.freq)));    library(fANCOVA);    p.value <- 1;    for (i in 1:iv.comb.freq) {        comb <- iv.comb[i,];        input.comb <- input[input$iv %in% comb, ];        input.comb <- input.comb[with(input.comb, order(iv)), ];        Taov.result <- T.aov(input.comb[,\"cov\"], input.comb[,\"dv\"], input.comb[,\"iv\"], plot=TRUE, data.points=TRUE);        loess.result <- loess.ancova(input.comb[,\"cov\"], input.comb[,\"dv\"], input.comb[,\"iv\"], plot=TRUE, data.points=TRUE);        fitted.data <- data.frame(loess.result$smooth.fit$fitted, input.comb[,\"iv\"]);        colnames(fitted.data)<- c(\"fitted\",\"iv\");        fitted.data1 <- fitted.data[fitted.data$iv %in% comb[1], ];        fitted.data1.mean <- mean(fitted.data1[,\"fitted\"]);        fitted.data2 <- fitted.data[fitted.data$iv %in% comb[2], ];        fitted.data2.mean <- mean(fitted.data2[,\"fitted\"]);        iv.comb[i,3] <- Taov.result$p.value;        p.value <- ifelse(Taov.result$p.value < p.value, Taov.result$p.value, p.value);                if (fitted.data1.mean > fitted.data2.mean) {            iv.comb[i,4] <- \">\"        } else if (fitted.data1.mean < fitted.data2.mean) {            iv.comb[i,4] <- \"<\"        } else {            iv.comb[i,4] <- \"=\"        };        iv.comb[i,5] <- paste(iv.comb[i,1], iv.comb[i,4], iv.comb[i,2]);        if (iv.comb[i,3] < 0.05) {            iv.comb[i,5] <- paste0(iv.comb[i,5], \"*\")        };    };    pairwise.result <- iv.comb[,5];};paste(sprintf(\"%.5f\", p.value), paste(pairwise.result, collapse=\";\"), sep=\",\");";
+	//private String itsRscriptHead = "input <- data.frame(";
+	//private String itsRscriptFoot = ");reg.model <- aov(dv~iv*cov,data=input);reg.interaction <- summary(reg.model)[[1]][[\"Pr(>F)\"]][3];if (is.null(reg.interaction) || is.na(reg.interaction)) {    p.value <- 1;} else if (reg.interaction > 0.05) {    ancova.model <- aov(dv~as.factor(iv)+cov,data=input);    library(car);    ancova.model.type3 <- Anova(ancova.model, type=3);    p.value <- ancova.model.type3[\"Pr(>F)\"][[1]][2];    library(emmeans);    ancova.compare.summary <- summary((emmeans(ancova.model, pairwise ~ iv, adjust = \"none\"))$contrasts);    ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$estimate > 0, gsub(\" - \", \" > \", ancova.compare.summary$contrast), ifelse(ancova.compare.summary$estimate < 0, gsub(\" - \", \" < \", ancova.compare.summary$contrast), gsub(\" - \", \" = \", ancova.compare.summary$contrast)));    ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$p.value < 0.05, paste0(ancova.compare.summary$contrast, \"*\"), ancova.compare.summary$contrast);    pairwise.result <- ancova.compare.summary$contrast;    } else {        library(gtools);    library(plyr);    iv.comb <- combinations(n=as.integer(summary(iv.levels)[\"Length\"]), r=2, v=iv.levels, repeats.allowed=F);    iv.comb.freq <- sum(count(iv.comb)$freq);    iv.comb <- cbind(iv.comb, c(rep(\"=\",iv.comb.freq)));    iv.comb <- cbind(iv.comb, c(rep.int(NA,iv.comb.freq)));    iv.comb <- cbind(iv.comb, c(rep(\"\",iv.comb.freq)));    library(fANCOVA);    p.value <- 1;    for (i in 1:iv.comb.freq) {        comb <- iv.comb[i,];        input.comb <- input[input$iv %in% comb, ];        input.comb <- input.comb[with(input.comb, order(iv)), ];        Taov.result <- T.aov(input.comb[,\"cov\"], input.comb[,\"dv\"], input.comb[,\"iv\"], plot=TRUE, data.points=TRUE);        loess.result <- loess.ancova(input.comb[,\"cov\"], input.comb[,\"dv\"], input.comb[,\"iv\"], plot=TRUE, data.points=TRUE);        fitted.data <- data.frame(loess.result$smooth.fit$fitted, input.comb[,\"iv\"]);        colnames(fitted.data)<- c(\"fitted\",\"iv\");        fitted.data1 <- fitted.data[fitted.data$iv %in% comb[1], ];        fitted.data1.mean <- mean(fitted.data1[,\"fitted\"]);        fitted.data2 <- fitted.data[fitted.data$iv %in% comb[2], ];        fitted.data2.mean <- mean(fitted.data2[,\"fitted\"]);        iv.comb[i,3] <- Taov.result$p.value;        p.value <- ifelse(Taov.result$p.value < p.value, Taov.result$p.value, p.value);                if (fitted.data1.mean > fitted.data2.mean) {            iv.comb[i,4] <- \">\"        } else if (fitted.data1.mean < fitted.data2.mean) {            iv.comb[i,4] <- \"<\"        } else {            iv.comb[i,4] <- \"=\"        };        iv.comb[i,5] <- paste(iv.comb[i,1], iv.comb[i,4], iv.comb[i,2]);        if (iv.comb[i,3] < 0.05) {            iv.comb[i,5] <- paste0(iv.comb[i,5], \"*\")        };    };    pairwise.result <- iv.comb[,5];};paste(sprintf(\"%.5f\", p.value), paste(pairwise.result, collapse=\";\"), sep=\",\");";
+	private static String itsRscript = null; 
 	
 	private String[] itsIVdata;
 	private float[] itsCOVdata;
 	private float[] itsDVdata;
+	
+	private boolean itsIsParameticAncova = true;
 	private double itsFstatPval;
-	private ArrayList<String> itsPairwiseComparison = new ArrayList<String>();
+	private ArrayList<String> itsPairwiseComparison;
 
 	//make a base model from two columns
 	public AncovaMeasure(QM theType, Column theIVColumn, Column theCOVColumn, Column theDVColumn)
@@ -86,45 +50,33 @@ public class AncovaMeasure
 		itsDVdata = theDVdata;
 		calc();
 	}
-
-	//constructor for non-base RM. It derives from a base-RM
-	public AncovaMeasure(AncovaMeasure theBase, BitSet theMembers)
-	{
-		itsQualityMeasure = theBase.itsQualityMeasure;
-		itsBase = theBase;
-
-		/*
-		//Create an empty measure
-		itsSampleSize = 0;
-		itsXSum = 0;
-		itsYSum = 0;
-		itsXYSum = 0;
-		itsXSquaredSum = 0;
-		itsYSquaredSum = 0;
-
-		itsData = new ArrayList<Point2D.Float>(theMembers.cardinality());
-		itsComplementData =
-			new ArrayList<Point2D.Float>(itsBase.getSampleSize() - theMembers.cardinality()); //create empty one. will be filled after update()
-
-		for (int i=0; i<itsBase.getSampleSize(); i++)
-		{
-			Point2D.Float anObservation = itsBase.getObservation(i);
-			if (theMembers.get(i))
-				addObservation(anObservation);
-			else //complement
-				itsComplementData.add(anObservation);
+	
+	private void initRscript() {
+		// Init AncovaMeasure.itsRscriptFoot
+		if (null == AncovaMeasure.itsRscript) {
+			String aRscript = JARTextFileLoader.load("/r-scripts/ancova_sm_ancova_full.R", "");
+			String aSplitor = "print(\"data|script\");";
+			int beginIndex = aRscript.indexOf(aSplitor) + aSplitor.length();
+			AncovaMeasure.itsRscript = aRscript.substring(beginIndex, aRscript.length());
+			Log.logCommandLine("itsRscript: " + AncovaMeasure.itsRscript);
 		}
-		*/
+	}
+	
+	private void setNullResult() {
+		itsFstatPval = 1;
+		itsPairwiseComparison = new ArrayList<String>( Arrays.asList( new String[]{"null"} ) );
 	}
 	
 	private void calc() {
 		
 		if (itsSampleSize < 4) {
-			itsFstatPval = 1;
+			setNullResult();
 			return;
 		}
 		
-		String aIVData = "iv = c(";
+		HashMap<String, Integer> ivLevelCount =  new HashMap<String, Integer>();
+		
+		String aIVData = "input <- data.frame(iv = c(";
 		String aCOVData = "),cov = c(";
 		String aDVData = "),dv = c(";
 		for(int i=0; i<itsSampleSize; i++)
@@ -135,33 +87,78 @@ public class AncovaMeasure
 				aDVData += ",";
 			}
 			
+			if (false == ivLevelCount.containsKey(itsIVdata[i])) {
+				ivLevelCount.put(itsIVdata[i], 1);
+			}
+			else {
+				ivLevelCount.put(itsIVdata[i], (ivLevelCount.get(itsIVdata[i])+1));
+			}
+			
 			aIVData += "'" + itsIVdata[i] + "'";
 			aCOVData += itsCOVdata[i];
 			aDVData += itsDVdata[i];
 		}
 		
+		boolean isDataValided = true;
+		// 1. 至少要有2種key
+		Set<String> ivKeys = ivLevelCount.keySet();
+		if (ivKeys.size() < 2) {
+			isDataValided = false;
+		}
 		
+		// 2. 每種key都要有2個以上
+		for (String key: ivKeys) {
+			if (ivLevelCount.get(key) < 3) {
+				isDataValided = false;
+			}
+		}
+		
+		if (false == isDataValided) {
+			setNullResult();
+			return;
+		}
+		
+		// ----------------------
 		
 		//String aData = "iv = c(1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2),cov = c(11,12,19,13,17,15,17,14,13,16,11,14,10,12,12,13,10,15,14,11),dv = c(21,23,25,23,23,24,24,20,22,24,21,24,21,20,23,24,23,21,25,24)";
-		String aData = aIVData + aCOVData + aDVData + ")";
+		String aData = aIVData + aCOVData + aDVData + "));";
 		Log.logCommandLine("aData: " + aData);
 		
-		String aRscript = itsRscriptHead + aData + itsRscriptFoot;
+		// Init AncovaMeasure.itsRscriptFoot
+		initRscript();
+		
+		String aRscript = aData + AncovaMeasure.itsRscript;
+		//Log.logCommandLine("aRscript: " + aRscript);
 		
 		
 		String aReturn = RserveUtil.runScript("TRIPLE_ANCOVA", aData, aRscript);
 		
 		String[] aReturnParts = aReturn.split(",");
 		
-		itsFstatPval = Double.parseDouble(aReturnParts[0]);
+		if (aReturnParts[0].equals("FALSE")) {
+			itsIsParameticAncova = false;
+		}
+		itsFstatPval = Double.parseDouble(aReturnParts[1]);
 		//Log.logCommandLine("ANCOVA Result: " + aReturnParts[1]);
 		
-		String[] aPairwiseComparison = aReturnParts[1].split(";");
+		String[] aPairwiseComparison = aReturnParts[2].split(";");
 		//itsPairwiseComparison.add(aReturnParts[1] + " (" + aReturnParts[0] + ")");
 		itsPairwiseComparison = new ArrayList<String>( Arrays.asList( aPairwiseComparison ) );
 	}
 	
-	public String getPairwiseComparison() {
+	public boolean isParameticAncova() {
+		return itsIsParameticAncova;
+	}
+	
+
+	public double getFstatPval() {
+		return itsFstatPval;
+	}
+	public double getFstatPvalInvert() {
+		return (1 - itsFstatPval);
+	}
+	
+	public String getFormatPairwiseComparison() {
 		String output = "";
 		for (String p : itsPairwiseComparison) {
 			if (false == output.equals("")) {
@@ -169,13 +166,12 @@ public class AncovaMeasure
 			}
 			output = output + p;
 		}
+		
+		if (false == itsIsParameticAncova) {
+			output = "[NP] " + output;
+		}
+		
 		return output;
 	}
 	
-	public double getFstatPval() {
-		return itsFstatPval;
-	}
-	public double getFstatPvalInvert() {
-		return (1 - itsFstatPval);
-	}
 }

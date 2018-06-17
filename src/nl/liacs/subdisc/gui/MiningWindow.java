@@ -1116,7 +1116,7 @@ public class MiningWindow extends JFrame implements ActionListener
 				
 				jLabelTargetInfo.setText(" ANCOVA pairwise comparison");
 				jLabelTargetInfoText.setText(String.format("%s (%s)",
-						aANCOVA.getPairwiseComparison(), aANCOVA.getFstatPval() ));
+						aANCOVA.getFormatPairwiseComparison(), aANCOVA.getFstatPval() ));
 				break;
 			}
 			case MULTI_LABEL :

@@ -1,12 +1,11 @@
-input <- data.frame(
-    iv = c('C','C','E','E','E','E','E'),cov = c(11.0,8.0,5.0,7.0,7.0,7.0,6.0),dv = c(11.0,3.0,5.0,5.0,5.0,4.0,7.0)
-);
-
+input <- data.frame(iv = c('C','C','C','C','E','E','E','E','E'),cov = c(19.0,17.0,17.0,14.0,11.0,12.0,13.0,10.0,15.0),dv = c(25.0,23.0,24.0,20.0,21.0,23.0,24.0,23.0,21.0));
+print("data|script");
 reg.model <- aov(dv~iv*cov,data=input);
 reg.interaction <- summary(reg.model)[[1]][["Pr(>F)"]][3];
 
 p.value <- 1;
-pairwise.result <- c();
+pairwise.result <- c('null');
+is.parametric.ancova <- TRUE;
 
 if (is.null(reg.interaction) || is.na(reg.interaction) ) {
     print('do nothing');
@@ -21,9 +20,8 @@ if (is.null(reg.interaction) || is.na(reg.interaction) ) {
     ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$estimate > 0, gsub(" - ", " > ", ancova.compare.summary$contrast), ifelse(ancova.compare.summary$estimate < 0, gsub(" - ", " < ", ancova.compare.summary$contrast), gsub(" - ", " = ", ancova.compare.summary$contrast)));
     ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$p.value < 0.05, paste0(ancova.compare.summary$contrast, "*"), ancova.compare.summary$contrast);
     pairwise.result <- ancova.compare.summary$contrast;
-    
 } else {
-    
+    is.parametric.ancova <- FALSE;
     library(gtools);
     library(plyr);
     iv.levels <- levels(factor(input[,"iv"]));
@@ -36,39 +34,47 @@ if (is.null(reg.interaction) || is.na(reg.interaction) ) {
     library(fANCOVA);
     p.value <- 1;
     for (i in 1:iv.comb.freq) {
+
         comb <- iv.comb[i,];
         input.comb <- input[input$iv %in% comb, ];
         input.comb <- input.comb[with(input.comb, order(iv)), ];
-        Taov.result <- T.aov(input.comb[,"cov"], input.comb[,"dv"], input.comb[,"iv"], plot=TRUE, data.points=TRUE);
 
-        loess.result <- loess.ancova(input.comb[,"cov"], input.comb[,"dv"], input.comb[,"iv"], plot=TRUE, data.points=TRUE);
-        fitted.data <- data.frame(loess.result$smooth.fit$fitted, input.comb[,"iv"]);
-        colnames(fitted.data)<- c("fitted","iv");
+        tryCatch({
+            Taov.result <- T.aov(input.comb[,"cov"], input.comb[,"dv"], input.comb[,"iv"], plot=FALSE, data.points=TRUE);
 
-        fitted.data1 <- fitted.data[fitted.data$iv %in% comb[1], ];
-        fitted.data1.mean <- mean(fitted.data1[,"fitted"]);
+            loess.result <- loess.ancova(input.comb[,"cov"], input.comb[,"dv"], input.comb[,"iv"], plot=FALSE, data.points=TRUE);
+            fitted.data <- data.frame(loess.result$smooth.fit$fitted, input.comb[,"iv"]);
+            colnames(fitted.data)<- c("fitted","iv");
 
-        fitted.data2 <- fitted.data[fitted.data$iv %in% comb[2], ];
-        fitted.data2.mean <- mean(fitted.data2[,"fitted"]);
+            fitted.data1 <- fitted.data[fitted.data$iv %in% comb[1], ];
+            fitted.data1.mean <- mean(fitted.data1[,"fitted"]);
 
-        iv.comb[i,3] <- Taov.result$p.value;
-        p.value <- ifelse(Taov.result$p.value < p.value, Taov.result$p.value, p.value);
-        
-        if (fitted.data1.mean > fitted.data2.mean) {
-            iv.comb[i,4] <- ">"
-        } else if (fitted.data1.mean < fitted.data2.mean) {
-            iv.comb[i,4] <- "<"
-        } else {
-            iv.comb[i,4] <- "="
-        };
+            fitted.data2 <- fitted.data[fitted.data$iv %in% comb[2], ];
+            fitted.data2.mean <- mean(fitted.data2[,"fitted"]);
 
-        iv.comb[i,5] <- paste(iv.comb[i,1], iv.comb[i,4], iv.comb[i,2]);
+            iv.comb[i,3] <- Taov.result$p.value;
+            p.value <- ifelse(Taov.result$p.value < p.value, Taov.result$p.value, p.value);
 
-        if (iv.comb[i,3] < 0.05) {
-            iv.comb[i,5] <- paste0(iv.comb[i,5], "*")
-        };
+            if (fitted.data1.mean > fitted.data2.mean) {
+                iv.comb[i,4] <- ">"
+            } else if (fitted.data1.mean < fitted.data2.mean) {
+                iv.comb[i,4] <- "<"
+            } else {
+                iv.comb[i,4] <- "="
+            };
+
+            iv.comb[i,5] <- paste(iv.comb[i,1], iv.comb[i,4], iv.comb[i,2]);
+
+            if (iv.comb[i,3] < 0.05) {
+                iv.comb[i,5] <- paste0(iv.comb[i,5], "*")
+            };
+        }, 
+        warning = function(w) {}, 
+        error=function(e){});
     };
 
-    pairwise.result <- iv.comb[,5];
+    if (iv.comb[,5] != "") {
+        pairwise.result <- iv.comb[,5];
+    };
 };
-paste(sprintf("%.5f", p.value), paste(pairwise.result, collapse=";"), sep=",");
+paste(is.parametric.ancova, sprintf("%.5f", p.value), paste(pairwise.result, collapse=";"), sep=",");
