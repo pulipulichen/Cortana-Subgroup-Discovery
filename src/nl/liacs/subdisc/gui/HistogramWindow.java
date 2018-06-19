@@ -382,7 +382,7 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 			aPlot.getRangeAxis().setTickLabelFont(SMALL_FONT);
 	}
 
-		itsChartPanel.setPreferredSize(new Dimension(aNrColumns*20, 450));
+		itsChartPanel.setPreferredSize(new Dimension(aNrColumns*20, 300));
 		itsChartPanel.setChart(aChart);
 		itsChartPanel.revalidate();
 	}
