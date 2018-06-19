@@ -171,9 +171,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 			itsQualityMeasureMinimum = itsSearchParameters.getQualityMeasureMinimum();
 
 
-			Log.logCommandLine("SubgroupDiscovery aTargetType" + aTargetType);
+			//Log.logCommandLine("SubgroupDiscovery aTargetType" + aTargetType);
 			TargetConcept aTC = itsSearchParameters.getTargetConcept();
-	// TODO for stable jar, initiated here, SubgroupDiscovery revision 893 moved this to else below
+			// TODO for stable jar, initiated here, SubgroupDiscovery revision 893 moved this to else below
+			
 			itsPrimaryColumn = aTC.getPrimaryTarget();
 			itsSecondaryColumn = aTC.getSecondaryTarget();
 			switch (aTargetType)
@@ -940,7 +941,8 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				
 				AncovaMeasure aAncova = new AncovaMeasure(itsBaseAncovaMeasure, theIVdata, theCOVdata, theDVdata);
 				aQuality = (float) aAncova.getFstatPvalInvert();
-				theNewSubgroup.setDescription(aAncova.getFormatPairwiseComparison()); //correlation
+				theNewSubgroup.setSecondaryDescription(aAncova.getFormatPairwiseComparison()); //correlation
+				theNewSubgroup.setTertiaryDescription("" + aAncova.isParametricAncova()); //intercept
 				
 				break;
 			}

@@ -226,9 +226,19 @@ public class XMLAutoRun
 				aWriter.write(aDelimiter);
 				aWriter.write(String.valueOf(aSubgroup.getMeasureValue()));
 				aWriter.write(aDelimiter);
-				aWriter.write(String.valueOf(aSubgroup.getSecondaryStatistic()));
+				switch (theTargetType) {
+					case TRIPLE_ANCOVA : 
+						aWriter.write(aSubgroup.getSecondaryDescription());	
+					default:
+						aWriter.write(String.valueOf(aSubgroup.getSecondaryStatistic()));				
+				}
 				aWriter.write(aDelimiter);
-				aWriter.write(String.valueOf(aSubgroup.getTertiaryStatistic()));
+				switch (theTargetType) {
+					case TRIPLE_ANCOVA : 
+						aWriter.write(aSubgroup.getTertiaryDescription());	
+					default:
+						aWriter.write(String.valueOf(aSubgroup.getTertiaryStatistic()));				
+				}
 				aWriter.write(aDelimiter);
 				aWriter.write(String.valueOf(aSubgroup.getPValue()));
 				aWriter.write(aDelimiter);

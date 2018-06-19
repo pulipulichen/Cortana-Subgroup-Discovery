@@ -73,18 +73,20 @@ public class Process
 			{
 				//JOptionPane.showMessageDialog(null, "before aSubgroupDiscovery");
 				//TargetConcept aTargetConcept = theSearchParameters.getTargetConcept();
-				//Log.logCommandLine("GO TRIPLE_ANCOVA ");
-				//RserveUtil.startup();
-				//RserveUtil.connect();
+				//Log.logCommandLine("GO TRIPLE_ANCOVA");
+				RserveUtil.startup();
+				RserveUtil.connect();
 				try {
 					aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, aTargetType, theMainWindow);
-					//RserveUtil.disconnect();
-					//RserveUtil.shutdown();
 				}
 				catch (Exception e) {
 					Log.logCommandLine("error: " + e.getMessage());
 				}
-				Log.logCommandLine("OK");
+				finally {
+					//RserveUtil.disconnect();
+					//RserveUtil.shutdown();
+				}
+				//Log.logCommandLine("OK");
 				//JOptionPane.showMessageDialog(null, "after aSubgroupDiscovery");
 				break;
 			}
@@ -110,15 +112,12 @@ public class Process
 				RserveUtil.startup();
 				RserveUtil.connect();
 				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
-				RserveUtil.disconnect();
+				//RserveUtil.disconnect();
 				RserveUtil.shutdown();
 				break;
 			default:
 				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
 		}
-		
-		
-		
 		
 		// if 2nd argument to above mine() is 0, you effectively run:
 		//aSubgroupDiscovery.mine(System.currentTimeMillis());
@@ -164,6 +163,19 @@ public class Process
 			Log.logCommandLine("    "+s.getConditions().toString());
 */		// end temp
 
+		switch (aTargetType)
+		{
+			case TRIPLE_ANCOVA :
+			{
+				//RserveUtil.disconnect();
+				RserveUtil.shutdown();
+				break;
+			}
+			default : {
+				
+			}
+		}
+		
 		return aSubgroupDiscovery;
 	}
 
@@ -368,6 +380,8 @@ public class Process
 		else
 			aString += "   " + theNumberOfSubgroups + " subgroups found.\n";
 		Log.logCommandLine(aString);
+		
+		
 	}
 
 	private static List<Float> compileStatistics(float theThreshold, int theNrMembers, SubgroupSet theSubgroupSet)

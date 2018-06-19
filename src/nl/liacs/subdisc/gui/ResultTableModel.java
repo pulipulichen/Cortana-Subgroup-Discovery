@@ -64,7 +64,7 @@ public class ResultTableModel extends AbstractTableModel
 					case SINGLE_NUMERIC : return "St. Dev.";
 					case DOUBLE_CORRELATION : return "Distance";
 					case DOUBLE_REGRESSION : return "Intercept";
-					case TRIPLE_ANCOVA : return "(null)";
+					case TRIPLE_ANCOVA : return "Parametric ANCOVA";
 					case MULTI_LABEL : return "Entropy";
 					default : return "";
 				}
@@ -105,11 +105,17 @@ public class ResultTableModel extends AbstractTableModel
 			case 4: 
 				switch (itsTargetType) {
 					case TRIPLE_ANCOVA : 
-						return aSubgroup.getDescription();
+						return aSubgroup.getSecondaryDescription();
 					default:
 						return RendererNumber.FORMATTER.format(aSubgroup.getSecondaryStatistic());						
 				}
-			case 5: return RendererNumber.FORMATTER.format(aSubgroup.getTertiaryStatistic());
+			case 5: 
+				switch (itsTargetType) {
+				case TRIPLE_ANCOVA : 
+					return aSubgroup.getTertiaryDescription();
+				default:
+					return RendererNumber.FORMATTER.format(aSubgroup.getTertiaryStatistic());						
+				}
 			case 6:
 			{
 				double aPValue = aSubgroup.getPValue();

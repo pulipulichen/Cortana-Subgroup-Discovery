@@ -89,6 +89,9 @@ public class SubDisc
 				&& ConfigIni.getBoolean("global", "AutoStartSubgroupDiscovery")) {
 			w.actionPerformed("Subgroup Discovery");
 		}
+		if (ConfigIni.getBoolean("global", "AutoExplore")) {
+			w.actionPerformed("Explore...");
+		}
 		if (ConfigIni.getBoolean("global", "AutoExit")) {
 			w.actionPerformed("Exit");
 		}

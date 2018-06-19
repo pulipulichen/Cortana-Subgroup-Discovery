@@ -22,6 +22,18 @@ public class RserveUtil
 {
 	//private static String RPath = "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe";
 	private static RConnection connection;
+	private static String itsRPath = null;
+	private static String itsRscriptStartup = null;
+	private static String itsRscriptShutdown = null;
+	
+	private static void initRscript() {
+		// Init AncovaMeasure.itsRscriptFoot
+		if (null == itsRscriptStartup) {
+			itsRPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
+			itsRscriptStartup = JARTextFileLoader.load("/r-scripts/r_serve_startup.R", "");
+			itsRscriptShutdown = JARTextFileLoader.load("/r-scripts/r_serve_shutdown.R", "");
+		}
+	}
 	
 	public static void startup() {
 		
@@ -36,13 +48,12 @@ public class RserveUtil
 			return;
 		}
 		
+		initRscript();
+		
 		final Runtime rt = Runtime.getRuntime();
 		try {
-			String RPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
-			rt.exec("\"" + RPath + "\" -e \"library(Rserve);Rserve()\"");
-			Log.logCommandLine("RserveUtil.startup(): " + RPath + " -e \"library(Rserve);Rserve()\"");
-			
-			connect();
+			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
+			Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
 		}
 		catch (Exception e) {
 			Log.logCommandLine("RserveUtil.startup() failed: " + e.getMessage());
@@ -56,8 +67,9 @@ public class RserveUtil
 		
 		final Runtime rt = Runtime.getRuntime();
 		try {
-			String RPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
-			rt.exec("\"" + RPath + "\" -e \"library(RSclient);RSshutdown(RSconnect())\"");
+			disconnect();
+			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
+			Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
 			connection = null;
 		}
 		catch (Exception e) {

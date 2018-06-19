@@ -1118,8 +1118,8 @@ public class MiningWindow extends JFrame implements ActionListener
 				RserveUtil.connect();
 				AncovaMeasure aANCOVA =
 						new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
-				//RserveUtil.disconnect();
-				//RserveUtil.shutdown();
+				RserveUtil.disconnect();
+				RserveUtil.shutdown();
 				
 				NumberFormat aFormatter = NumberFormat.getNumberInstance();
 				aFormatter.setMaximumFractionDigits(2);

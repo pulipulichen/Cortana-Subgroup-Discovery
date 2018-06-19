@@ -2,6 +2,7 @@ package nl.liacs.subdisc.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.*;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -63,6 +64,30 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		//pack();
 		setVisible(true);
 	}
+	
+	private JLabel jLabelAvgStDev;
+	private JTextField jTextFieldAverage;
+	private JTextField jTextFieldStDev;
+	
+	private JLabel jLabelAvgHalfStDev;
+	private JTextField jTextFieldAvgMinusHalfStDev;
+	private JTextField jTextFieldAvgPlusHalfStDev;
+	
+	private JLabel jLabelAvgOneStDev;
+	private JTextField jTextFieldAvgMinusOneStDev;
+	private JTextField jTextFieldAvgPlusOneStDev;
+	
+	private JLabel jLabelMedian;
+	private JTextField jTextFieldMedian;
+	private JTextField jTextFieldMedianHidden;
+	
+	private JLabel jLabelMinMax;
+	private JTextField jTextFieldMin;
+	private JTextField jTextFieldMax;
+	
+	private JLabel jLabelQ1Q3;
+	private JTextField jTextFieldQ1;
+	private JTextField jTextFieldQ3;
 
 	private void initComponents()
 	{
@@ -70,12 +95,18 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 
 		// SOUTH PANEL, initialises comboBoxes used by createHistogram
 		JPanel aSouthPanel = new JPanel();
-		aSouthPanel.setLayout(new GridLayout(1, 3));
+		aSouthPanel.setLayout(new GridLayout(1, 2));
 		// TODO create permanent 'columnName-columnIndex map' in Table?
 		// map can also be used directly by MiningWindow/ BrowseWindow
 		String[] sa = new String[itsTable.getNrColumns()];
-		for (int i = 0, j = itsTable.getNrColumns(); i < j; ++i)
+		for (int i = 0, j = itsTable.getNrColumns(); i < j; ++i) {
 			sa[i] = itsTable.getColumn(i).getName();
+		}
+		
+		JPanel anAttributeGridPanel = new JPanel();
+		anAttributeGridPanel.setLayout(new GridLayout(2, 1));
+		aSouthPanel.add(anAttributeGridPanel);
+		
 
 		// ATTRIBUTE PANEL
 		JPanel anAttributePanel = new JPanel();
@@ -88,7 +119,7 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		anAttributePanel.add(itsAttributeBinsSlider);
 		itsAttributePlotButton = GUI.buildButton("Plot Attribute", 'A', "attributeplot", this);
 		anAttributePanel.add(itsAttributePlotButton);
-		aSouthPanel.add(anAttributePanel);
+		anAttributeGridPanel.add(anAttributePanel);
 
 		// TARGET PANEL (duplicate code)
 		JPanel aTargetPanel = new JPanel();
@@ -101,12 +132,57 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		aTargetPanel.add(itsTargetBinsSlider);
 		itsTargetPlotButton = GUI.buildButton("Plot Target", 'T', "targetplot", this);
 		aTargetPanel.add(itsTargetPlotButton);
-		aSouthPanel.add(aTargetPanel);
+		anAttributeGridPanel.add(aTargetPanel);
 
 		// MISC PANEL
 		JPanel aMiscPanel = new JPanel();
-		aMiscPanel.setLayout(new BoxLayout(aMiscPanel, BoxLayout.Y_AXIS));
+		//aMiscPanel.setLayout(new BoxLayout(aMiscPanel, BoxLayout.Y_AXIS));
+		aMiscPanel.setLayout(new GridLayout(7, 3));
 		aMiscPanel.setBorder(GUI.buildBorder("Other"));
+
+		jLabelAvgStDev = initJLabel("Avg. / StDev.");
+		aMiscPanel.add(jLabelAvgStDev);
+		jTextFieldAverage = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldAverage);
+		jTextFieldStDev = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldStDev);
+		
+		jLabelAvgHalfStDev = initJLabel("Avg. กำ 0.5 StDev.");
+		aMiscPanel.add(jLabelAvgHalfStDev);
+		jTextFieldAvgMinusHalfStDev = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldAvgMinusHalfStDev);
+		jTextFieldAvgPlusHalfStDev = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldAvgPlusHalfStDev);
+		
+		jLabelAvgOneStDev = initJLabel("Avg. กำ 1 StDev.");
+		aMiscPanel.add(jLabelAvgOneStDev);
+		jTextFieldAvgMinusOneStDev = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldAvgMinusOneStDev);
+		jTextFieldAvgPlusOneStDev = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldAvgPlusOneStDev);
+		
+		jLabelMedian = initJLabel("Median");
+		aMiscPanel.add(jLabelMedian);
+		jTextFieldMedian = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldMedian);
+		jTextFieldMedianHidden = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldMedianHidden);
+		jTextFieldMedianHidden.setVisible(false);
+		
+		jLabelMinMax = initJLabel("Min / Max");
+		aMiscPanel.add(jLabelMinMax);
+		jTextFieldMin = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldMin);
+		jTextFieldMax = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldMax);
+		
+		jLabelQ1Q3 = initJLabel("Q1 / Q3");
+		aMiscPanel.add(jLabelQ1Q3);
+		jTextFieldQ1 = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldQ1);
+		jTextFieldQ3 = GUI.buildTextField("0");
+		aMiscPanel.add(jTextFieldQ3);
+		
 		//aMiscPanel.add(GUI.buildButton("Save", "save", this));
 		//aMiscPanel.add(GUI.buildButton("Print", "print", this));
 		aMiscPanel.add(GUI.buildButton("CrossTable", 'R', "crosstable", this));
@@ -114,8 +190,9 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		JButton aButton = GUI.buildButton("Close", 'C', "close", this);
 		GUI.focusComponent(aButton, this);
 		aMiscPanel.add(aButton);
+		
 		aSouthPanel.add(aMiscPanel);
-
+		
 		add(aSouthPanel, BorderLayout.SOUTH);
 
 		// MAPS
@@ -125,6 +202,14 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		itsChartPanel = new ChartPanel(null);
 		updateChartPanel();
 		add(new JScrollPane(itsChartPanel), BorderLayout.CENTER);
+	}
+	
+	// TODO MM GUI.buildLabel(), link Label and Field
+	private static JLabel initJLabel(String theName)
+	{
+		JLabel aJLable = new JLabel(theName);
+		aJLable.setFont(GUI.DEFAULT_TEXT_FONT);
+		return aJLable;
 	}
 
 	private void setupSlider(JSlider theSlider) {
@@ -458,15 +543,41 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		// assumes only 2 maps exist (Attribute and Target map)
 		int aNrBins = (theMap == itsAMap ? itsAttributeBinsSlider.getValue() :
 											itsTargetBinsSlider.getValue());
-
+		float aMin = 0f;
+		float aQ1 = 0f;
+		float aQ2 = 0f;
+		float aQ3 = 0f;
+		float aMax = 0f;
+		
+		float[] aDataList = new float[theColumn.size()];
+		for (int i = 0, j = theColumn.size(); i < j; ++i) {
+			aDataList[i] = theColumn.getFloat(i);
+			
+			if (0f == aMin) {
+				aMin = theColumn.getFloat(i);
+			}
+			else if (theColumn.getFloat(i) < aMin) {
+				aMin = theColumn.getFloat(i);
+			}
+			
+			if (0f == aMax) {
+				aMax = theColumn.getFloat(i);
+			}
+			else if (theColumn.getFloat(i) > aMax) {
+				aMax = theColumn.getFloat(i);
+			}
+		}
+		
 		float aSum = 0.0f;
-		for (int i = 0, j = theColumn.size(); i < j; ++i)
+		for (int i = 0, j = theColumn.size(); i < j; ++i) {
 			aSum += theColumn.getFloat(i);
+		}
 
 		float anAvg = aSum / theColumn.size();
 		float aStDev = 0.0f;
-		for (int i = 0, j = theColumn.size(); i < j; ++i)
+		for (int i = 0, j = theColumn.size(); i < j; ++i) {
 			aStDev += Math.pow(anAvg-theColumn.getFloat(i), 2.0);
+		}
 		aStDev = (float) Math.sqrt(aStDev);
 
 		float aStart = Math.max(anAvg - 2.3f * aStDev, theColumn.getMin());
@@ -479,9 +590,78 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		float aValue = aStart;
 		float aStep = aNrBins > 2 ? (aStop - aStart)/(aNrBins-2) : 0.0f;
 
-		for(int i = 0; i < aNrBins-1; ++i)
+		for(int i = 0; i < aNrBins-1; ++i) {
 			theMap.put(aValue + i*aStep, i);
+		}
 		theMap.put(Float.POSITIVE_INFINITY, aNrBins-1);
+		
+		
+		// ---------------------
+		
+		NumberFormat aFormatter = NumberFormat.getNumberInstance();
+		aFormatter.setMaximumFractionDigits(4);
+		
+		
+		jTextFieldAverage.setText("" + aFormatter.format(anAvg));
+		jTextFieldStDev.setText("" + aFormatter.format(aStDev));
+		
+		jTextFieldAvgMinusHalfStDev.setText("" + aFormatter.format(anAvg - (0.5 * aStDev)));
+		jTextFieldAvgPlusHalfStDev.setText("" + aFormatter.format(anAvg + (0.5 * aStDev)));
+		
+		jTextFieldAvgMinusOneStDev.setText("" + aFormatter.format(anAvg - (1 * aStDev)));
+		jTextFieldAvgPlusOneStDev.setText("" + aFormatter.format(anAvg + (1 * aStDev)));
+		
+		jTextFieldMedian.setText("" + aFormatter.format(q2(aDataList)));
+		
+		jTextFieldMin.setText("" + aFormatter.format(aMin));
+		jTextFieldMax.setText("" + aFormatter.format(aMax));
+		
+		jTextFieldQ1.setText("" + aFormatter.format(q1(aDataList)));
+		jTextFieldQ3.setText("" + aFormatter.format(q3(aDataList)));
+		
+		//jLabelStDev.setText("StDev: " + aStDev);
+		//jLabelAvgP05StDev.setText("Avg + 0.5 StDev: " + (anAvg + (aStDev/2)));
+		//jLabelAvgM05StDev.setText("Avg - 0.5 StDev: " + (anAvg - (aStDev/2) ));
+		//jLabelAvgP1StDev.setText("Avg + 1 StDev: " + (anAvg + aStDev));
+		//jLabelAvgM1StDev.setText("Avg - 1 StDev: " + (anAvg - aStDev));
+		
+		
+		//jLabelAvgP1StDev.setText("Avg + 1 StDev: " + (anAvg + aStDev));
+		//jLabelAvgM1StDev.setText("Avg - 1 StDev: " + (anAvg - aStDev));
+	}
+	
+	public double q1(float[] m) {
+	    int q1 = (m.length)/4;
+
+	    if (m.length%2 == 1) {
+	        return m[q1];
+	    }
+	    else {
+	        return (m[q1-1] + m[q1]) / 2.0;
+	    }
+	}
+	
+	public double q2(float[] m) {
+	    int q1 = (m.length)/2;
+
+	    if (m.length%2 == 1) {
+	        return m[q1];
+	    }
+	    else {
+	        return (m[q1-1] + m[q1]) / 2.0;
+	    }
+	}
+	
+	public double q3(float[] m) {
+		double q = (m.length)*.75;
+	    int q3 = (int) q;
+
+	    if (m.length%2 == 1) {
+	        return m[q3];
+	    }
+	    else {
+	        return (m[q3-1] + m[q3]) / 2.0;
+	    }
 	}
 
 	/*
@@ -492,14 +672,14 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 	private Float[] createBins(Map<?, Integer> theMap)
 	{
 		return theMap.keySet().toArray(new Float[0]);
-/*
+        /*
 		float[] aBins = new float[theMap.size()];
 		Iterator<? super Object> iter = (Iterator<? super Object>) theMap.keySet().iterator();
 		for (int i = 0, j = theMap.size(); i < j; ++i)
 			aBins[i] = (Float) iter.next();
 
 		return aBins;
- */
+        */
 	}
 
 	// alternative could be a targetValues Map for each attributeValue

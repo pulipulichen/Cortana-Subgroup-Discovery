@@ -14,7 +14,7 @@ public enum TargetType implements EnumInterface
 	SINGLE_ORDINAL("single ordinal"),
 	DOUBLE_REGRESSION("double regression"),
 	DOUBLE_CORRELATION("double correlation"),	
-	TRIPLE_ANCOVA("triple ANCOVA"),
+	TRIPLE_ANCOVA("1 nom + 1 num > 1 num"),
 	MULTI_LABEL("multi-label"),
 	MULTI_BINARY_CLASSIFICATION("multi binary classification");
 
@@ -295,7 +295,7 @@ public enum TargetType implements EnumInterface
 				case SINGLE_ORDINAL		: return 0.5;
 				case DOUBLE_REGRESSION		: return 0.5;
 				case DOUBLE_CORRELATION		: return 0.5;
-				case TRIPLE_ANCOVA		: return 0.1;
+				case TRIPLE_ANCOVA		: return 0.5;
 				case MULTI_LABEL		: return 0.5;
 				case MULTI_BINARY_CLASSIFICATION: return 0.5;	// TODO true?
 				default :

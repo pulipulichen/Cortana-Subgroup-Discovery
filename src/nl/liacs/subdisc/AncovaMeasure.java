@@ -15,7 +15,7 @@ public class AncovaMeasure
 	private float[] itsCOVdata;
 	private float[] itsDVdata;
 	
-	private boolean itsIsParameticAncova = true;
+	private boolean itsIsParametricAncova = true;
 	private double itsFstatPval;
 	private ArrayList<String> itsPairwiseComparison;
 
@@ -136,7 +136,7 @@ public class AncovaMeasure
 		String[] aReturnParts = aReturn.split(",");
 		
 		if (aReturnParts[0].equals("FALSE")) {
-			itsIsParameticAncova = false;
+			itsIsParametricAncova = false;
 		}
 		itsFstatPval = Double.parseDouble(aReturnParts[1]);
 		//Log.logCommandLine("ANCOVA Result: " + aReturnParts[1]);
@@ -146,8 +146,8 @@ public class AncovaMeasure
 		itsPairwiseComparison = new ArrayList<String>( Arrays.asList( aPairwiseComparison ) );
 	}
 	
-	public boolean isParameticAncova() {
-		return itsIsParameticAncova;
+	public boolean isParametricAncova() {
+		return itsIsParametricAncova;
 	}
 	
 
@@ -167,11 +167,10 @@ public class AncovaMeasure
 			output = output + p;
 		}
 		
-		if (false == itsIsParameticAncova) {
+		if (false == itsIsParametricAncova) {
 			output = "[NP] " + output;
 		}
 		
 		return output;
 	}
-	
 }
