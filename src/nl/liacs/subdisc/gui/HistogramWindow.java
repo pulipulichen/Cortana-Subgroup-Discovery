@@ -39,7 +39,9 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 	private Map<?, Integer> itsAMap;
 	private Map<?, Integer> itsTMap;
 	private JButton itsAttributePlotButton;
+	private JButton itsAttributeBrowseButton;
 	private JButton itsTargetPlotButton;
+	private JButton itsTargetBrowseButton;
 
 	// TODO use configurable sliders for Numeric Attribute/Target
 	private JSlider itsAttributeBinsSlider;
@@ -88,6 +90,8 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 	private JLabel jLabelQ1Q3;
 	private JTextField jTextFieldQ1;
 	private JTextField jTextFieldQ3;
+	
+	private String[] itsColumnNames; 
 
 	private void initComponents()
 	{
@@ -102,6 +106,7 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		for (int i = 0, j = itsTable.getNrColumns(); i < j; ++i) {
 			sa[i] = itsTable.getColumn(i).getName();
 		}
+		itsColumnNames = sa;
 		
 		JPanel anAttributeGridPanel = new JPanel();
 		anAttributeGridPanel.setLayout(new GridLayout(2, 1));
@@ -117,8 +122,17 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		anAttributePanel.add(itsAttributeColumnsBox);
 		setupSlider(itsAttributeBinsSlider = new JSlider());
 		anAttributePanel.add(itsAttributeBinsSlider);
+		
+		JPanel anAttributeButtonGridPanel = new JPanel();
+		anAttributeButtonGridPanel.setLayout(new GridLayout(1, 2));
+		anAttributePanel.add(anAttributeButtonGridPanel);
+		
 		itsAttributePlotButton = GUI.buildButton("Plot Attribute", 'A', "attributeplot", this);
-		anAttributePanel.add(itsAttributePlotButton);
+		anAttributeButtonGridPanel.add(itsAttributePlotButton);
+
+		itsAttributeBrowseButton = GUI.buildButton("Browse Attribute", 'B', "attributebrowse", this);
+		anAttributeButtonGridPanel.add(itsAttributeBrowseButton);
+		
 		anAttributeGridPanel.add(anAttributePanel);
 
 		// TARGET PANEL (duplicate code)
@@ -130,8 +144,18 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		aTargetPanel.add(itsTargetColumnsBox);
 		setupSlider(itsTargetBinsSlider = new JSlider());
 		aTargetPanel.add(itsTargetBinsSlider);
+		
+		JPanel aTargetButtonGridPanel = new JPanel();
+		aTargetButtonGridPanel.setLayout(new GridLayout(1, 2));
+		aTargetPanel.add(aTargetButtonGridPanel);
+		
 		itsTargetPlotButton = GUI.buildButton("Plot Target", 'T', "targetplot", this);
-		aTargetPanel.add(itsTargetPlotButton);
+		aTargetButtonGridPanel.add(itsTargetPlotButton);
+		
+		itsTargetBrowseButton = GUI.buildButton("Browse Target", 'B', "targetbrowse", this);
+		aTargetButtonGridPanel.add(itsTargetBrowseButton);
+		
+		
 		anAttributeGridPanel.add(aTargetPanel);
 
 		// MISC PANEL
@@ -185,8 +209,8 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		
 		//aMiscPanel.add(GUI.buildButton("Save", "save", this));
 		//aMiscPanel.add(GUI.buildButton("Print", "print", this));
-		aMiscPanel.add(GUI.buildButton("CrossTable", 'R', "crosstable", this));
-
+		aMiscPanel.add(GUI.buildButton("CrossTable...", 'R', "crosstable", this));
+		
 		JButton aButton = GUI.buildButton("Close", 'C', "close", this);
 		GUI.focusComponent(aButton, this);
 		aMiscPanel.add(aButton);
@@ -243,8 +267,12 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 			new CrossTableWindow(((CategoryPlot)itsChartPanel.getChart().getPlot()).getDataset());
 		else if ("attributeplot".equals(anEvent))
 			new PlotWindow(itsTable.getColumn(itsAttributeColumnsBox.getSelectedIndex()));
+		else if ("attributebrowse".equals(anEvent))
+			new BrowseWindow(itsTable, null, (String) itsAttributeColumnsBox.getSelectedItem());
 		else if ("targetplot".equals(anEvent))
 			new PlotWindow(itsTable.getColumn(itsTargetColumnsBox.getSelectedIndex()));
+		else if ("targetbrowse".equals(anEvent))
+			new BrowseWindow(itsTable, null, (String) itsTargetColumnsBox.getSelectedItem());
 		else if ("close".equals(anEvent))
 			dispose();
 	}
@@ -569,13 +597,13 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		for (int i = 0, j = theColumn.size(); i < j; ++i) {
 			aSum += theColumn.getFloat(i);
 		}
-
 		float anAvg = aSum / theColumn.size();
+		
 		float aStDev = 0.0f;
 		for (int i = 0, j = theColumn.size(); i < j; ++i) {
 			aStDev += Math.pow(anAvg-theColumn.getFloat(i), 2.0);
 		}
-		aStDev = (float) Math.sqrt(aStDev);
+		aStDev = (float) Math.sqrt(aStDev / (theColumn.size() - 1));
 
 		float aStart = Math.max(anAvg - 2.3f * aStDev, theColumn.getMin());
 		float aStop = Math.min(anAvg + 2.3f * aStDev, theColumn.getMax());
@@ -625,13 +653,13 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		for (int i = 0, j = theColumn.size(); i < j; ++i) {
 			aSum += theColumn.getFloat(i);
 		}
-
 		float anAvg = aSum / theColumn.size();
+		
 		float aStDev = 0.0f;
 		for (int i = 0, j = theColumn.size(); i < j; ++i) {
-			aStDev += Math.pow(anAvg-theColumn.getFloat(i), 2.0);
+			aStDev += Math.pow(anAvg - theColumn.getFloat(i), 2.0);
 		}
-		aStDev = (float) Math.sqrt(aStDev);
+		aStDev = (float) Math.sqrt(aStDev / (theColumn.size() - 1));
 
 		// ---------------------
 		

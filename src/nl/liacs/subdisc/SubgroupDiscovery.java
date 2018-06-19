@@ -324,6 +324,20 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				}
 				break;
 			}
+			case NUMERIC_DISTRIBUTION :
+			{
+				//this is the crucial translation from nr bins to nr splitpoint
+				// code does nothing if aNrSplitPoints == 0
+				float[] aSplitPoints = theRefinement.getCondition().getColumn().getDistributionSplitPoints(theSubgroup.getMembers());
+				boolean first = true;
+				for (int j=0; j<aSplitPoints.length; j++)
+				{
+					Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(Float.toString(aSplitPoints[j]));
+					//addToBuffer(aNewSubgroup);
+					checkAndLog(aNewSubgroup, anOldCoverage);
+				}
+				break;
+			}
 			case NUMERIC_BINS :
 			{
 				//this is the crucial translation from nr bins to nr splitpoint

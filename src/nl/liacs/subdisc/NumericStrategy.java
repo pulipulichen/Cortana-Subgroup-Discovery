@@ -7,6 +7,7 @@ import java.util.*;
  */
 public enum NumericStrategy implements EnumInterface
 {
+	NUMERIC_DISTRIBUTION("distribution"),
 	NUMERIC_BINS("bins"),
 	NUMERIC_BEST("best"),
 	NUMERIC_ALL("all"),
@@ -55,9 +56,40 @@ public enum NumericStrategy implements EnumInterface
 	public static ArrayList<NumericStrategy> getNormalValues()
 	{
 		ArrayList<NumericStrategy> aResult = new ArrayList<NumericStrategy>(3);
-		aResult.add(NUMERIC_ALL);
-		aResult.add(NUMERIC_BINS);
-		aResult.add(NUMERIC_BEST);
+		
+		String aDefaultNumericStrategy = ConfigIni.get("search strategy", "DefaultNumericStrategy", "all");
+		
+		switch (aDefaultNumericStrategy) {
+			case "distribution":
+				aResult.add(NUMERIC_DISTRIBUTION);
+				aResult.add(NUMERIC_ALL);
+				aResult.add(NUMERIC_BINS);
+				aResult.add(NUMERIC_BEST);
+				break;
+			case "all":
+				aResult.add(NUMERIC_ALL);
+				aResult.add(NUMERIC_DISTRIBUTION);
+				aResult.add(NUMERIC_BINS);
+				aResult.add(NUMERIC_BEST);
+				break;
+			case "bins":
+				aResult.add(NUMERIC_BINS);
+				aResult.add(NUMERIC_DISTRIBUTION);
+				aResult.add(NUMERIC_ALL);
+				aResult.add(NUMERIC_BEST);
+				break;
+			case "best":
+				aResult.add(NUMERIC_BEST);
+				aResult.add(NUMERIC_DISTRIBUTION);
+				aResult.add(NUMERIC_BINS);
+				aResult.add(NUMERIC_ALL);
+				break;
+			default:
+				aResult.add(NUMERIC_DISTRIBUTION);
+				aResult.add(NUMERIC_ALL);
+				aResult.add(NUMERIC_BINS);
+				aResult.add(NUMERIC_BEST);
+		}
 		
 		//no intervals!
 		return aResult;
@@ -70,7 +102,20 @@ public enum NumericStrategy implements EnumInterface
 	 */
 	public static NumericStrategy getDefault()
 	{
-		return NumericStrategy.NUMERIC_BINS;
+String aDefaultNumericStrategy = ConfigIni.get("search strategy", "DefaultNumericStrategy", "all");
+		
+		switch (aDefaultNumericStrategy) {
+			case "distribution":
+				return NumericStrategy.NUMERIC_DISTRIBUTION;
+			case "all":
+				return NumericStrategy.NUMERIC_ALL;
+			case "bins":
+				return NumericStrategy.NUMERIC_BINS;
+			case "best":
+				return NumericStrategy.NUMERIC_BEST;
+			default:
+				return NumericStrategy.NUMERIC_DISTRIBUTION;
+		}
 	}
 
 	// uses Javadoc from EnumInterface

@@ -1861,6 +1861,124 @@ public class Column implements XMLNodeInterface
 
 		return aSplitPoints;
 	}
+	
+	/**
+	 * Split data via +-1stdev avg q1 q2 q3
+	 * @param theBitSet
+	 * @param theNrSplits
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public float[] getDistributionSplitPoints(BitSet theBitSet) throws IllegalArgumentException
+	{
+		if (!isValidCall("getSplitPoints", theBitSet)) {
+			return new float[0];
+		}
+		
+		// prevent crash in aSplitPoints populating loop
+		final int size = theBitSet.cardinality();
+		if (size == 0) {
+			return new float[0];
+		}
+
+		float[] aDomain = new float[size];
+		for (int i = theBitSet.nextSetBit(0), j = -1; i >= 0; i = theBitSet.nextSetBit(i + 1))
+			aDomain[++j] = itsFloatz[i];
+
+		Arrays.sort(aDomain);
+		//Log.logCommandLine("getDistributionSplitPoints aDomain(" + aDomain.length + "): " + Arrays.toString(aDomain));
+		
+		// ---------------------
+		
+		float aMin = 0f;
+		//float aQ1 = q1(aDomain);
+		//float aQ2 = q2(aDomain);
+		//float aQ3 = q3(aDomain);
+		float aMax = 0f;
+		
+		float aSum = 0.0f;
+		for (int i = 0, j = size; i < j; ++i) {
+			aSum += aDomain[i];
+			
+			if (0f == aMin) {
+				aMin = aDomain[i];
+			}
+			else if (aDomain[i] < aMin) {
+				aMin = aDomain[i];
+			}
+			
+			if (0f == aMax) {
+				aMax = aDomain[i];
+			}
+			else if (aDomain[i] > aMax) {
+				aMax = aDomain[i];
+			}
+		}
+
+		float anAvg = aSum / size;
+		float aStDev = 0.0f;
+		for (int i = 0, j = size; i < j; ++i) {
+			aStDev += Math.pow(anAvg-aDomain[i], 2.0);
+		}
+		aStDev = (float) Math.sqrt(aStDev / (size - 1));
+		
+		//Log.logCommandLine("getDistributionSplitPoints aStDev: " + aStDev);
+		
+		float[] aSplitPointCandidatesRaw = {
+				anAvg,
+				(float) (anAvg - (0.5 * aStDev)),
+				(float) (anAvg + (0.5 * aStDev)),
+				(float) (anAvg - (1 * aStDev)),
+				(float) (anAvg + (1 * aStDev)),
+				//(float) (anAvg - (1.5 * aStDev)),
+				//(float) (anAvg + (1.5 * aStDev)),
+				//(float) (anAvg - (2 * aStDev)),
+				//(float) (anAvg + (2 * aStDev)),
+				//(float) (anAvg - (2.5 * aStDev)),
+				//(float) (anAvg + (2.5 * aStDev)),
+				//(float) (anAvg - (3 * aStDev)),
+				//(float) (anAvg + (3 * aStDev)),
+				percentile(aDomain, 0.25),
+				percentile(aDomain, 0.5),
+				percentile(aDomain, 0.75),
+		}; 
+		
+		//Log.logCommandLine("getDistributionSplitPoints aSplitPointCandidatesRaw: " + Arrays.toString(aSplitPointCandidatesRaw));
+		
+		ArrayList<Float> aSplitPointCandidates = new ArrayList<Float>();
+		aSplitPointCandidates.add(anAvg);
+		
+		for (int i = 0; i < aSplitPointCandidatesRaw.length; i++) {
+			float p = aSplitPointCandidatesRaw[i];
+			if (p > aMin && p < aMax && aSplitPointCandidates.contains(p) == false) {
+				aSplitPointCandidates.add(p);
+			}
+		}
+		
+		float[] aSplitPoints = new float[aSplitPointCandidates.size()];
+		for (int i = 0; i < aSplitPoints.length; i++) {
+			aSplitPoints[i] = aSplitPointCandidates.get(i);
+		}
+		
+		Arrays.sort(aSplitPoints);
+		
+		//Log.logCommandLine("getDistributionSplitPoints aSplitPoints: " + Arrays.toString(aSplitPoints));
+
+		return aSplitPoints;
+	}
+	
+	public float percentile(float[] data,double p){  
+	    int n = data.length;  
+	    Arrays.sort(data);  
+	    double px =  p*(n-1);  
+	    int i = (int)java.lang.Math.floor(px);  
+	    double g = px - i;  
+	    if(g==0){  
+	        return data[i];  
+	    }else{  
+	        return (float) ((1-g)*data[i]+g*data[i+1]);  
+	    }  
+	}  
 
 	/**
 	 * Returns the average of all values for Columns of

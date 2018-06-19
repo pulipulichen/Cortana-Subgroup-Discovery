@@ -53,7 +53,40 @@ public class BrowseWindow extends JFrame implements ActionListener//, MouseListe
 			setVisible(true);
 		}
 	}
+	
+	public BrowseWindow(Table theTable, Subgroup theSubgroup, String theColumn)
+	{
+		if (theTable == null)
+		{
+			Log.logCommandLine(
+				"BrowseWindow Constructor: theTable can not be 'null'.");
+			return;
+		}
+		else
+		{
+			itsTable = theTable;
+			initComponents(theSubgroup);
 
+			if (theSubgroup == null)
+				setTitle("Data for: " + itsTable.getName());
+			else
+				setTitle(theSubgroup.getCoverage() +
+						" members in subgroup: " +
+						theSubgroup.getConditions());
+
+			setIconImage(MiningWindow.ICON);
+			setLocation(100, 100);
+			setSize(GUI.WINDOW_DEFAULT_SIZE);
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			setVisible(true);
+			
+
+			// select the column
+			itsColumnsBox.setSelectedItem(theColumn);
+			updateItsColumnsBox();
+		}
+	}
+	
 	private void initComponents(Subgroup theSubgroup)
 	{
 		itsBrowseJTable = new BrowseJTable(itsTable, theSubgroup);
