@@ -138,7 +138,7 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		JPanel aMiscPanel = new JPanel();
 		//aMiscPanel.setLayout(new BoxLayout(aMiscPanel, BoxLayout.Y_AXIS));
 		aMiscPanel.setLayout(new GridLayout(7, 3));
-		aMiscPanel.setBorder(GUI.buildBorder("Other"));
+		aMiscPanel.setBorder(GUI.buildBorder("Distribution"));
 
 		jLabelAvgStDev = initJLabel("Avg. / StDev.");
 		aMiscPanel.add(jLabelAvgStDev);
@@ -312,16 +312,20 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 				// all possible attribute values are stored in an (ordered) Map
 				Iterator<String> anIterator = aColumn.getDomain().iterator();
 				int idx = -1;
-				while (anIterator.hasNext())
+				while (anIterator.hasNext()) {
 					aMap.put(anIterator.next(), ++idx);
+				}
+				resetDistribution();
 				break;
 			}
 			case ORDINAL: {
 				// no use case yet
+				resetDistribution();
 				break;
 			}
 			case NUMERIC : {
 				safariiHisto(aColumn, aMap);
+				setDistribution(aColumn, aMap);
 				break;
 			}
 			case BINARY : {
@@ -329,10 +333,12 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 				// but order [0, 1] is still essential
 				aMap.put(Boolean.FALSE, 0);
 				aMap.put(Boolean.TRUE, 1);
+				resetDistribution();
 				break;
 			}
 			default : {
 				unknownAttributeType("updateMap", aType);
+				resetDistribution();
 				return;
 			}
 		}
@@ -406,8 +412,23 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 						// count is incremented
 						// uses aMap and tMap for fast indexing (O(1))
 						// (compared to linear array/ TreeSet lookups (O(n)))
-						for (int i = 0, j = a.size(); i < j; ++i)
+						for (int i = 0, j = a.size(); i < j; ++i) {
 							++counts[itsAMap.get(a.getNominal(i))][itsTMap.get(t.getNominal(i))];
+						}
+						
+						int aMax = 0;
+						for (int i = 0; i < counts.length; i++) {
+							for (int j = 0; j < counts[i].length; j++) {
+								if (counts[i][j] > aMax) {
+									aMax = counts[i][j]; 
+								}
+							}
+						}
+						
+						jLabelAvgStDev.setText("Mode");
+						jLabelAvgStDev.setVisible(true);
+						jTextFieldAverage.setText("" + aMax);
+						jTextFieldAverage.setVisible(true);
 						break;
 					}
 					case ORDINAL : {
@@ -543,6 +564,38 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		// assumes only 2 maps exist (Attribute and Target map)
 		int aNrBins = (theMap == itsAMap ? itsAttributeBinsSlider.getValue() :
 											itsTargetBinsSlider.getValue());
+			
+		float aSum = 0.0f;
+		for (int i = 0, j = theColumn.size(); i < j; ++i) {
+			aSum += theColumn.getFloat(i);
+		}
+
+		float anAvg = aSum / theColumn.size();
+		float aStDev = 0.0f;
+		for (int i = 0, j = theColumn.size(); i < j; ++i) {
+			aStDev += Math.pow(anAvg-theColumn.getFloat(i), 2.0);
+		}
+		aStDev = (float) Math.sqrt(aStDev);
+
+		float aStart = Math.max(anAvg - 2.3f * aStDev, theColumn.getMin());
+		float aStop = Math.min(anAvg + 2.3f * aStDev, theColumn.getMax());
+		if (aStart == aStop)
+		{
+			aStart--;
+			aStop++;
+		}
+		float aValue = aStart;
+		float aStep = aNrBins > 2 ? (aStop - aStart)/(aNrBins-2) : 0.0f;
+
+		for(int i = 0; i < aNrBins-1; ++i) {
+			theMap.put(aValue + i*aStep, i);
+		}
+		theMap.put(Float.POSITIVE_INFINITY, aNrBins-1);
+	}
+	
+	// NOTE not save for overflow/ NaN
+	private void setDistribution(Column theColumn, Map<? super Object, Integer> theMap)
+	{
 		float aMin = 0f;
 		float aQ1 = 0f;
 		float aQ2 = 0f;
@@ -580,54 +633,71 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		}
 		aStDev = (float) Math.sqrt(aStDev);
 
-		float aStart = Math.max(anAvg - 2.3f * aStDev, theColumn.getMin());
-		float aStop = Math.min(anAvg + 2.3f * aStDev, theColumn.getMax());
-		if (aStart == aStop)
-		{
-			aStart--;
-			aStop++;
-		}
-		float aValue = aStart;
-		float aStep = aNrBins > 2 ? (aStop - aStart)/(aNrBins-2) : 0.0f;
-
-		for(int i = 0; i < aNrBins-1; ++i) {
-			theMap.put(aValue + i*aStep, i);
-		}
-		theMap.put(Float.POSITIVE_INFINITY, aNrBins-1);
-		
-		
 		// ---------------------
 		
 		NumberFormat aFormatter = NumberFormat.getNumberInstance();
 		aFormatter.setMaximumFractionDigits(4);
 		
-		
+		jLabelAvgStDev.setVisible(true);
+		jLabelAvgStDev.setText("Avg. / StDev.");
+		jTextFieldAverage.setVisible(true);
+		jTextFieldStDev.setVisible(true);
 		jTextFieldAverage.setText("" + aFormatter.format(anAvg));
 		jTextFieldStDev.setText("" + aFormatter.format(aStDev));
 		
+		jLabelAvgHalfStDev.setVisible(true);
+		jTextFieldAvgMinusHalfStDev.setVisible(true);
+		jTextFieldAvgPlusHalfStDev.setVisible(true);
 		jTextFieldAvgMinusHalfStDev.setText("" + aFormatter.format(anAvg - (0.5 * aStDev)));
 		jTextFieldAvgPlusHalfStDev.setText("" + aFormatter.format(anAvg + (0.5 * aStDev)));
 		
+		jLabelAvgOneStDev.setVisible(true);
+		jTextFieldAvgMinusOneStDev.setVisible(true);
+		jTextFieldAvgPlusOneStDev.setVisible(true);
 		jTextFieldAvgMinusOneStDev.setText("" + aFormatter.format(anAvg - (1 * aStDev)));
 		jTextFieldAvgPlusOneStDev.setText("" + aFormatter.format(anAvg + (1 * aStDev)));
 		
+		jLabelMedian.setVisible(true);
+		jTextFieldMedian.setVisible(true);
 		jTextFieldMedian.setText("" + aFormatter.format(q2(aDataList)));
 		
+		jLabelMinMax.setVisible(true);
+		jTextFieldMin.setVisible(true);
+		jTextFieldMax.setVisible(true);
 		jTextFieldMin.setText("" + aFormatter.format(aMin));
 		jTextFieldMax.setText("" + aFormatter.format(aMax));
 		
+		jLabelQ1Q3.setVisible(true);
+		jTextFieldQ1.setVisible(true);
+		jTextFieldQ3.setVisible(true);
 		jTextFieldQ1.setText("" + aFormatter.format(q1(aDataList)));
 		jTextFieldQ3.setText("" + aFormatter.format(q3(aDataList)));
+	}
+	
+	private void resetDistribution()
+	{
+		jLabelAvgStDev.setVisible(false);
+		jTextFieldAverage.setVisible(false);
+		jTextFieldStDev.setVisible(false);
 		
-		//jLabelStDev.setText("StDev: " + aStDev);
-		//jLabelAvgP05StDev.setText("Avg + 0.5 StDev: " + (anAvg + (aStDev/2)));
-		//jLabelAvgM05StDev.setText("Avg - 0.5 StDev: " + (anAvg - (aStDev/2) ));
-		//jLabelAvgP1StDev.setText("Avg + 1 StDev: " + (anAvg + aStDev));
-		//jLabelAvgM1StDev.setText("Avg - 1 StDev: " + (anAvg - aStDev));
+		jLabelAvgHalfStDev.setVisible(false);
+		jTextFieldAvgMinusHalfStDev.setVisible(false);
+		jTextFieldAvgPlusHalfStDev.setVisible(false);
 		
+		jLabelAvgOneStDev.setVisible(false);
+		jTextFieldAvgMinusOneStDev.setVisible(false);
+		jTextFieldAvgPlusOneStDev.setVisible(false);
 		
-		//jLabelAvgP1StDev.setText("Avg + 1 StDev: " + (anAvg + aStDev));
-		//jLabelAvgM1StDev.setText("Avg - 1 StDev: " + (anAvg - aStDev));
+		jLabelMedian.setVisible(false);
+		jTextFieldMedian.setVisible(false);
+		
+		jLabelMinMax.setVisible(false);
+		jTextFieldMin.setVisible(false);
+		jTextFieldMax.setVisible(false);
+		
+		jLabelQ1Q3.setVisible(false);
+		jTextFieldQ1.setVisible(false);
+		jTextFieldQ3.setVisible(false);
 	}
 	
 	public double q1(float[] m) {

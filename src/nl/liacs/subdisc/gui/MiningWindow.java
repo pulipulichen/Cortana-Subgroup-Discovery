@@ -77,7 +77,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		initTitle();
 		setIconImage(ICON);
 		setLocation(100, 100);
-		setSize(700, 600);
+		setSize(800, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initJMenuGui(); // for GUI debugging only, DO NOT REMOVE
 		setVisible(true);
@@ -106,6 +106,9 @@ public class MiningWindow extends JFrame implements ActionListener
 
 		jMenuItemMetaData = initMenuItem(STD.META_DATA);
 		jMenuFile.add(jMenuItemMetaData);
+		
+		jMenuItemDistribution = initMenuItem(STD.DISTRIBUTION);
+		jMenuFile.add(jMenuItemDistribution);
 
 		jMenuFile.addSeparator();
 
@@ -180,7 +183,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		jButtonOpen = new JButton();
 		jButtonBrowse = new JButton();
 		jButtonExplore = new JButton();
-		jButtonMetaData = new JButton();
+		jButtonDistribution = new JButton();
+		jButtonExit = new JButton();
 
 		jPanelDataSet.setLayout(new BorderLayout(40, 0));
 		jPanelDataSet.setBorder(GUI.buildBorder("Dataset"));
@@ -233,7 +237,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		jPanelDataSet.add(jPanelDataSetFields, BorderLayout.CENTER);
 
 		final JPanel aButtonPanel = new JPanel();
-		aButtonPanel.setLayout(new GridLayout(2, 2));
+		aButtonPanel.setLayout(new GridLayout(2, 3));
 
 		jButtonOpen = initButton(STD.OPEN_FILE);
 		aButtonPanel.add(jButtonOpen);
@@ -246,6 +250,13 @@ public class MiningWindow extends JFrame implements ActionListener
 
 		jButtonMetaData = initButton(STD.META_DATA);
 		aButtonPanel.add(jButtonMetaData);
+
+		jButtonDistribution = initButton(STD.DISTRIBUTION);
+		aButtonPanel.add(jButtonDistribution);
+		
+		jButtonExit = initButton(STD.EXIT);
+		aButtonPanel.add(jButtonExit);
+		
 
 		jPanelDataSetButtons.add(aButtonPanel);
 
@@ -762,6 +773,8 @@ public class MiningWindow extends JFrame implements ActionListener
 						jButtonBrowse,
 						jButtonExplore,
 						jButtonMetaData,
+						jButtonDistribution,
+						jButtonExit,
 						jButtonCrossValidate,
 						jButtonSubgroupDiscovery,
 						jButtonComputeThreshold,
@@ -1386,6 +1399,17 @@ public class MiningWindow extends JFrame implements ActionListener
 			public void run()
 			{
 				new MetaDataWindow(masterWindow, itsTable);
+			}
+		});
+	}
+	
+	private void distributionActionPerformed()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				new BrowseWindow(itsTable, null);
 			}
 		});
 	}
@@ -2132,6 +2156,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JMenuItem jMenuItemBrowse;
 	private JMenuItem jMenuItemExplore;
 	private JMenuItem jMenuItemMetaData;
+	private JMenuItem jMenuItemDistribution;
 	private JMenuItem jMenuItemSubgroupDiscovery;
 	private JMenuItem jMenuItemCreateAutorunFile;
 	private JMenuItem jMenuItemAddToAutorunFile;
@@ -2172,6 +2197,8 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JButton jButtonBrowse;
 	private JButton jButtonExplore;
 	private JButton jButtonMetaData;
+	private JButton jButtonDistribution;
+	private JButton jButtonExit;
 
 	// TARGET CONCEPT
 	private JPanel jPanelTargetConcept;
@@ -2338,6 +2365,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		BROWSE(			"Browse...",		KeyEvent.VK_B,	true),
 		EXPLORE(		"Explore...",		KeyEvent.VK_E,	true),
 		META_DATA(		"Meta Data...",		KeyEvent.VK_D,	true),
+		DISTRIBUTION(		"Distribution...",		KeyEvent.VK_S,	true),
 		SUBGROUP_DISCOVERY(	"Subgroup Discovery",	KeyEvent.VK_S,	true),
 		CREATE_AUTORUN_FILE(	"Create Autorun File",	KeyEvent.VK_C,	true),
 		ADD_TO_AUTORUN_FILE(	"Add to Autorun File",	KeyEvent.VK_A,	true),
@@ -2397,6 +2425,8 @@ public class MiningWindow extends JFrame implements ActionListener
 			exploreActionPerformed();
 		else if (STD.META_DATA.GUI_TEXT.equals(aCommand))
 			metaDataActionPerformed();
+		else if (STD.DISTRIBUTION.GUI_TEXT.equals(aCommand))
+			distributionActionPerformed();
 		else if (STD.SUBGROUP_DISCOVERY.GUI_TEXT.equals(aCommand))
 			subgroupDiscoveryActionPerformed();
 		else if (STD.CREATE_AUTORUN_FILE.GUI_TEXT.equals(aCommand))

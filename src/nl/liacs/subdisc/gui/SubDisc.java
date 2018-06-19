@@ -95,6 +95,9 @@ public class SubDisc
 		if (ConfigIni.getBoolean("global", "AutoMetaData")) {
 			w.actionPerformed("Meta Data...");
 		}
+		if (ConfigIni.getBoolean("global", "AutoBrowse")) {
+			w.actionPerformed("Browse...");
+		}
 		if (ConfigIni.getBoolean("global", "AutoExit")) {
 			w.actionPerformed("Exit");
 		}
