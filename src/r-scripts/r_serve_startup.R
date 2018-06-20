@@ -1,2 +1,2 @@
-library(Rserve);
+if(!require(Rserve)){install.packages("Rserve")};
 Rserve();

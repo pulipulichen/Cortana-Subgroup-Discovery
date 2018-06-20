@@ -1,6 +1,7 @@
 package nl.liacs.subdisc;
 
 
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -29,9 +30,58 @@ public class RserveUtil
 	private static void initRscript() {
 		// Init AncovaMeasure.itsRscriptFoot
 		if (null == itsRscriptStartup) {
-			itsRPath = ConfigIni.get("global", "RPath", "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe");
-			itsRscriptStartup = JARTextFileLoader.load("/r-scripts/r_serve_startup.R", "");
-			itsRscriptShutdown = JARTextFileLoader.load("/r-scripts/r_serve_shutdown.R", "");
+			int dialogButton = JOptionPane.YES_NO_OPTION;
+			int dialogResult = JOptionPane.showConfirmDialog(null, "R has not been installed. \nPleasse check the config.ini setting. \nDo you want to open R's download page?", "R is not found", dialogButton);
+			if(dialogResult == 0) {
+				//System.out.println("Yes option");
+				try {
+					Desktop.getDesktop().browse(new URI("https://cloud.r-project.org/"));
+				}
+				catch (Exception e) {
+					Log.logCommandLine("Open URI error: " + e.getMessage());
+				}
+			}
+			//return;
+			
+			itsRPath = ConfigIni.get("global", "RPath");
+			
+			// Check the RPath
+			if (tryRPath(itsRPath) == false) {
+				itsRPath = null;
+			}
+			
+			if (null == itsRPath) {
+				// Guess the RPath
+				String[] aRPathCandidate = {
+						"R"
+				};
+				
+				for (int i = 0; i < aRPathCandidate.length; i++) {
+					if (tryRPath(aRPathCandidate[i])) {
+						itsRPath = aRPathCandidate[i];
+						break;
+					}
+				}
+				
+				if (null == itsRPath) {
+					//throw new FileNotFoundException("R path is not correct. May you have not install R.");
+					Log.logCommandLine("R path is not correct. May you have not install R.");
+				}
+			}
+			
+			
+			itsRscriptStartup = JARTextFileLoader.load("/r-scripts/r_serve_startup.R", "").replaceAll("%","\"");
+			itsRscriptShutdown = JARTextFileLoader.load("/r-scripts/r_serve_shutdown.R", "").replaceAll("%","\"");
+		}
+	}
+	
+	private static boolean tryRPath(String theRPath) {
+		try {
+			Runtime.getRuntime().exec("\"" + itsRPath + "\"");
+			return true;
+		}
+		catch (Exception e) {
+			return false;
 		}
 	}
 	
@@ -177,12 +227,13 @@ public class RserveUtil
 	
 	
 	private static HashMap<String, String> runScriptCache =  new HashMap<String, String>();
+	private static ArrayList<String> declaredFunctions =  new ArrayList<String>();
 	private static int runScriptConnectCount = 0;
 	
 	@SuppressWarnings("finally")
-	public static String runScript(String aScriptKey, String aDataKey, String aScript) {
+	public static String runScript(String aScriptKey, String aDataScript, String aFunctionScript) {
 		String aReturn = null;
-		String key = aScriptKey + "_" + aDataKey;
+		String key = aScriptKey + "_" + aDataScript;
 		
 		if (runScriptCache.containsKey(key)) {
 			return runScriptCache.get(key);
@@ -198,10 +249,19 @@ public class RserveUtil
 		try {
 			Thread.sleep(100);	
 			
+			if (declaredFunctions.contains(aScriptKey) == false) {
+				Log.logCommandLine("Run Function Script: " + aFunctionScript);
+				connection.eval(aFunctionScript);
+				
+				declaredFunctions.add(aScriptKey);
+				runScriptConnectCount++;
+				Thread.sleep(100);	
+			}
+			
 			runScriptConnectCount++;
 			Log.logCommandLine("Conntect: " + runScriptConnectCount);
           
-			aReturn = (String) connection.eval(aScript).asString();
+			aReturn = (String) connection.eval(aDataScript).asString();
 			runScriptCache.put(key, aReturn);
 			return aReturn;
 		} catch (Exception e) {
@@ -214,7 +274,7 @@ public class RserveUtil
 				Thread.sleep(1000);
 				startup();
 				connect();
-				return runScript(aScriptKey, aDataKey, aScript);
+				return runScript(aScriptKey, aDataScript, aFunctionScript);
 			}
 			catch (Exception e2) {
 				e2.printStackTrace();
