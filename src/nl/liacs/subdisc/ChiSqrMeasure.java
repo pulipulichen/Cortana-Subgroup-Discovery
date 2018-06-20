@@ -2,13 +2,11 @@ package nl.liacs.subdisc;
 
 import java.util.*;
 
-public class AncovaMeasure
+public class ChiSqrMeasure
 {
 	private int itsSampleSize;
 	public static QM itsQualityMeasure; // FIXME MM this should not be static
 	
-	//private String itsRscriptHead = "input <- data.frame(";
-	//private String itsRscriptFoot = ");reg.model <- aov(dv~iv*cov,data=input);reg.interaction <- summary(reg.model)[[1]][[\"Pr(>F)\"]][3];if (is.null(reg.interaction) || is.na(reg.interaction)) {    p.value <- 1;} else if (reg.interaction > 0.05) {    ancova.model <- aov(dv~as.factor(iv)+cov,data=input);    library(car);    ancova.model.type3 <- Anova(ancova.model, type=3);    p.value <- ancova.model.type3[\"Pr(>F)\"][[1]][2];    library(emmeans);    ancova.compare.summary <- summary((emmeans(ancova.model, pairwise ~ iv, adjust = \"none\"))$contrasts);    ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$estimate > 0, gsub(\" - \", \" > \", ancova.compare.summary$contrast), ifelse(ancova.compare.summary$estimate < 0, gsub(\" - \", \" < \", ancova.compare.summary$contrast), gsub(\" - \", \" = \", ancova.compare.summary$contrast)));    ancova.compare.summary$contrast <- ifelse(ancova.compare.summary$p.value < 0.05, paste0(ancova.compare.summary$contrast, \"*\"), ancova.compare.summary$contrast);    pairwise.result <- ancova.compare.summary$contrast;    } else {        library(gtools);    library(plyr);    iv.comb <- combinations(n=as.integer(summary(iv.levels)[\"Length\"]), r=2, v=iv.levels, repeats.allowed=F);    iv.comb.freq <- sum(count(iv.comb)$freq);    iv.comb <- cbind(iv.comb, c(rep(\"=\",iv.comb.freq)));    iv.comb <- cbind(iv.comb, c(rep.int(NA,iv.comb.freq)));    iv.comb <- cbind(iv.comb, c(rep(\"\",iv.comb.freq)));    library(fANCOVA);    p.value <- 1;    for (i in 1:iv.comb.freq) {        comb <- iv.comb[i,];        input.comb <- input[input$iv %in% comb, ];        input.comb <- input.comb[with(input.comb, order(iv)), ];        Taov.result <- T.aov(input.comb[,\"cov\"], input.comb[,\"dv\"], input.comb[,\"iv\"], plot=TRUE, data.points=TRUE);        loess.result <- loess.ancova(input.comb[,\"cov\"], input.comb[,\"dv\"], input.comb[,\"iv\"], plot=TRUE, data.points=TRUE);        fitted.data <- data.frame(loess.result$smooth.fit$fitted, input.comb[,\"iv\"]);        colnames(fitted.data)<- c(\"fitted\",\"iv\");        fitted.data1 <- fitted.data[fitted.data$iv %in% comb[1], ];        fitted.data1.mean <- mean(fitted.data1[,\"fitted\"]);        fitted.data2 <- fitted.data[fitted.data$iv %in% comb[2], ];        fitted.data2.mean <- mean(fitted.data2[,\"fitted\"]);        iv.comb[i,3] <- Taov.result$p.value;        p.value <- ifelse(Taov.result$p.value < p.value, Taov.result$p.value, p.value);                if (fitted.data1.mean > fitted.data2.mean) {            iv.comb[i,4] <- \">\"        } else if (fitted.data1.mean < fitted.data2.mean) {            iv.comb[i,4] <- \"<\"        } else {            iv.comb[i,4] <- \"=\"        };        iv.comb[i,5] <- paste(iv.comb[i,1], iv.comb[i,4], iv.comb[i,2]);        if (iv.comb[i,3] < 0.05) {            iv.comb[i,5] <- paste0(iv.comb[i,5], \"*\")        };    };    pairwise.result <- iv.comb[,5];};paste(sprintf(\"%.5f\", p.value), paste(pairwise.result, collapse=\";\"), sep=\",\");";
 	private static String itsFunctionRscript = null; 
 	
 	private String[] itsIVdata;
@@ -20,7 +18,7 @@ public class AncovaMeasure
 	private ArrayList<String> itsPairwiseComparison;
 
 	//make a base model from two columns
-	public AncovaMeasure(QM theType, Column theIVColumn, Column theCOVColumn, Column theDVColumn)
+	public ChiSqrMeasure(QM theType, Column theIVColumn, Column theCOVColumn, Column theDVColumn)
 	{
 		itsQualityMeasure = theType;
 		
@@ -41,7 +39,7 @@ public class AncovaMeasure
 		calc();
 	}
 	
-	public AncovaMeasure(AncovaMeasure theBase, String[] theIVdata, float[] theCOVdata, float[] theDVdata)
+	public ChiSqrMeasure(ChiSqrMeasure theBase, int sample1True, int sample1False, int sample2True, int sample2False)
 	{
 		itsQualityMeasure = theBase.itsQualityMeasure;
 		itsSampleSize = theIVdata.length;
@@ -53,12 +51,12 @@ public class AncovaMeasure
 	
 	private void initFunctionRscript() {
 		// Init AncovaMeasure.itsRscriptFoot
-		if (null == AncovaMeasure.itsFunctionRscript) {
-			String aRscript = JARTextFileLoader.load("/r-scripts/cortana_ancova.R", "");
+		if (null == ChiSqrMeasure.itsFunctionRscript) {
+			String aRscript = JARTextFileLoader.load("/r-scripts/ancova.R", "");
 			String aSplitor = "print(\"data|script\");";
 			int endIndex = aRscript.indexOf(aSplitor);
-			AncovaMeasure.itsFunctionRscript = aRscript.substring(0, endIndex);
-			Log.logCommandLine("itsFunctionRscript: " + AncovaMeasure.itsFunctionRscript);
+			ChiSqrMeasure.itsFunctionRscript = aRscript.substring(0, endIndex);
+			Log.logCommandLine("itsFunctionRscript: " + ChiSqrMeasure.itsFunctionRscript);
 		}
 	}
 	
@@ -76,7 +74,7 @@ public class AncovaMeasure
 		
 		HashMap<String, Integer> ivLevelCount =  new HashMap<String, Integer>();
 		
-		String aIVData = "cortana_ancova(data.frame(iv = c(";
+		String aIVData = "ancova_sm_ancova(data.frame(iv = c(";
 		String aCOVData = "),cov = c(";
 		String aDVData = "),dv = c(";
 		String anEndData = ")));";
@@ -131,7 +129,7 @@ public class AncovaMeasure
 		//Log.logCommandLine("aRscript: " + aRscript);
 		
 		
-		String aReturn = RserveUtil.runScript("TRIPLE_ANCOVA", aDataScript, AncovaMeasure.itsFunctionRscript);
+		String aReturn = RserveUtil.runScript("TRIPLE_ANCOVA", aDataScript, ChiSqrMeasure.itsFunctionRscript);
 		
 		String[] aReturnParts = aReturn.split(",");
 		
