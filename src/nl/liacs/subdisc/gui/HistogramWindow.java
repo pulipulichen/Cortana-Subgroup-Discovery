@@ -687,7 +687,7 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		
 		jLabelMedian.setVisible(true);
 		jTextFieldMedian.setVisible(true);
-		jTextFieldMedian.setText("" + aFormatter.format(q2(aDataList)));
+		jTextFieldMedian.setText("" + aFormatter.format(percentile(aDataList, 0.5)));
 		
 		jLabelMinMax.setVisible(true);
 		jTextFieldMin.setVisible(true);
@@ -698,8 +698,8 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 		jLabelQ1Q3.setVisible(true);
 		jTextFieldQ1.setVisible(true);
 		jTextFieldQ3.setVisible(true);
-		jTextFieldQ1.setText("" + aFormatter.format(q1(aDataList)));
-		jTextFieldQ3.setText("" + aFormatter.format(q3(aDataList)));
+		jTextFieldQ1.setText("" + aFormatter.format(percentile(aDataList, 0.25)));
+		jTextFieldQ3.setText("" + aFormatter.format(percentile(aDataList, 0.75)));
 	}
 	
 	private void resetDistribution()
@@ -761,6 +761,19 @@ public class HistogramWindow extends JFrame implements ActionListener, ChangeLis
 	        return (m[q3-1] + m[q3]) / 2.0;
 	    }
 	}
+	
+	public float percentile(float[] data,double p){  
+	    int n = data.length;  
+	    Arrays.sort(data);  
+	    double px =  p*(n-1);  
+	    int i = (int)java.lang.Math.floor(px);  
+	    double g = px - i;  
+	    if(g==0){  
+	        return data[i];  
+	    }else{  
+	        return (float) ((1-g)*data[i]+g*data[i+1]);  
+	    }  
+	}  
 
 	/*
 	 * CODE BELOW IS OBSOLETE NOW

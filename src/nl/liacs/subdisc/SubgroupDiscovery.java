@@ -332,7 +332,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				boolean first = true;
 				for (int j=0; j<aSplitPoints.length; j++)
 				{
-					Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(Float.toString(aSplitPoints[j]));
+					Subgroup aNewSubgroup = theRefinement.getRefinedSubgroupWithDistribution(Float.toString(aSplitPoints[j]));
 					//addToBuffer(aNewSubgroup);
 					checkAndLog(aNewSubgroup, anOldCoverage);
 				}

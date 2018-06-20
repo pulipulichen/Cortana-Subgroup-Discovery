@@ -69,6 +69,16 @@ public class Table implements XMLNodeInterface
 		itsNrColumns = theNrColumns;
 		itsColumns.ensureCapacity(theNrColumns);
 	}
+	
+	// FileLoaderTXT / DataLoaderTXT
+	public Table(String theSource, String theTableName, int theNrRows, int theNrColumns)
+	{
+		itsSource = theSource;
+		itsName = theTableName;
+		itsNrRows = theNrRows;
+		itsNrColumns = theNrColumns;
+		itsColumns.ensureCapacity(theNrColumns);
+	}
 
 	// FileLoaderXML
 	public Table(Node theTableNode, String theXMLFileDirectory)

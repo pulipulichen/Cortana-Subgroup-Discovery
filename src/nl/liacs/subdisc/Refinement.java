@@ -22,6 +22,19 @@ public class Refinement
 		aRefinedSubgroup.addCondition(aCondition);
 		return aRefinedSubgroup;
 	}
+	
+	public Subgroup getRefinedSubgroupWithDistribution(String theValue)
+	{
+		// see remarks at Subgroup.copy about deep-copy
+		Subgroup aRefinedSubgroup = itsSubgroup.copy();
+		// see remarks at Condition.copy about deep-copy
+		Condition aCondition = itsCondition.copy();
+		// only set new value for copied Condition, not for itsCondition
+		aCondition.setValue(theValue);
+		aCondition.setNumericValueCommentDistribution(theValue);
+		aRefinedSubgroup.addCondition(aCondition);
+		return aRefinedSubgroup;
+	}
 
 	public Subgroup getRefinedSubgroup(ValueSet theValue)
 	{

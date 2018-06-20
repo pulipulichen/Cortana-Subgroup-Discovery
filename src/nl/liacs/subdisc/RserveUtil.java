@@ -75,6 +75,9 @@ public class RserveUtil
 		catch (Exception e) {
 			
 		}
+		finally {
+			runScriptConnectCount = 0;
+		}
 	}
 	
 	public static void connect() {

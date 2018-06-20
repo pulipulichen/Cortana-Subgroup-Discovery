@@ -98,6 +98,9 @@ public class SubDisc
 		if (ConfigIni.getBoolean("global", "AutoBrowse")) {
 			w.actionPerformed("Browse...");
 		}
+		if (ConfigIni.getBoolean("global", "AutoDistribution")) {
+			w.actionPerformed("Distribution...");
+		}
 		if (ConfigIni.getBoolean("global", "AutoExit")) {
 			w.actionPerformed("Exit");
 		}

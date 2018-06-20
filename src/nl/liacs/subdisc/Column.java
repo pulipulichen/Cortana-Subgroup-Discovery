@@ -1862,23 +1862,21 @@ public class Column implements XMLNodeInterface
 		return aSplitPoints;
 	}
 	
-	/**
-	 * Split data via +-1stdev avg q1 q2 q3
-	 * @param theBitSet
-	 * @param theNrSplits
-	 * @return
-	 * @throws IllegalArgumentException
-	 */
-	public float[] getDistributionSplitPoints(BitSet theBitSet) throws IllegalArgumentException
-	{
+	private HashMap<Float, String> itsDistributionComments = null;
+	
+	private void initDistributionComments (BitSet theBitSet) {
+		if (itsDistributionComments != null) {
+			return;
+		}
+		
 		if (!isValidCall("getSplitPoints", theBitSet)) {
-			return new float[0];
+			return;
 		}
 		
 		// prevent crash in aSplitPoints populating loop
 		final int size = theBitSet.cardinality();
 		if (size == 0) {
-			return new float[0];
+			return;
 		}
 
 		float[] aDomain = new float[size];
@@ -1930,34 +1928,98 @@ public class Column implements XMLNodeInterface
 				(float) (anAvg + (0.5 * aStDev)),
 				(float) (anAvg - (1 * aStDev)),
 				(float) (anAvg + (1 * aStDev)),
-				//(float) (anAvg - (1.5 * aStDev)),
-				//(float) (anAvg + (1.5 * aStDev)),
-				//(float) (anAvg - (2 * aStDev)),
-				//(float) (anAvg + (2 * aStDev)),
-				//(float) (anAvg - (2.5 * aStDev)),
-				//(float) (anAvg + (2.5 * aStDev)),
-				//(float) (anAvg - (3 * aStDev)),
-				//(float) (anAvg + (3 * aStDev)),
+				(float) (anAvg - (1.5 * aStDev)),
+				(float) (anAvg + (1.5 * aStDev)),
+				(float) (anAvg - (2 * aStDev)),
+				(float) (anAvg + (2 * aStDev)),
+				(float) (anAvg - (2.5 * aStDev)),
+				(float) (anAvg + (2.5 * aStDev)),
+				(float) (anAvg - (3 * aStDev)),
+				(float) (anAvg + (3 * aStDev)),
+				percentile(aDomain, 0.2),
 				percentile(aDomain, 0.25),
+				percentile(aDomain, 0.33),
+				percentile(aDomain, 0.4),
 				percentile(aDomain, 0.5),
+				percentile(aDomain, 0.6),
+				percentile(aDomain, 0.66),
 				percentile(aDomain, 0.75),
+				percentile(aDomain, 0.8)
 		}; 
 		
-		//Log.logCommandLine("getDistributionSplitPoints aSplitPointCandidatesRaw: " + Arrays.toString(aSplitPointCandidatesRaw));
+		Log.logCommandLine("getDistributionSplitPoints aSplitPointCandidatesRaw: " + Arrays.toString(aSplitPointCandidatesRaw));
 		
-		ArrayList<Float> aSplitPointCandidates = new ArrayList<Float>();
-		aSplitPointCandidates.add(anAvg);
+		String[] comments = {
+				"Avg",
+				"Avg -0.5 StD",
+				"Avg +0.5 StD",
+				"Avg -1 StD",
+				"Avg +1 StD",
+				"Avg -1.5 StD",
+				"Avg +1.5 StD",
+				"Avg -2 StD",
+				"Avg +2 StD",
+				"Avg -2.5 StD",
+				"Avg +2.5 StD",
+				"Avg -3 StD",
+				"Avg +3 StD",
+				"P20",
+				"P25",
+				"P33",
+				"P40",
+				"P50",
+				"P60",
+				"P66",
+				"P75",
+				"P80"
+		};
 		
+		itsDistributionComments = new HashMap<Float, String>();
 		for (int i = 0; i < aSplitPointCandidatesRaw.length; i++) {
-			float p = aSplitPointCandidatesRaw[i];
-			if (p > aMin && p < aMax && aSplitPointCandidates.contains(p) == false) {
-				aSplitPointCandidates.add(p);
+			float key = aSplitPointCandidatesRaw[i];
+			if (key < aMin || key > aMax) {
+				continue;
+			}
+			
+			String comment = comments[i];
+			
+			
+			
+			if (itsDistributionComments.containsKey(key) == false) {
+				itsDistributionComments.put(key, comment);
+			}
+			else {
+				String prevComment = itsDistributionComments.get(key);
+				itsDistributionComments.put(key, prevComment + " / " + comment);
 			}
 		}
+	}
+	
+	public String getDistributionComment(String theValue) {
+		float key = Float.parseFloat(theValue);
+		if (itsDistributionComments.containsKey(key)) {
+			return itsDistributionComments.get(key);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Split data via +-1stdev avg q1 q2 q3
+	 * @param theBitSet
+	 * @param theNrSplits
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public float[] getDistributionSplitPoints(BitSet theBitSet) throws IllegalArgumentException
+	{
+		initDistributionComments(theBitSet);
 		
-		float[] aSplitPoints = new float[aSplitPointCandidates.size()];
+		Object[] keys = (itsDistributionComments.keySet()).toArray();
+		float[] aSplitPoints = new float[keys.length];
 		for (int i = 0; i < aSplitPoints.length; i++) {
-			aSplitPoints[i] = aSplitPointCandidates.get(i);
+			aSplitPoints[i] = (float) keys[i];
 		}
 		
 		Arrays.sort(aSplitPoints);

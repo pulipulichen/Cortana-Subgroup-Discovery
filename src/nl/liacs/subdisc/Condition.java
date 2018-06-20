@@ -53,6 +53,8 @@ public class Condition implements Comparable<Condition>
 	private float itsNumericValue = Float.NaN;	// ColumnType = NUMERIC
 	private Interval itsInterval = null;		// ColumnType = NUMERIC
 	private boolean itsBinaryValue = false;		// ColumnType = BINARY
+	
+	private String itsNumericValueComment = null;
 
 	/**
 	 * Default initialisation values for {@link Column}} of
@@ -339,10 +341,28 @@ public class Condition implements Comparable<Condition>
 	@Override
 	public String toString()
 	{
-		if (itsColumn.getType() == AttributeType.NUMERIC || itsOperator == Operator.ELEMENT_OF)
-			return String.format("%s %s %s", itsColumn.getName(), itsOperator, getValue());
+		if (itsColumn.getType() == AttributeType.NUMERIC || itsOperator == Operator.ELEMENT_OF) {
+			if (null == itsNumericValueComment) {
+				return String.format("%s %s %s", itsColumn.getName(), itsOperator, getValue());
+			}
+			else {
+				return String.format("%s %s %s (%s)", itsColumn.getName(), itsOperator, getValue(), itsNumericValueComment);
+			}
+		}
 		else
 			return String.format("%s %s '%s'", itsColumn.getName(), itsOperator, getValue());
+	}
+	
+	public String getNumericValueComment() {
+		return itsNumericValueComment;
+	}
+	
+	public void setNumericValueComment(String theComment) {
+		itsNumericValueComment = theComment;
+	}
+	
+	public void setNumericValueCommentDistribution(String theComment) {
+		itsNumericValueComment = itsColumn.getDistributionComment(theComment);
 	}
 
 	/*

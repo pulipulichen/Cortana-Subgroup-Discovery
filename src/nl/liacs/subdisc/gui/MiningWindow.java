@@ -1409,7 +1409,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		{
 			public void run()
 			{
-				new BrowseWindow(itsTable, null);
+				new DistributionWindow(itsTable);
 			}
 		});
 	}
