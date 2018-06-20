@@ -386,16 +386,18 @@ public class Column implements XMLNodeInterface
 	 */
 	public void add(String theNominal)
 	{
-		if (theNominal == null)
-			throw new NullPointerException();
+		if (theNominal == null) {
+			throw new NullPointerException("theNominal is null");
+		}
 		if (!itsDistinctValues.contains(theNominal))
 		{
 			itsDistinctValues.add(theNominal);
 			// !contains so inserted at end of list
 			itsNominals.add(itsDistinctValues.get(itsDistinctValues.size()-1));
 		}
-		else
+		else {
 			itsNominals.add(itsDistinctValues.get(itsDistinctValues.indexOf(theNominal)));
+		}
 
 		++itsSize;
 	}
@@ -726,21 +728,57 @@ public class Column implements XMLNodeInterface
 		itsNominals = new ArrayList<String>(itsSize);
 		itsMissingValue = AttributeType.NOMINAL.DEFAULT_MISSING_VALUE;
 
-		if (aFalse != null)
+		if (aFalse != null) {
 			itsDistinctValues.add(aFalse);
-		if (aTrue != null)
+		}
+		if (aTrue != null) {
 			itsDistinctValues.add(aTrue);
+		}
+		//Log.logCommandLine("toNominalType: " + itsSize);
 
-		for (int i = 0, j = itsSize; i < j; ++i)
-			if (aTrue == null && aFalse == null) //just missing values so far
-				itsNominals.add(itsMissingValue);
-			else
+		for (int i = 0, j = itsSize; i < j; ++i) {
+			if (aTrue == null && aFalse == null) {
+				//just missing values so far
+				if (itsNominals.size() == 0) {
+					itsNominals.add(itsMissingValue);
+				}
+				else {
+					itsNominals.add(itsNominals.get(0));
+				}
+			}	
+			else {
 				itsNominals.add(itsFloatz[i] > 0.5f ? aTrue : aFalse);
+			}
+			//itsNominals.add(itsNominals[i]);
+		}
 
 		// Cleanup (for GarbageCollector).
 		itsBinaries = null;
 		itsType = AttributeType.NOMINAL;
 		return true;
+	}
+	
+	public void validateBinary() {
+		if (itsType == AttributeType.NOMINAL && itsCardinality < 3) {
+			Log.logCommandLine("validateBinary(): " + this.getName() + " may be binary");
+			
+			boolean isBinary = true;
+			for (String aMember: getNominalMembers()) {
+				if (AttributeType.isValidBinaryValue(aMember) == false) {
+					isBinary = false;
+					break;
+				}
+			}
+			
+			if (true == isBinary) {
+				itsBinaries = new BitSet(itsNominals.size());
+				for (int i = 0; i < itsNominals.size(); i++) {
+					itsBinaries.set(i, AttributeType.isValidBinaryTrueValue(itsNominals.get(i)));
+				}
+				itsNominals = null;
+				itsType = AttributeType.BINARY;
+			}
+		}
 	}
 
 
@@ -894,19 +932,24 @@ public class Column implements XMLNodeInterface
 					// now sets all non-missing to 'true'
 					else if (AttributeType.NOMINAL.DEFAULT_MISSING_VALUE.equals(aValue))
 					{
-						if ((itsMissing.cardinality() < itsSize) && AttributeType.isValidBinaryTrueValue(itsNominals.get(itsMissing.nextClearBit(0))))
+						if ((itsMissing.cardinality() < itsSize) 
+								&& AttributeType.isValidBinaryTrueValue(itsNominals.get(itsMissing.nextClearBit(0)))) {
 							// All false initially, only set non-missing values to 'true'.
-							for (int i = itsMissing.nextClearBit(0); i >= 0 && i < itsSize; i = itsMissing.nextClearBit(i + 1))
+							for (int i = itsMissing.nextClearBit(0); i >= 0 && i < itsSize; i = itsMissing.nextClearBit(i + 1)) {
 								itsBinaries.set(i);
+							}
+						}
 					}
 					// TODO ask user which value to use as 'true'
 					// now sets all itsNominals.get(0) values to 'true'
 					else
 					{
 						// All false initially, only set 'true' bits.
-						for (int i = 0; i < itsSize; i++)
-							if (aValue.equals(itsNominals.get(i)))
+						for (int i = 0; i < itsSize; i++) {
+							if (aValue.equals(itsNominals.get(i))) {
 								itsBinaries.set(i);
+							}
+						}
 					}
 				}
 				itsDistinctValues = null;
@@ -988,8 +1031,9 @@ public class Column implements XMLNodeInterface
 				itsMissingValue = "0";
 			else if (Float.parseFloat(itsMissingValue) == 1.0f)
 				itsMissingValue = "1";
-			else if (itsType.DEFAULT_MISSING_VALUE.equals(itsMissingValue))
+			else if (itsType.DEFAULT_MISSING_VALUE.equals(itsMissingValue)) {
 				itsMissingValue = AttributeType.BINARY.DEFAULT_MISSING_VALUE;
+			}
 		}
 		catch (NumberFormatException anException) {}
 
@@ -1173,11 +1217,13 @@ public class Column implements XMLNodeInterface
 				try { Float.parseFloat(theNewValue); return true; }
 				catch (NumberFormatException anException) { return false; }
 			}
+			/*
 			case BINARY :
 			{
 				return AttributeType.isValidBinaryTrueValue(theNewValue) ||
 					AttributeType.isValidBinaryFalseValue(theNewValue);
 			}
+			*/
 			default :
 			{
 				logTypeError("Column.isValidValue()");

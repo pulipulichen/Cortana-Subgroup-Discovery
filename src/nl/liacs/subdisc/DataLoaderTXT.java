@@ -192,6 +192,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 				{
 					++aColumn;
 					String s = aScanner.next();
+					//Log.logCommandLine("scan: " + s);
 					removeQuotes(s);
 
 					// is it currently set to binary? (this may change as more lines are read)
@@ -255,7 +256,9 @@ public class DataLoaderTXT implements FileLoaderInterface
 							Log.logCommandLine("false: " + aFalseBinaryValues[aColumn]);
 							aFloats.set(aColumn, false);
 							aColumns.get(aColumn).toNominalType(aTrueBinaryValues[aColumn], aFalseBinaryValues[aColumn]);
+							//aColumns.get(aColumn).add(s);
 							// FALL THROUGH
+							continue;
 						}
 					}
 
@@ -267,6 +270,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 						aColumns.get(aColumn).add(AttributeType.NOMINAL.DEFAULT_MISSING_VALUE);
 					}
 					else {
+						//Log.logCommandLine("add nominal: " + s);
 						aColumns.get(aColumn).add(s);
 					}
 				}
@@ -279,8 +283,14 @@ public class DataLoaderTXT implements FileLoaderInterface
 			}
 
 			// one final check about the validity of the XML file
-			if (anOriginalTypes != null)
+			if (anOriginalTypes != null) {
 				evaluateXMLLoading(anOriginalTypes, theFile);
+			}
+			
+			// Parse each Column, check if it is Binary
+			for (Column c: aColumns) {
+				c.validateBinary();
+			}
 		}
 		catch (IOException e)
 		{
@@ -516,6 +526,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 			
 			// is it binary (or empty String)
 			// TODO set itsMissing
+			/*
 			if (AttributeType.isValidBinaryValue(s) || isEmptyString(s))
 			{
 				aColumns.add(new Column(aHeaders[i],
@@ -534,9 +545,10 @@ public class DataLoaderTXT implements FileLoaderInterface
 				else {
 					aColumns.get(i).add(AttributeType.isValidBinaryTrueValue(s));
 				}
-				Log.logCommandLine(i + "is binary ");
+				Log.logCommandLine(i + " is binary ");
 				continue;
 			}
+			*/
 			
 			// --------------------------
 
