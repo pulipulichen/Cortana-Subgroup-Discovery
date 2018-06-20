@@ -30,17 +30,6 @@ public class RserveUtil
 	private static void initRscript() {
 		// Init AncovaMeasure.itsRscriptFoot
 		if (null == itsRscriptStartup) {
-			int dialogButton = JOptionPane.YES_NO_OPTION;
-			int dialogResult = JOptionPane.showConfirmDialog(null, "R has not been installed. \nPleasse check the config.ini setting. \nDo you want to open R's download page?", "R is not found", dialogButton);
-			if(dialogResult == 0) {
-				//System.out.println("Yes option");
-				try {
-					Desktop.getDesktop().browse(new URI("https://cloud.r-project.org/"));
-				}
-				catch (Exception e) {
-					Log.logCommandLine("Open URI error: " + e.getMessage());
-				}
-			}
 			//return;
 			
 			itsRPath = ConfigIni.get("global", "RPath");
@@ -66,6 +55,20 @@ public class RserveUtil
 				if (null == itsRPath) {
 					//throw new FileNotFoundException("R path is not correct. May you have not install R.");
 					Log.logCommandLine("R path is not correct. May you have not install R.");
+					
+
+					int dialogButton = JOptionPane.YES_NO_OPTION;
+					int dialogResult = JOptionPane.showConfirmDialog(null, "R has not been installed. \nPleasse check the config.ini setting. \nDo you want to open R's download page?", "R is not found", dialogButton);
+					if(dialogResult == 0) {
+						//System.out.println("Yes option");
+						try {
+							Desktop.getDesktop().browse(new URI("https://cloud.r-project.org/"));
+						}
+						catch (Exception e) {
+							Log.logCommandLine("Open URI error: " + e.getMessage());
+						}
+					}
+					return;
 				}
 			}
 			
@@ -232,6 +235,10 @@ public class RserveUtil
 	
 	@SuppressWarnings("finally")
 	public static String runScript(String aScriptKey, String aDataScript, String aFunctionScript) {
+		if (null == itsRPath) {
+			return null;
+		}
+		
 		String aReturn = null;
 		String key = aScriptKey + "_" + aDataScript;
 		
@@ -243,7 +250,7 @@ public class RserveUtil
 		
 		if (connection == null) {
 			Log.logCommandLine("No connection. Please excute RserveUtil.startup() first.");
-			return aReturn;
+			return null;
 		}
 		
 		try {

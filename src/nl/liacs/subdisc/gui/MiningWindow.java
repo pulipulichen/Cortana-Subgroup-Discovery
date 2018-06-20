@@ -1126,6 +1126,8 @@ public class MiningWindow extends JFrame implements ActionListener
 				Column aCOVColumn = itsTargetConcept.getSecondaryTarget();
 				Column aDVColumn = itsTargetConcept.getThirdTarget();
 				
+				jLabelTargetInfo.setText(" Base model");
+				jLabelTargetInfoText.setText("Analyzing...");
 
 				RserveUtil.startup();
 				RserveUtil.connect();
@@ -1137,9 +1139,10 @@ public class MiningWindow extends JFrame implements ActionListener
 				NumberFormat aFormatter = NumberFormat.getNumberInstance();
 				aFormatter.setMaximumFractionDigits(2);
 				
-				jLabelTargetInfo.setText(" ANCOVA pairwise comparison");
-				jLabelTargetInfoText.setText(String.format("%s (%s)",
-						aANCOVA.getFormatPairwiseComparison(), aANCOVA.getFstatPval() ));
+				String aMethod = aANCOVA.getMethod();
+				
+				jLabelTargetInfoText.setText(String.format("%s: %s (%s)",
+						aMethod, aANCOVA.getFormatPairwiseComparison(), aANCOVA.getFstatPval() ));
 				break;
 			}
 			case MULTI_LABEL :

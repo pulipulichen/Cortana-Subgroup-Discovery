@@ -591,10 +591,15 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				// TODO: complete list of QMs
 				boolean aLowIsDominatedQM = false;
 				boolean anAsymmetricQM = true;
-				if (aQualityMeasure == QM.BINOMIAL)
+				if (aQualityMeasure == QM.BINOMIAL) {
 					aLowIsDominatedQM = true;
-				if (aQualityMeasure == QM.CHI_SQUARED || aQualityMeasure == QM.INFORMATION_GAIN)
+				}
+				if (aQualityMeasure == QM.CHI_SQUARE_TEST
+						|| aQualityMeasure == QM.CHI_SQUARE_TEST_CELL
+						|| aQualityMeasure == QM.CHI_SQUARE_TEST_X_SQRT
+						|| aQualityMeasure == QM.INFORMATION_GAIN) {
 					anAsymmetricQM = false;
+				}
 
 				if (false && !anAsymmetricQM) // TODO: fix this for depth > 1, check only upper OR lower hull
 				{

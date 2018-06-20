@@ -132,6 +132,9 @@ public class AncovaMeasure
 		
 		
 		String aReturn = RserveUtil.runScript("TRIPLE_ANCOVA", aDataScript, AncovaMeasure.itsFunctionRscript);
+		if (null == aReturn) {
+			return;
+		}
 		
 		String[] aReturnParts = aReturn.split(",");
 		
@@ -148,6 +151,14 @@ public class AncovaMeasure
 	
 	public boolean isParametricAncova() {
 		return itsIsParametricAncova;
+	}
+	
+	public String getMethod() {
+		String aMethod = "ANCOVA";
+		if (false == itsIsParametricAncova) {
+			aMethod = "fANCOVA";
+		}
+		return aMethod;
 	}
 	
 

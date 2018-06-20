@@ -1,10 +1,8 @@
 cortana_chisq <- function (data, row_num) {
     col_num <- length(data) / row_num;
     tbl <-matrix(data, nrow = row_num);
-    print(tbl);
     chisq.result <- chisq.test(tbl);
     adj.stdres <- chisq.result$stdres[1,1];
-    print(chisq.result);
 
     expDat <- tbl;
     for (i in 1:row_num) {
@@ -13,12 +11,13 @@ cortana_chisq <- function (data, row_num) {
         };
     };
 
+    is.fisher.test <- FALSE;
     if (sum(data) < 20 && length(which(expDat <= 5))>0) {
         chisq.result <- fisher.test(tbl);
-        print("fisher");
+        is.fisher.test <- TRUE;
     };
     qualityMeasure <- chisq.result$p.value;
-    paste(sprintf("%.5f", qualityMeasure), sprintf("%.5f", adj.stdres), sep=",");
+    paste(sprintf("%.5f", qualityMeasure), sprintf("%.5f", adj.stdres),is.fisher.test, sep=",");
 };
 print("data|script");
 cortana_chisq(c(3, 1, 1, 3, 6, 6), 2);

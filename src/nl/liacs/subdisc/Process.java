@@ -108,8 +108,11 @@ public class Process
 		QM theMeasure = theSearchParameters.getQualityMeasure();
 		
 		switch (theMeasure) {
-			case CHI_SQUARE_TEST_O:
-			case CHI_SQUARE_TEST_C:
+			case CHI_SQUARE_TEST:
+			case CHI_SQUARE_TEST_CELL:
+			case CHI_SQUARE_TEST_X_SQRT:
+			//case CHI_SQUARE_TEST_O:
+			//case CHI_SQUARE_TEST_C:
 				RserveUtil.startup();
 				RserveUtil.connect();
 				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);

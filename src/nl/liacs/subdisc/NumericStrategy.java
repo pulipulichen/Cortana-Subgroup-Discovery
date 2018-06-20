@@ -58,7 +58,7 @@ public enum NumericStrategy implements EnumInterface
 		ArrayList<NumericStrategy> aResult = new ArrayList<NumericStrategy>(3);
 		
 		String aDefaultNumericStrategy = ConfigIni.get("search strategy", "DefaultNumericStrategy", "all");
-		
+		//Log.logCommandLine("aDefaultNumericStrategy: " + aDefaultNumericStrategy);
 		switch (aDefaultNumericStrategy) {
 			case "distribution":
 				aResult.add(NUMERIC_DISTRIBUTION);

@@ -9,10 +9,13 @@ public enum QM implements EnumInterface
 
 	// SINGLE_NOMINAL quality measures
 	//WRACC		("WRAcc",		"0.02",	TargetType.SINGLE_NOMINAL),
+	CHI_SQUARE_TEST	("ChiSq",		"-10",	TargetType.SINGLE_NOMINAL),
+	CHI_SQUARE_TEST_CELL	("ChiSq [Cell]",		"-10",	TargetType.SINGLE_NOMINAL),
+	CHI_SQUARE_TEST_X_SQRT	("ChiSq [X^2]",		"-10",	TargetType.SINGLE_NOMINAL),
 	WRACC		("WRAcc",		"-1",	TargetType.SINGLE_NOMINAL),
-	ABSWRACC	("Abs WRAcc",		"0.02",	TargetType.SINGLE_NOMINAL),
-	CHI_SQUARE_TEST_O	("Chi-square Test [O]",		"-10",	TargetType.SINGLE_NOMINAL),
-	CHI_SQUARE_TEST_C	("Chi-square Test [C]",		"-10",	TargetType.SINGLE_NOMINAL),
+	ABSWRACC	("Abs WRAcc",		"0.02",	TargetType.SINGLE_NOMINAL),	
+	//CHI_SQUARE_TEST_O	("Chi-square Test [O]",		"-10",	TargetType.SINGLE_NOMINAL),
+	//CHI_SQUARE_TEST_C	("Chi-square Test [C]",		"-10",	TargetType.SINGLE_NOMINAL),
 	CHI_SQUARED	("Chi-squared",		"50",	TargetType.SINGLE_NOMINAL),
 	INFORMATION_GAIN("Information gain",	"0.02",	TargetType.SINGLE_NOMINAL),
 	BINOMIAL	("Binomial test",	"0.05",	TargetType.SINGLE_NOMINAL),
