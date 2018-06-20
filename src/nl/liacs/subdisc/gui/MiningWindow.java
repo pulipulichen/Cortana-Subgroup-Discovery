@@ -251,8 +251,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		jButtonMetaData = initButton(STD.META_DATA);
 		aButtonPanel.add(jButtonMetaData);
 
-		jButtonDistribution = initButton(STD.DISTRIBUTION);
-		aButtonPanel.add(jButtonDistribution);
+		//jButtonDistribution = initButton(STD.DISTRIBUTION);
+		//aButtonPanel.add(jButtonDistribution);
 		
 		jButtonExit = initButton(STD.EXIT);
 		aButtonPanel.add(jButtonExit);
