@@ -24,6 +24,8 @@ public class MiningWindow extends JFrame implements ActionListener
 	public static final Image ICON = new ImageIcon(Toolkit.getDefaultToolkit().getImage(MiningWindow.class.getResource("/icon.jpg"))).getImage();
 
 	private Table itsTable;
+	
+	private boolean itsInitialized = false;
 
 	// target info
 	private int itsPositiveCount; // nominal target
@@ -49,6 +51,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		}
 		else
 			initMiningWindow();
+		
+		itsInitialized = true;
+		jComboBoxThirdTargetFieldActionPerformed();
 	}
 
 	// loaded from XML
@@ -66,6 +71,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		}
 		else
 			initMiningWindow();
+		
+		itsInitialized = true;
+		jComboBoxThirdTargetFieldActionPerformed();
 	}
 
 	private void initMiningWindow()
@@ -158,8 +166,9 @@ public class MiningWindow extends JFrame implements ActionListener
 		jMenuGui.setFont(GUI.DEFAULT_TEXT_FONT);
 		jMenuGui.setText("Gui");
 		jMenuGui.setMnemonic('G');
-		if (GUI_DEBUG)
+		if (GUI_DEBUG) {
 			jMiningWindowMenuBar.add(jMenuGui);
+		}
 
 		// MENU BAR - ABOUT
 		jMenuAbout = initMenu(STD.ABOUT);
@@ -500,9 +509,11 @@ public class MiningWindow extends JFrame implements ActionListener
 			jComboBoxNumericStrategy.addItem(n.GUI_TEXT);
 
 		// Add all implemented TargetTypes
-		for (TargetType t : TargetType.values())
-			if (TargetType.isImplemented(t))
+		for (TargetType t : TargetType.values()) {
+			if (TargetType.isImplemented(t)) {
 				jComboBoxTargetType.addItem(t.GUI_TEXT);
+			}
+		}
 
 		// Add all SearchStrategies
 		for (SearchStrategy s : SearchStrategy.values())
@@ -1626,6 +1637,52 @@ public class MiningWindow extends JFrame implements ActionListener
 		}
 		itsSearchParameters.setTargetConcept(itsTargetConcept);
 
+		if (true == itsInitialized) {
+			//return;
+		}
+		
+		initTargetInfo();
+	}
+	
+	private void jComboBoxThirdTargetFieldActionPerformed()
+	{
+		switch (itsTargetConcept.getTargetType())
+		{
+			case SINGLE_NOMINAL :
+			{
+				itsTargetConcept.setTargetValue(getMiscFieldName());
+				break;
+			}
+			case DOUBLE_REGRESSION :
+			{
+				//Log.logCommandLine("\n     getMiscFieldName: " + getMiscFieldName());
+				itsTargetConcept.setSecondaryTarget(itsTable.getColumn(getMiscFieldName()));
+				break;
+			}
+			case DOUBLE_CORRELATION :
+			{
+				itsTargetConcept.setSecondaryTarget(itsTable.getColumn(getMiscFieldName()));
+				break;
+			}
+			case TRIPLE_ANCOVA :
+			{
+				itsTargetConcept.setSecondaryTarget(itsTable.getColumn(getMiscFieldName()));
+				itsTargetConcept.setThirdTarget(itsTable.getColumn(getThirdTargetName()));
+				break;
+			}
+			case MULTI_BINARY_CLASSIFICATION :
+			{
+				itsTargetConcept.setTargetValue(getMiscFieldName());
+				break;
+			}
+			default : break;
+		}
+		itsSearchParameters.setTargetConcept(itsTargetConcept);
+
+		if (true == itsInitialized) {
+			//return;
+		}
+		
 		initTargetInfo();
 	}
 
@@ -2461,7 +2518,12 @@ public class MiningWindow extends JFrame implements ActionListener
 			jComboBoxTargetAttributeActionPerformed();
 		else if (MISC_FIELD_BOX.equals(aCommand))
 			jComboBoxMiscFieldActionPerformed();
-
+		else if (THIRD_TARGET_BOX.equals(aCommand)) {
+			jComboBoxThirdTargetFieldActionPerformed();
+			Log.logCommandLine("THIRD_TARGET_BOX changed");
+		}
+		
+		
 		else if (STD.QM_MANUAL.GUI_TEXT.equals(aCommand))
 			jButtonQMManualActionPerformed();
 		else if (STD.SECONDARY_TERTIARY_TARGETS.GUI_TEXT.equals(aCommand))

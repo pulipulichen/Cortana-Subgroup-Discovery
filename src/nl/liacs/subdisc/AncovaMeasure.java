@@ -28,6 +28,10 @@ public class AncovaMeasure
 		// 20180616 we have to init ANCOVA result based on theIVColumn, theCOVColumn, and the DVColumn
 		//itsPairwiseComparison.add("A > B*");
 		
+		if (theIVColumn == null) {
+			return;
+		}
+		
 		itsSampleSize = theIVColumn.size();
 		itsIVdata = new String[itsSampleSize];
 		itsCOVdata = new float[itsSampleSize];
@@ -171,6 +175,10 @@ public class AncovaMeasure
 	
 	public String getFormatPairwiseComparison() {
 		String output = "";
+		if (itsPairwiseComparison == null) {
+			return output;
+		}
+		
 		for (String p : itsPairwiseComparison) {
 			if (false == output.equals("")) {
 				output = output + "; ";
