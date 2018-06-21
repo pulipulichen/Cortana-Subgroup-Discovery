@@ -124,6 +124,10 @@ public class ResultWindow extends JFrame implements ActionListener
 		setSize(GUI.WINDOW_DEFAULT_SIZE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setVisible(true);
+		
+		if (ConfigIni.getBoolean("global", "AutoStartSubgroupDiscoverySave")) {
+			jButtonSaveActionPerformed();
+		}
 	}
 
 	private void initComponents()
@@ -523,8 +527,9 @@ public class ResultWindow extends JFrame implements ActionListener
 		double aPValue = aValidation.computeEmpiricalPValue(aQualities, itsSubgroupSet);
 		JOptionPane.showMessageDialog(this, "The empirical p-value is p = " + aPValue);
 
-		for (Subgroup aSubgroup : itsSubgroupSet)
+		for (Subgroup aSubgroup : itsSubgroupSet) {
 			aSubgroup.setEmpiricalPValue(aQualities);
+		}
 
 		itsSubgroupTable.repaint();
 		setBusy(false);
@@ -551,9 +556,17 @@ public class ResultWindow extends JFrame implements ActionListener
 
 	private void jButtonSaveActionPerformed()
 	{
-		File aFile = new FileHandler(Action.SAVE).getFile();
-		if (aFile == null)
+		//Log.logCommandLine("jButtonSaveActionPerformed()");
+		
+		String aFileName = itsTable.getName() + "_"
+				+ itsSearchParameters.getQualityMeasure().getFormattedGUIText()
+				+ ".csv";
+		
+		File aFile = new FileHandler(Action.SAVE, aFileName, FileType.TXT).getFile();
+		
+		if (aFile == null) {
 			return; // cancelled
+		}
 
 		XMLAutoRun.save(itsSubgroupSet, aFile.getAbsolutePath(), itsSearchParameters.getTargetType());
 	}

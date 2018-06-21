@@ -53,7 +53,7 @@ public class ResultTableModel extends AbstractTableModel
 					case SINGLE_NUMERIC : return "Average";
 					case DOUBLE_CORRELATION : return "Correlation";
 					case DOUBLE_REGRESSION : return "Slope";
-					case TRIPLE_ANCOVA : return "Pairwise Comparison";
+					case TRIPLE_ANCOVA : return "PairwiseComparison";
 					case MULTI_LABEL : return "Edit Distance";
 					default : return "";
 				}
@@ -64,7 +64,7 @@ public class ResultTableModel extends AbstractTableModel
 					case SINGLE_NUMERIC : return "St. Dev.";
 					case DOUBLE_CORRELATION : return "Distance";
 					case DOUBLE_REGRESSION : return "Intercept";
-					case TRIPLE_ANCOVA : return "Parametric ANCOVA";
+					case TRIPLE_ANCOVA : return "Method";
 					case MULTI_LABEL : return "Entropy";
 					default : return "";
 				}

@@ -224,4 +224,10 @@ public enum QM implements EnumInterface
 
 	@Override
 	public String toString() { return GUI_TEXT; };
+	
+	public String getFormattedGUIText() {
+		return GUI_TEXT
+				.replaceAll(" ", "")
+				.replaceAll("\\.", "");
+	}
 }

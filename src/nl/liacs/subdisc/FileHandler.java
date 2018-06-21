@@ -33,10 +33,16 @@ public class FileHandler
 	private Table itsTable;
 	private SearchParameters itsSearchParameters;
 	private File itsFile;
+	private String itsDefaultFileName;
+	private FileType itsDefaultType;
 
 	// Main FileHandler
 	public FileHandler(Action theAction)
 	{
+		doAction(theAction);
+	}
+	
+	private void doAction(Action theAction) {
 		switch(theAction)
 		{
 			case OPEN_FILE :
@@ -46,9 +52,29 @@ public class FileHandler
 				break;
 			}
 			case OPEN_DATABASE : openDatabase(); break;
-			case SAVE : save(FileType.ALL_DATA_FILES); break;
+			case SAVE : {
+				save(FileType.ALL_DATA_FILES); 
+				break;
+			}
 			default : break;
 		}
+	}
+	
+
+	// Main FileHandler
+	public FileHandler(Action theAction, String theDefaultFileName)
+	{
+		itsDefaultFileName = theDefaultFileName;
+		doAction(theAction);
+	}
+	
+
+	// Main FileHandler
+	public FileHandler(Action theAction, String theDefaultFileName, FileType theType)
+	{
+		itsDefaultFileName = theDefaultFileName;
+		itsDefaultType = theType;
+		doAction(theAction);
 	}
 
 	//save in a specific format
@@ -200,10 +226,12 @@ public class FileHandler
 
 	private File save(FileType theType)
 	{
-		if (theType == FileType.ALL_DATA_FILES)
+		if (theType == FileType.ALL_DATA_FILES) {
 			showFileChooser(Action.SAVE);
-		else
+		}
+		else {
 			saveFileChooser(theType);
+		}
 		return itsFile;
 	}
 
@@ -235,7 +263,17 @@ public class FileHandler
 		aChooser.addChoosableFileFilter(new FileTypeFilter(FileType.TXT));
 		aChooser.addChoosableFileFilter(new FileTypeFilter(FileType.ARFF));
 		aChooser.addChoosableFileFilter(new FileTypeFilter(FileType.XML));
-		aChooser.setFileFilter(new FileTypeFilter(FileType.ALL_DATA_FILES));
+		
+		if (null != itsDefaultType) {
+			aChooser.setFileFilter(new FileTypeFilter(itsDefaultType));
+		}
+		else {
+			aChooser.setFileFilter(new FileTypeFilter(FileType.ALL_DATA_FILES));
+		}
+		
+		if (null != itsDefaultFileName) {
+			aChooser.setSelectedFile(new File(itsDefaultFileName));
+		}
 
 		String aDefaultLoadFile = ConfigIni.get("global", "DefaultLoadFile");
 		if (null != aDefaultLoadFile && false == FileHandler.hasDefaultLoaded) {

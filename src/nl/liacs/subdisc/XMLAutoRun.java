@@ -191,24 +191,37 @@ public class XMLAutoRun
 		// always save result TODO search parameters based filename
 		save(aSubgroupDiscovery.getResult(), theFile.getAbsolutePath().replace(".xml", ("_"+ aBegin + ".txt")), aSearchParameters.getTargetType());
 	}
+	
+	private static String parseQuote(String input) {
+		if (input.indexOf("\"") > -1 || input.indexOf(",") > -1) {
+			input = input.replaceAll("\"", "\\\\\"");
+			input = "\"" + input + "\""; 
+		}
+		return input;
+	}
 
 	public static void save(SubgroupSet theSubgroupSet, String theFileName, TargetType theTargetType)
-	{
-		if (theSubgroupSet == null || theFileName == null)
+	{		
+		if (theSubgroupSet == null || theFileName == null) {
 			return;
+		}
 
 		BufferedWriter aWriter = null;
 
 		try
 		{
-			String aDelimiter = "\t";
+			String aDelimiter = ",";
+			if (theFileName.endsWith(".tsv")) {
+				aDelimiter = "\t";
+			}
+			
 			aWriter = new BufferedWriter(new FileWriter(theFileName));
 
 			aWriter.write(ResultTableModel.getColumnName(0, theTargetType));
 			for (int i = 1, j = ResultTableModel.COLUMN_COUNT; i < j; ++i)
 			{
 				aWriter.write(aDelimiter);
-				aWriter.write(ResultTableModel.getColumnName(i, theTargetType));
+				aWriter.write(parseQuote(ResultTableModel.getColumnName(i, theTargetType)));
 			}
 			aWriter.write("\n");
 
@@ -218,31 +231,33 @@ public class XMLAutoRun
 			{
 				aSubgroup = anIterator.next();
 
-				aWriter.write(String.valueOf(aSubgroup.getID()));
+				aWriter.write(parseQuote(String.valueOf(aSubgroup.getID())));
 				aWriter.write(aDelimiter);
-				aWriter.write(String.valueOf(aSubgroup.getDepth()));
+				aWriter.write(parseQuote(String.valueOf(aSubgroup.getDepth())));
 				aWriter.write(aDelimiter);
-				aWriter.write(String.valueOf(aSubgroup.getCoverage()));
+				aWriter.write(parseQuote(String.valueOf(aSubgroup.getCoverage())));
 				aWriter.write(aDelimiter);
-				aWriter.write(String.valueOf(aSubgroup.getMeasureValue()));
+				aWriter.write(parseQuote(String.valueOf(aSubgroup.getMeasureValue())));
 				aWriter.write(aDelimiter);
 				switch (theTargetType) {
 					case TRIPLE_ANCOVA : 
-						aWriter.write(aSubgroup.getSecondaryDescription());	
+						aWriter.write(parseQuote(aSubgroup.getSecondaryDescription()));
+						break;
 					default:
-						aWriter.write(String.valueOf(aSubgroup.getSecondaryStatistic()));				
+						aWriter.write(parseQuote(String.valueOf(aSubgroup.getSecondaryStatistic())));				
 				}
 				aWriter.write(aDelimiter);
 				switch (theTargetType) {
 					case TRIPLE_ANCOVA : 
-						aWriter.write(aSubgroup.getTertiaryDescription());	
+						aWriter.write(parseQuote(aSubgroup.getTertiaryDescription()));
+						break;
 					default:
-						aWriter.write(String.valueOf(aSubgroup.getTertiaryStatistic()));				
+						aWriter.write(parseQuote(String.valueOf(aSubgroup.getTertiaryStatistic())));				
 				}
 				aWriter.write(aDelimiter);
-				aWriter.write(String.valueOf(aSubgroup.getPValue()));
+				aWriter.write(parseQuote(String.valueOf(aSubgroup.getPValue())));
 				aWriter.write(aDelimiter);
-				aWriter.write(aSubgroup.getConditions().toString());
+				aWriter.write(parseQuote(aSubgroup.getConditions().toString()));
 				//aWriter.write(aSubgroup.getConditions().toNaturalOrderString());	// TODO for testing only
 				aWriter.write("\n");
 			}

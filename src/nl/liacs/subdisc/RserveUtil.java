@@ -58,7 +58,10 @@ public class RserveUtil
 					
 
 					int dialogButton = JOptionPane.YES_NO_OPTION;
-					int dialogResult = JOptionPane.showConfirmDialog(null, "R has not been installed. \nPleasse check the config.ini setting. \nDo you want to open R's download page?", "R is not found", dialogButton);
+					int dialogResult = JOptionPane.showConfirmDialog(null, "R has not been installed. \n" 
+							+ "Pleasse check the config.ini setting. \n"
+							+ "Subgroup result would not be analysed correctly. \n"
+							+ "Do you want to open R's download page?", "R is not found", dialogButton);
 					if(dialogResult == 0) {
 						//System.out.println("Yes option");
 						try {

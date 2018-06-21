@@ -77,7 +77,14 @@ public class SubDisc
 		TestUtil.start();
 
 		//Log.logCommandLine("error: " + JARTextFileLoader.load("/r-scripts/ancova_sm_ancova_full.R"));
-		
+		/*
+		String input = "Sl\"o,pe";
+		if (input.indexOf("\"") > -1 || input.indexOf(",") > -1) {
+			input = input.replaceAll("\"", "\\\\\"");
+			input = "\"" + input + "\""; 
+		}
+		Log.logCommandLine("save: " + input + input.indexOf("\""));
+		*/
 		
 		// 20180414 Open the main window directly without open a file.
 		MiningWindow w = new MiningWindow();
