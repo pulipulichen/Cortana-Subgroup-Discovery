@@ -1,2 +1,0 @@
-library(RSclient)
-RSshutdown(RSconnect())

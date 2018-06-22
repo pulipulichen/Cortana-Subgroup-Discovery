@@ -22,10 +22,11 @@ import java.util.HashMap;
 public class RserveUtil
 {
 	//private static String RPath = "D:\\Program Files\\R\\R-3.4.0\\bin\\R.exe";
-	private static RConnection connection;
+	private static RConnection connection = null;
 	private static String itsRPath = null;
 	private static String itsRscriptStartup = null;
 	private static String itsRscriptShutdown = null;
+	private static boolean itsLazyStartup = false;
 	
 	private static void initRscript() {
 		// Init AncovaMeasure.itsRscriptFoot
@@ -92,10 +93,14 @@ public class RserveUtil
 	}
 	
 	public static void startup() {
+		itsLazyStartup = true;
+	}
+	
+	public static void startup(boolean isForce) {
 		
 		try (Socket ignored = new Socket("localhost", 6311)) {
 	        //return false;
-			Log.logCommandLine("RserveUtil.startup() 6311 is not occupied.");
+			//Log.logCommandLine("RserveUtil.startup() 6311 is not occupied.");
 	    } catch (IOException ignored) {
 	    	Log.logCommandLine("RserveUtil.startup() Socket failed: " + ignored.getMessage());
 	        return;
@@ -110,7 +115,9 @@ public class RserveUtil
 		final Runtime rt = Runtime.getRuntime();
 		try {
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
-			Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
+			//Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"" + (connection != null));
+			
+			connect();
 		}
 		catch (Exception e) {
 			Log.logCommandLine("RserveUtil.startup() failed: " + e.getMessage());
@@ -118,6 +125,8 @@ public class RserveUtil
 	}
 	
 	public static void shutdown() {
+		itsLazyStartup = false;
+		
 		if (connection == null) {
 			return;
 		}
@@ -126,7 +135,7 @@ public class RserveUtil
 		try {
 			disconnect();
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
-			Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
+			//Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
 			connection = null;
 		}
 		catch (Exception e) {
@@ -143,11 +152,13 @@ public class RserveUtil
 		}
 		try {
 			connection = new RConnection();
+			//Log.logCommandLine("Rserve connectioned. " + (connection != null));
 		}
 		catch (Exception e) {
-			String message = "Rserve connection failed.";
+			String message = "Rserve connection failed: " + e.getMessage();
 			JOptionPane.showMessageDialog(null, message);
 			connection = null;
+			Log.logCommandLine("Rserve connection failed: " + e.getMessage());
 		}
 	}
 	
@@ -155,79 +166,8 @@ public class RserveUtil
 		if (connection != null) {
 			connection.close();
 			connection = null;
+			//Log.logCommandLine("Rserve disconnectioned. " + (connection != null));
 		}
-	}
-	
-	// -------------------------------------
-	
-	private static HashMap<String, Float> chiSquareTestCache;
-	private static int chiSquareTestCount;
-	
-	private static String chiSquareTestRScript = "tbl <-matrix(data, nrow = 2);expDat <- tbl;for (i in 1:2){expDat[i,1] <- (sum(tbl[i,]) * sum(tbl[,1])) / sum(tbl);  expDat[i,2] <- (sum(tbl[i,]) * sum(tbl[,2])) / sum(tbl);};if (sum(data) <= 20 && length(which(expDat <= 5))>0) {result <- fisher.test(tbl)} else {result <- chisq.test(tbl)};(1-result$p.value)";
-	
-	public static float chiSquareTest(int sample1True, int sample1False, int sample2True, int sample2False) {
-		float aReturn = 0;
-		String key = sample1True + ", " + sample1False + ", " + sample2True + ", " + sample2False;
-		
-		if (chiSquareTestCache == null) {
-			chiSquareTestCache = new HashMap<String, Float>();
-		}
-		else if (chiSquareTestCache.containsKey(key)) {
-			return chiSquareTestCache.get(key);
-		}
-		
-		
-		if (connection == null) {
-			return aReturn;
-		}
-		
-		try {
-			/*
-			if (chiSquareTestCount % 10 == 9 && false) {
-				chiSquareTestCount = 0;
-				disconnect();
-				//Thread.sleep(1000);
-				connect();
-			}
-			*/
-			Thread.sleep(100);	
-			
-			
-			String rScript = "data <- c("+key+");" 
-        		  + chiSquareTestRScript;
-			chiSquareTestCount++;
-			Log.logCommandLine("Conntect: " + chiSquareTestCount);
-          
-			aReturn = (float) connection.eval(rScript).asDouble();
-			chiSquareTestCache.put(key, aReturn);
-          
-		//} catch (RserveException e) {
-			//e.printStackTrace();            
-		//} catch (REXPMismatchException e) {
-			//e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-			
-			try {
-				Thread.sleep(1000);
-				disconnect();
-				shutdown();
-				Thread.sleep(1000);
-				startup();
-				connect();
-				return chiSquareTest(sample1True, sample1False, sample2True, sample2False);
-			}
-			catch (Exception e2) {
-				e2.printStackTrace();
-			}
-		} finally {
-	        //Log.logCommandLine("" + chiSquareTestRScript);
-			return aReturn;
-		}
-	}
-
-	public static float chiSquareTest(float sample1True, float sample1False, float sample2True, float sample2False) {
-		return chiSquareTest((int) sample1True, (int) sample1False, (int) sample2True, (int) sample2False);
 	}
 	
 	// --------------------
@@ -239,6 +179,11 @@ public class RserveUtil
 	
 	@SuppressWarnings("finally")
 	public static String runScript(String aScriptKey, String aDataScript, String aFunctionScript) {
+
+		if (true == itsLazyStartup) {
+			startup(true);
+		}
+		
 		if (null == itsRPath) {
 			return null;
 		}
@@ -261,7 +206,7 @@ public class RserveUtil
 			Thread.sleep(100);	
 			
 			if (declaredFunctions.contains(aScriptKey) == false) {
-				Log.logCommandLine("Run Function Script: " + aFunctionScript);
+				//Log.logCommandLine("Run Function Script: " + aFunctionScript);
 				connection.eval(aFunctionScript);
 				
 				declaredFunctions.add(aScriptKey);
@@ -270,7 +215,7 @@ public class RserveUtil
 			}
 			
 			runScriptConnectCount++;
-			Log.logCommandLine("Conntect: " + runScriptConnectCount);
+			//Log.logCommandLine("Conntect: " + runScriptConnectCount);
           
 			aReturn = (String) connection.eval(aDataScript).asString();
 			runScriptCache.put(key, aReturn);

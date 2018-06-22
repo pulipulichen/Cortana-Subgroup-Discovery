@@ -282,9 +282,11 @@ public class FileHandler
 				//Log.logCommandLine("FileHandle showFileChooser() error: " + aJarPath);
 				//return;
 				itsFile = new File(aJarPath + "/" + aDefaultLoadFile);
-				itsLastFileLocation = itsFile.getParent();
-				FileHandler.hasDefaultLoaded = true;
-				return;
+				if (itsFile.exists() == true) {
+					itsLastFileLocation = itsFile.getParent();
+					FileHandler.hasDefaultLoaded = true;
+					return;
+				}
 			}
 			catch (Exception e) {
 				Log.logCommandLine("FileHandle showFileChooser() error: " + e.getMessage());

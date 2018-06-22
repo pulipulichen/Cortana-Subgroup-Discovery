@@ -56,7 +56,12 @@ public class SubDisc
 	
 	public static void main(String[] args)
 	{
+		//Log.logCommandLine("start cortana");
+		
 		checkLibs();
+		
+		//Log.logCommandLine("start cortana 1");
+		
 		if (!GraphicsEnvironment.isHeadless() && (SplashScreen.getSplashScreen() != null))
 		{
 			// assume it is an XML-autorun experiment
@@ -69,12 +74,19 @@ public class SubDisc
 				SplashScreen.getSplashScreen().close();
 			}
 		}
+		
+		//Log.logCommandLine("start cortana 2");
 
 		if (XMLAutoRun.autoRunSetting(args)) {
 			return;
 		}
 		
+		
+		//Log.logCommandLine("start cortana 3");
+		
 		TestUtil.start();
+		
+		//Log.logCommandLine("start cortana 4");
 
 		//Log.logCommandLine("error: " + JARTextFileLoader.load("/r-scripts/ancova_sm_ancova_full.R"));
 		/*
@@ -87,30 +99,42 @@ public class SubDisc
 		*/
 		
 		// 20180414 Open the main window directly without open a file.
-		MiningWindow w = new MiningWindow();
+		try {
+			MiningWindow w = new MiningWindow();
+			
+			//Log.logCommandLine("start cortana 5");
+			
+			// 20180616 開啟Cortana並且讀取檔案
+			w.actionPerformed("Open File");
+			
+			//Log.logCommandLine("start cortana 6");
+			
+			if (ConfigIni.get("global", "DefaultLoadFile") != null
+					&& ConfigIni.getBoolean("global", "AutoStartSubgroupDiscovery")) {
+				w.actionPerformed("Subgroup Discovery");
+			}
+			if (ConfigIni.getBoolean("global", "AutoExplore")) {
+				w.actionPerformed("Explore...");
+			}
+			if (ConfigIni.getBoolean("global", "AutoMetaData")) {
+				w.actionPerformed("Meta Data...");
+			}
+			if (ConfigIni.getBoolean("global", "AutoBrowse")) {
+				w.actionPerformed("Browse...");
+			}
+			if (ConfigIni.getBoolean("global", "AutoDistribution")) {
+				w.actionPerformed("Distribution...");
+			}
+			if (ConfigIni.getBoolean("global", "AutoExit")) {
+				w.actionPerformed("Exit");
+			}
+		}
+		catch (Exception e) {
+			Log.logCommandLine("MiningWindow error:" + e.getMessage());
+		}
+			
 		
-		// 20180616 開啟Cortana並且讀取檔案
-		w.actionPerformed("Open File");
-		
-		if (ConfigIni.get("global", "DefaultLoadFile") != null
-				&& ConfigIni.getBoolean("global", "AutoStartSubgroupDiscovery")) {
-			w.actionPerformed("Subgroup Discovery");
-		}
-		if (ConfigIni.getBoolean("global", "AutoExplore")) {
-			w.actionPerformed("Explore...");
-		}
-		if (ConfigIni.getBoolean("global", "AutoMetaData")) {
-			w.actionPerformed("Meta Data...");
-		}
-		if (ConfigIni.getBoolean("global", "AutoBrowse")) {
-			w.actionPerformed("Browse...");
-		}
-		if (ConfigIni.getBoolean("global", "AutoDistribution")) {
-			w.actionPerformed("Distribution...");
-		}
-		if (ConfigIni.getBoolean("global", "AutoExit")) {
-			w.actionPerformed("Exit");
-		}
+		//Log.logCommandLine("start cortana 7");
 		
 		//Log.logCommandLine("" + ConfigIni.getBoolean("global", "SubgroupDiscoveryAutoStart"));
 		

@@ -120,7 +120,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 			{
 				if (!aSingleLine.isEmpty())
 				{
-					Log.logCommandLine("aSingleLine: " + aSingleLine);
+					//Log.logCommandLine("aSingleLine: " + aSingleLine);
 					aLineArrayList.add(aSingleLine.split(itsDelimiter));
 				}
 			}
@@ -467,7 +467,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 	// create Table Columns using HeaderLine names, base Type on DataLine
 	private void createTable(File theFile, String aHeaderLine, String aDataLine, ArrayList<String[]> aLineArrayList)
 	{
-		message("createTable", "creating Table");
+		//message("createTable", "creating Table");
 		String[] aHeaders = aHeaderLine.split(itsDelimiter);
 		String[] aData = aDataLine.split(itsDelimiter);
 
@@ -493,7 +493,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 				isMissingValue = true;
 			}
 			
-			Log.logCommandLine(i + ": " + s);
+			//Log.logCommandLine(i + ": " + s);
 			removeQuotes(s);
 
 			// --------------------------
@@ -517,7 +517,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 				}
 				
 				
-				Log.logCommandLine(i + "is numeric ");
+				//Log.logCommandLine(i + " is numeric ");
 				continue;
 			}
 			catch (NumberFormatException e) {}
@@ -545,7 +545,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 				else {
 					aColumns.get(i).add(AttributeType.isValidBinaryTrueValue(s));
 				}
-				Log.logCommandLine(i + " is binary ");
+				//Log.logCommandLine(i + " is binary ");
 				continue;
 			}
 			*/
@@ -565,7 +565,7 @@ public class DataLoaderTXT implements FileLoaderInterface
 				s = originalS;
 			}
 			aColumns.get(i).add(s);
-			Log.logCommandLine(i + "is nominal ");
+			//Log.logCommandLine(i + " is nominal ");
 			
 		}	// for (int i = 0, j = aHeaders.length; i < j; ++i)
 		

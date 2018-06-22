@@ -19,6 +19,8 @@ public class JARTextFileLoader
 			theFileName = "/" + theFileName;
 		}
 		
+		theFileName = "/config" + theFileName;
+		
 		StringBuffer sb = new StringBuffer();
 		
 		try {

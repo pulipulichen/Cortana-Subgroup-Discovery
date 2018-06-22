@@ -6,3 +6,6 @@
 /.settings/
 /libs/*/*
 /log.txt
+/batch/log.txt
+/log/
+/bin/config/

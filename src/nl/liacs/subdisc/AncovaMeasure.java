@@ -16,8 +16,8 @@ public class AncovaMeasure
 	private float[] itsDVdata;
 	
 	private boolean itsIsParametricAncova = true;
-	private double itsFstatPval;
-	private ArrayList<String> itsPairwiseComparison;
+	private double itsFstatPval = 1;
+	private ArrayList<String> itsPairwiseComparison = new ArrayList<String>();
 
 	//make a base model from two columns
 	public AncovaMeasure(QM theType, Column theIVColumn, Column theCOVColumn, Column theDVColumn)
@@ -62,7 +62,7 @@ public class AncovaMeasure
 			String aSplitor = "print(\"data|script\");";
 			int endIndex = aRscript.indexOf(aSplitor);
 			AncovaMeasure.itsFunctionRscript = aRscript.substring(0, endIndex);
-			Log.logCommandLine("itsFunctionRscript: " + AncovaMeasure.itsFunctionRscript);
+			//Log.logCommandLine("itsFunctionRscript: " + AncovaMeasure.itsFunctionRscript);
 		}
 	}
 	
@@ -127,7 +127,7 @@ public class AncovaMeasure
 		
 		//String aData = "iv = c(1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2),cov = c(11,12,19,13,17,15,17,14,13,16,11,14,10,12,12,13,10,15,14,11),dv = c(21,23,25,23,23,24,24,20,22,24,21,24,21,20,23,24,23,21,25,24)";
 		String aDataScript = aIVData + aCOVData + aDVData + anEndData;
-		Log.logCommandLine("aDataScript: " + aDataScript);
+		//Log.logCommandLine("aDataScript: " + aDataScript);
 		
 		// Init AncovaMeasure.itsRscriptFoot
 		initFunctionRscript();

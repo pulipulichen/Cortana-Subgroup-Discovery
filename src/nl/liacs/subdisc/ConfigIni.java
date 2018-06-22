@@ -28,21 +28,12 @@ public class ConfigIni
 			if (f.isFile() == false) {
 				String aConfigContent = JARTextFileLoader.load("config.ini");
 				BufferedWriter writer = null;
-				try
-				{
-				    writer = new BufferedWriter( new FileWriter( anIniPath ));
-				    writer.write( aConfigContent);
-				}
-				catch ( IOException e) {}
-				finally
-				{
-				    try
-				    {
-				        if ( writer != null)
-				        writer.close( );
-				    }
-				    catch ( IOException e) { }
-				}
+			    writer = new BufferedWriter( new FileWriter( anIniPath ));
+			    writer.write( aConfigContent);
+			
+		        if ( writer != null) {
+			        writer.close( );
+		        }
 			}
 			itsIni = new Ini(f);
 		}

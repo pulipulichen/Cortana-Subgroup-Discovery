@@ -6,15 +6,15 @@ import java.nio.file.*;
 public class Log
 {
 	// outputfile constants
-	public static boolean DEBUG = true;		// Logs debug in file < LOGPATH + "debug" + timeStamp + ".log" >
-	public static boolean ERROR = true;		// logs error in file < LOGPATH + "error" + timeStamp + ".log" >
+	public static boolean DEBUG = false;		// Logs debug in file < LOGPATH + "debug" + timeStamp + ".log" >
+	public static boolean ERROR = false;		// logs error in file < LOGPATH + "error" + timeStamp + ".log" >
 
 	public static boolean SQLLOG = false;		// Logs all sql-queries in file < LOGPATH + "sql.log" >
 	public static boolean SQLRESULTLOG = false;	// If (SQLLOG = true) : Logs all sql-query results same file
 	public static boolean REFINEMENTLOG = false;	// Logs all refinements in file < LOGPATH + "refinement.log" >
 	public static boolean COMMANDLINELOG = true;	// Logs a few things to dos commandline
 
-	public static boolean LOG = true;			// Basket of all the (...LOG = false) log attempts
+	public static boolean LOG = false;			// Basket of all the (...LOG = false) log attempts
 	public static boolean FORCECOMMANDLINELOG = false;	// If (LOG = false) all its content is put on the commandline
 
 	private static String LOGPATH = new String("../log/");	// NB: this path of direcories will be created

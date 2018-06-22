@@ -31,7 +31,7 @@ public class Process
 		
 		if (QM.useRserve(theMeasure)) {
 			RserveUtil.startup();
-			RserveUtil.connect();
+			//RserveUtil.connect();
 		}
 		
 		switch (aTargetType)
@@ -112,10 +112,6 @@ public class Process
 			}
 		}
 		
-		if (QM.useRserve(theMeasure)) {
-			RserveUtil.shutdown();
-		}
-		
 		
 		switch (theMeasure) {
 			case CHI_SQUARE_TEST:
@@ -123,11 +119,11 @@ public class Process
 			case CHI_SQUARE_TEST_X_SQRT:
 			//case CHI_SQUARE_TEST_O:
 			//case CHI_SQUARE_TEST_C:
-				RserveUtil.startup();
-				RserveUtil.connect();
+				//RserveUtil.startup();
+				//RserveUtil.connect();
 				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
 				//RserveUtil.disconnect();
-				RserveUtil.shutdown();
+				//RserveUtil.shutdown();
 				break;
 			default:
 				aSubgroupDiscovery.mine(System.currentTimeMillis(), theNrThreads);
@@ -177,17 +173,9 @@ public class Process
 			Log.logCommandLine("    "+s.getConditions().toString());
 */		// end temp
 
-		switch (aTargetType)
-		{
-			case TRIPLE_ANCOVA :
-			{
-				//RserveUtil.disconnect();
-				RserveUtil.shutdown();
-				break;
-			}
-			default : {
-				
-			}
+
+		if (QM.useRserve(theMeasure)) {
+			RserveUtil.shutdown();
 		}
 		
 		return aSubgroupDiscovery;

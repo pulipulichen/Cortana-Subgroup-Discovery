@@ -1141,10 +1141,10 @@ public class MiningWindow extends JFrame implements ActionListener
 				jLabelTargetInfoText.setText("Analyzing...");
 
 				RserveUtil.startup();
-				RserveUtil.connect();
+				//RserveUtil.connect();
 				AncovaMeasure aANCOVA =
 						new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
-				RserveUtil.disconnect();
+				//RserveUtil.disconnect();
 				RserveUtil.shutdown();
 				
 				NumberFormat aFormatter = NumberFormat.getNumberInstance();
@@ -1832,10 +1832,13 @@ public class MiningWindow extends JFrame implements ActionListener
 	{
 		try {
 			setupSearchParameters();
+			Log.logCommandLine("runSubgroupDiscovery() 1");
 			Process.runSubgroupDiscovery(theTable, theFold, theBitSet, itsSearchParameters, true, getNrThreads(), this);
+			Log.logCommandLine("runSubgroupDiscovery() 2");
 		}
 		catch (Exception e) {
 			Log.logCommandLine("runSubgroupDiscovery error: " + e.getMessage());
+			Log.logCommandLine(Arrays.toString(e.getStackTrace()));
 		}
 	}
 
@@ -1843,8 +1846,9 @@ public class MiningWindow extends JFrame implements ActionListener
 	{
 		final TargetType aTargetType = itsTargetConcept.getTargetType();
 		String[] aSetup = new RandomQualitiesWindow(aTargetType).getSettings();
-		if (!RandomQualitiesWindow.isValidRandomQualitiesSetup(aSetup))
+		if (!RandomQualitiesWindow.isValidRandomQualitiesSetup(aSetup)) {
 			return;
+		}
 
 		// same as setup for runSubgroupDiscovery?
 		setupSearchParameters();
@@ -2520,7 +2524,7 @@ public class MiningWindow extends JFrame implements ActionListener
 			jComboBoxMiscFieldActionPerformed();
 		else if (THIRD_TARGET_BOX.equals(aCommand)) {
 			jComboBoxThirdTargetFieldActionPerformed();
-			Log.logCommandLine("THIRD_TARGET_BOX changed");
+			//Log.logCommandLine("THIRD_TARGET_BOX changed");
 		}
 		
 		
