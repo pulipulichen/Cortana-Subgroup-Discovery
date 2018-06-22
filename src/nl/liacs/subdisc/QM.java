@@ -209,6 +209,22 @@ public enum QM implements EnumInterface
 			}
 		}
 	}
+	
+	public static boolean useRserve(QM theQM)
+	{
+		switch(theQM)
+		{
+			case CHI_SQUARE_TEST: return true;
+			case CHI_SQUARE_TEST_CELL: return true;
+			case CHI_SQUARE_TEST_X_SQRT: return true;
+			case ANCOVA: return true;
+			default :
+			{
+				Log.logCommandLine(theQM.GUI_TEXT + " don't use Rserve.");
+				return false;
+			}
+		}
+	}
 
 	/*
 	 * throws an AssertionError(QM) if a SINGLE_NUMERIC or SINGLE_ORDINAL

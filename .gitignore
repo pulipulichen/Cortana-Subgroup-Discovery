@@ -3,3 +3,6 @@
 /batch/\.Rhistory
 /[[]document]/
 /*.log
+/.settings/
+/libs/*/*
+/log.txt

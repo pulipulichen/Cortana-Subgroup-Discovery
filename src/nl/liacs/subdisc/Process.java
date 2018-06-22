@@ -25,7 +25,15 @@ public class Process
 		SubgroupDiscovery aSubgroupDiscovery = null;
 		echoMiningStart();
 		long aBegin = System.currentTimeMillis();
+		
 
+		QM theMeasure = theSearchParameters.getQualityMeasure();
+		
+		if (QM.useRserve(theMeasure)) {
+			RserveUtil.startup();
+			RserveUtil.connect();
+		}
+		
 		switch (aTargetType)
 		{
 			case SINGLE_NOMINAL :
@@ -75,8 +83,7 @@ public class Process
 				//JOptionPane.showMessageDialog(null, "before aSubgroupDiscovery");
 				//TargetConcept aTargetConcept = theSearchParameters.getTargetConcept();
 				//Log.logCommandLine("GO TRIPLE_ANCOVA");
-				RserveUtil.startup();
-				RserveUtil.connect();
+				
 				try {
 					aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, aTargetType, theMainWindow);
 				}
@@ -105,7 +112,10 @@ public class Process
 			}
 		}
 		
-		QM theMeasure = theSearchParameters.getQualityMeasure();
+		if (QM.useRserve(theMeasure)) {
+			RserveUtil.shutdown();
+		}
+		
 		
 		switch (theMeasure) {
 			case CHI_SQUARE_TEST:

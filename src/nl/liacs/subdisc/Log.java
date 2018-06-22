@@ -1,6 +1,7 @@
 package nl.liacs.subdisc;
 
 import java.io.*;
+import java.nio.file.*;
 
 public class Log
 {
@@ -23,6 +24,8 @@ public class Log
 	static java.io.OutputStream logStream = System.out;
 	static java.io.OutputStream sqlLogStream = System.out;
 	static java.io.OutputStream refinementLogStream = System.out;
+	
+	private static FileWriter logWriter;
 
 	public static void openFileOutputStreams()
 	{
@@ -41,11 +44,11 @@ public class Log
 				aLogPath.mkdirs();
 				Log.logCommandLine("creating files in directory: " + LOGPATH);
 
-				if (DEBUG) debug = new java.io.FileOutputStream(LOGPATH + "debug.wri");
-				if (ERROR) error = new java.io.FileOutputStream(LOGPATH + "error.wri");
-				if (LOG) log = new java.io.FileOutputStream(LOGPATH + "log.wri");
-				if (SQLLOG) sqlLog = new java.io.FileOutputStream(LOGPATH + "sql.wri");
-				if (REFINEMENTLOG) refinementLog = new java.io.FileOutputStream(LOGPATH + "refinement.wri");
+				if (DEBUG) debug = new java.io.FileOutputStream(LOGPATH + "debug.txt");
+				if (ERROR) error = new java.io.FileOutputStream(LOGPATH + "error.txt");
+				if (LOG) log = new java.io.FileOutputStream(LOGPATH + "log.txt");
+				if (SQLLOG) sqlLog = new java.io.FileOutputStream(LOGPATH + "sql.txt");
+				if (REFINEMENTLOG) refinementLog = new java.io.FileOutputStream(LOGPATH + "refinement.txt");
 			} catch (Exception ex) {
 				errmade = true;
 				error(ex.toString()); }
@@ -106,8 +109,30 @@ public class Log
 
 	public static void logCommandLine(String s)
 	{
-		if (COMMANDLINELOG)
+		if (COMMANDLINELOG) {
 			System.out.println(s);
+		}
+		
+		logWrite(s);
+	}
+	
+	private static boolean isLogReset = false;
+	private static String logPath = "log.txt";
+	
+	private static void logWrite(String s) {
+		try {
+			if (false == isLogReset) {
+				new File(logPath).delete();
+				isLogReset = true;
+			}
+			
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logPath, true)));
+			out.println(s);
+			out.close();
+		}
+		catch (Exception e) {
+			System.out.print(e.getMessage());
+		}
 	}
 
 	public static void toUniqueFile(String theFileName, String theContent) {
@@ -139,19 +164,20 @@ public class Log
 	}
 
 	private static void log(String s) {
-		if (LOG)
-
+		if (LOG) {
 	        try {
 				logStream.write(charsToBytes(s.toCharArray())); logStream.write('\n');
 	        	}
 			catch (Exception ex){}
-   else
-    	if (FORCECOMMANDLINELOG)
-
-			try {
-				System.out.println("  " + s);
-			}
-			catch (Exception ex){}
+		}
+	    else {
+	    	if (FORCECOMMANDLINELOG) {
+				try {
+					System.out.println("  " + s);
+				}
+				catch (Exception ex){}
+	    	}
+	    }
     }
 
 

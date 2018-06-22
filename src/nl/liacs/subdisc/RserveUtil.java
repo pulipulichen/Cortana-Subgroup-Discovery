@@ -76,8 +76,8 @@ public class RserveUtil
 			}
 			
 			
-			itsRscriptStartup = JARTextFileLoader.load("/r-scripts/r_serve_startup.R", "").replaceAll("%","\"");
-			itsRscriptShutdown = JARTextFileLoader.load("/r-scripts/r_serve_shutdown.R", "").replaceAll("%","\"");
+			itsRscriptStartup = JARTextFileLoader.load("/r-scripts/r_serve_startup.R", "").replaceAll("\"","\\\\\"");
+			itsRscriptShutdown = JARTextFileLoader.load("/r-scripts/r_serve_shutdown.R", "").replaceAll("\"","\\\\\"");
 		}
 	}
 	
@@ -95,6 +95,7 @@ public class RserveUtil
 		
 		try (Socket ignored = new Socket("localhost", 6311)) {
 	        //return false;
+			Log.logCommandLine("RserveUtil.startup() 6311 is not occupied.");
 	    } catch (IOException ignored) {
 	    	Log.logCommandLine("RserveUtil.startup() Socket failed: " + ignored.getMessage());
 	        return;
