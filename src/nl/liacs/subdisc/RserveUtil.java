@@ -53,6 +53,33 @@ public class RserveUtil
 					}
 				}
 				
+				// Finding R in directory
+				if (null == itsRPath) {
+					String[] aRPathFolderCandidate = {
+							"C:\\Program Files\\R",
+							"D:\\Program Files\\R",
+							"C:\\Program Files (x86)\\R",
+							"D:\\Program Files (x86)\\R"
+					};
+					
+					for (int i = 0; i < aRPathFolderCandidate.length; i++) {
+						File aRfolder = new File(aRPathFolderCandidate[i]);
+						if (aRfolder.exists()) {
+							// find the first sub folder
+							for (final File fileEntry : aRfolder.listFiles()) {
+						        if (fileEntry.isDirectory() && fileEntry.getName().startsWith("R-")) {
+						        	itsRPath = aRPathFolderCandidate[i] + "\\" + fileEntry.getName() + "\\bin\\R.exe";
+
+						        	if (new File(itsRPath).exists()) {
+						        		Log.logCommandLine("Find RPath: " + itsRPath);
+						        		break;
+						        	}
+						        }
+						    }
+						}
+					}
+				}
+				
 				if (null == itsRPath) {
 					//throw new FileNotFoundException("R path is not correct. May you have not install R.");
 					Log.logCommandLine("R path is not correct. May you have not install R.");
