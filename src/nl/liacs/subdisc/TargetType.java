@@ -13,7 +13,8 @@ public enum TargetType implements EnumInterface
 	SINGLE_NUMERIC("single numeric"),
 	SINGLE_ORDINAL("single ordinal"),
 	DOUBLE_REGRESSION("double regression"),
-	DOUBLE_CORRELATION("double correlation"),	
+	DOUBLE_CORRELATION("double correlation"),
+	GROUP_ANOVA("1 nom > 1 num"),
 	TRIPLE_ANCOVA("1 nom + 1 num > 1 num"),
 	MULTI_LABEL("multi-label"),
 	MULTI_BINARY_CLASSIFICATION("multi binary classification");
@@ -83,6 +84,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case GROUP_ANOVA		: return true;
 			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return true;
 			case MULTI_BINARY_CLASSIFICATION: return false;
@@ -104,6 +106,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case GROUP_ANOVA		: return true;
 			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;
@@ -125,6 +128,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return false;
 			case DOUBLE_CORRELATION		: return false;
+			case GROUP_ANOVA		: return false;
 			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;
@@ -146,6 +150,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return false;
 			case DOUBLE_CORRELATION		: return false;
+			case GROUP_ANOVA		: return false;
 			case TRIPLE_ANCOVA		: return false;
 			case MULTI_LABEL		: return true;
 			case MULTI_BINARY_CLASSIFICATION: return true;
@@ -167,6 +172,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return false;
+			case GROUP_ANOVA		: return false;
 			case TRIPLE_ANCOVA		: return false;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;
@@ -188,6 +194,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case GROUP_ANOVA		: return true;
 			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return true;
@@ -209,6 +216,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return true;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case GROUP_ANOVA		: return true;
 			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;	// TODO true?
@@ -231,6 +239,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case GROUP_ANOVA		: return true;
 			case TRIPLE_ANCOVA		: return true;
 			case MULTI_LABEL		: return false;
 			case MULTI_BINARY_CLASSIFICATION: return false;	// TODO true?
@@ -253,6 +262,7 @@ public enum TargetType implements EnumInterface
 			case SINGLE_ORDINAL		: return false;
 			case DOUBLE_REGRESSION		: return true;
 			case DOUBLE_CORRELATION		: return true;
+			case GROUP_ANOVA		: return false;
 			case TRIPLE_ANCOVA		: return false;
 			case MULTI_LABEL		: return true;
 			case MULTI_BINARY_CLASSIFICATION: return false;	// TODO true?
@@ -275,6 +285,7 @@ public enum TargetType implements EnumInterface
 				case SINGLE_ORDINAL		: return 100;
 				case DOUBLE_REGRESSION		: return 100;
 				case DOUBLE_CORRELATION		: return 100;
+				case GROUP_ANOVA		: return 100;
 				case TRIPLE_ANCOVA		: return 100;
 				case MULTI_LABEL		: return 100;
 				case MULTI_BINARY_CLASSIFICATION: return 100;	// TODO true?
@@ -295,6 +306,7 @@ public enum TargetType implements EnumInterface
 				case SINGLE_ORDINAL		: return 0.5;
 				case DOUBLE_REGRESSION		: return 0.5;
 				case DOUBLE_CORRELATION		: return 0.5;
+				case GROUP_ANOVA		: return 0.5;
 				case TRIPLE_ANCOVA		: return 0.5;
 				case MULTI_LABEL		: return 0.5;
 				case MULTI_BINARY_CLASSIFICATION: return 0.5;	// TODO true?

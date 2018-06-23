@@ -34,6 +34,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	private Column itsThirdColumn;	//TRIPLE_ANCOVA
 	private CorrelationMeasure itsBaseCM;	//DOUBLE_CORRELATION
 	private RegressionMeasure itsBaseRM;	//DOUBLE_REGRESSION
+	private AnovaMeasure itsBaseAnovaMeasure;	//GROUP_ANOVA
 	private AncovaMeasure itsBaseAncovaMeasure;	//TRIPLE_ANCOVA
 	private BinaryTable itsBinaryTable;	//MULTI_LABEL
 	private List<Column> itsTargets;	//MULTI_LABEL
@@ -179,6 +180,9 @@ public class SubgroupDiscovery extends MiningAlgorithm
 			itsSecondaryColumn = aTC.getSecondaryTarget();
 			switch (aTargetType)
 			{
+				case GROUP_ANOVA:
+					itsBaseAnovaMeasure = new AnovaMeasure(itsSearchParameters.getQualityMeasure(), itsPrimaryColumn, itsSecondaryColumn);
+					break;
 				case TRIPLE_ANCOVA:
 					itsThirdColumn = aTC.getThirdTarget();
 					itsBaseAncovaMeasure = new AncovaMeasure(itsSearchParameters.getQualityMeasure(), itsPrimaryColumn, itsSecondaryColumn, itsThirdColumn);
@@ -934,6 +938,49 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				}
 				break;
 			}
+
+			case DOUBLE_CORRELATION :
+			{
+				CorrelationMeasure aCM = new CorrelationMeasure(itsBaseCM);
+				for (int i = 0; i < itsNrRows; i++)
+					if (theNewSubgroup.getMembers().get(i))
+						aCM.addObservation(itsPrimaryColumn.getFloat(i), itsSecondaryColumn.getFloat(i));
+				theNewSubgroup.setSecondaryStatistic(aCM.getCorrelation()); //correlation
+				theNewSubgroup.setTertiaryStatistic(aCM.computeCorrelationDistance()); //intercept
+				aQuality = (float) aCM.getEvaluationMeasureValue();
+				break;
+			}
+			
+			case GROUP_ANOVA :
+			{
+				//List itsData = new ArrayList(theNewSubgroup.getMembers().cardinality());
+				//final BitSet aMembers = theNewSubgroup.getMembers();
+				int[] theMembersIndex = theNewSubgroup.getMembersIndex();
+				int theMembersLength = theMembersIndex.length;
+				
+				String[] theIVdata = new String[theMembersLength];
+				float[] theDVdata = new float[theMembersLength];
+				
+				TargetConcept aTC = itsSearchParameters.getTargetConcept();
+				Column aIVcolumn = aTC.getPrimaryTarget();
+				Column aDVcolumn = aTC.getSecondaryTarget();
+				
+				for (int i = 0; i < theMembersLength; i++) {
+					theIVdata[i] = aIVcolumn.getString(theMembersIndex[i]);
+					theDVdata[i] = aDVcolumn.getFloat(theMembersIndex[i]);
+				}
+				
+				//Log.logCommandLine("GO case TRIPLE_ANCOVA " + itsSearchParameters.getTargetConcept().getPrimaryTarget().getString(0));
+				
+				AnovaMeasure aAnova = new AnovaMeasure(itsBaseAnovaMeasure, theIVdata, theDVdata);
+				aQuality = (float) aAnova.getFstatPvalInvert();
+				theNewSubgroup.setSecondaryDescription(aAnova.getFormatPairwiseComparison());
+				theNewSubgroup.setTertiaryDescription("" + aAnova.getMethod());
+				
+				break;
+			}
+			
+			
 			case TRIPLE_ANCOVA :
 			{
 				//List itsData = new ArrayList(theNewSubgroup.getMembers().cardinality());
@@ -963,17 +1010,6 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				theNewSubgroup.setSecondaryDescription(aAncova.getFormatPairwiseComparison());
 				theNewSubgroup.setTertiaryDescription("" + aAncova.getMethod());
 				
-				break;
-			}
-			case DOUBLE_CORRELATION :
-			{
-				CorrelationMeasure aCM = new CorrelationMeasure(itsBaseCM);
-				for (int i = 0; i < itsNrRows; i++)
-					if (theNewSubgroup.getMembers().get(i))
-						aCM.addObservation(itsPrimaryColumn.getFloat(i), itsSecondaryColumn.getFloat(i));
-				theNewSubgroup.setSecondaryStatistic(aCM.getCorrelation()); //correlation
-				theNewSubgroup.setTertiaryStatistic(aCM.computeCorrelationDistance()); //intercept
-				aQuality = (float) aCM.getEvaluationMeasureValue();
 				break;
 			}
 			case MULTI_LABEL :

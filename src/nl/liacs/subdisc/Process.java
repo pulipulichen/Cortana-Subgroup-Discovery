@@ -78,6 +78,21 @@ public class Process
 				//JOptionPane.showMessageDialog(null, "after aSubgroupDiscovery");
 				break;
 			}
+			case DOUBLE_CORRELATION :
+			{
+				aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, false, theMainWindow);
+				break;
+			}
+			case GROUP_ANOVA :
+			{
+				try {
+					aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, aTargetType, theMainWindow);
+				}
+				catch (Exception e) {
+					Log.logCommandLine("GROUP_ANOVA error: " + e.getMessage());
+				}
+				break;
+			}
 			case TRIPLE_ANCOVA :
 			{
 				//JOptionPane.showMessageDialog(null, "before aSubgroupDiscovery");
@@ -96,11 +111,6 @@ public class Process
 				}
 				//Log.logCommandLine("OK");
 				//JOptionPane.showMessageDialog(null, "after aSubgroupDiscovery");
-				break;
-			}
-			case DOUBLE_CORRELATION :
-			{
-				aSubgroupDiscovery = new SubgroupDiscovery(theSearchParameters, theTable, false, theMainWindow);
 				break;
 			}
 			default :

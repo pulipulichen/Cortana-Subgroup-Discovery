@@ -86,6 +86,10 @@ public enum QM implements EnumInterface
 	LINEAR_REGRESSION	("Sig. of Slope Diff. (C)", "-1.0", TargetType.DOUBLE_REGRESSION),
 	COOKS_DISTANCE		("Cook's Distance",	"0.0",	TargetType.DOUBLE_REGRESSION),
 	
+	// GROUP_ANOVA
+	ANOVA	("ANOVA F stat. (p-val)", "-1.0", TargetType.GROUP_ANOVA),
+	
+	// TRIPLE_ANCOVA
 	ANCOVA	("ANCOVA F stat. (p-val)", "-1.0", TargetType.TRIPLE_ANCOVA);
 
 	// to enforce implementation of SINGLE_NUMERIC and SINGLE_ORDINAL QMs
@@ -217,6 +221,7 @@ public enum QM implements EnumInterface
 			case CHI_SQUARE_TEST: return true;
 			case CHI_SQUARE_TEST_CELL: return true;
 			case CHI_SQUARE_TEST_X_SQRT: return true;
+			case ANOVA: return true;
 			case ANCOVA: return true;
 			default :
 			{

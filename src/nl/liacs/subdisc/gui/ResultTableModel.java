@@ -53,6 +53,7 @@ public class ResultTableModel extends AbstractTableModel
 					case SINGLE_NUMERIC : return "Average";
 					case DOUBLE_CORRELATION : return "Correlation";
 					case DOUBLE_REGRESSION : return "Slope";
+					case GROUP_ANOVA : return "PairwiseComparison";
 					case TRIPLE_ANCOVA : return "PairwiseComparison";
 					case MULTI_LABEL : return "Edit Distance";
 					default : return "";
@@ -64,6 +65,7 @@ public class ResultTableModel extends AbstractTableModel
 					case SINGLE_NUMERIC : return "St. Dev.";
 					case DOUBLE_CORRELATION : return "Distance";
 					case DOUBLE_REGRESSION : return "Intercept";
+					case GROUP_ANOVA : return "Method";
 					case TRIPLE_ANCOVA : return "Method";
 					case MULTI_LABEL : return "Entropy";
 					default : return "";
@@ -104,17 +106,19 @@ public class ResultTableModel extends AbstractTableModel
 			case 3: return RendererNumber.FORMATTER.format(aSubgroup.getMeasureValue());
 			case 4: 
 				switch (itsTargetType) {
-					case TRIPLE_ANCOVA : 
+				case GROUP_ANOVA :	
+				case TRIPLE_ANCOVA : 
 						return aSubgroup.getSecondaryDescription();
 					default:
 						return RendererNumber.FORMATTER.format(aSubgroup.getSecondaryStatistic());						
 				}
 			case 5: 
 				switch (itsTargetType) {
-				case TRIPLE_ANCOVA : 
-					return aSubgroup.getTertiaryDescription();
-				default:
-					return RendererNumber.FORMATTER.format(aSubgroup.getTertiaryStatistic());						
+					case GROUP_ANOVA :
+					case TRIPLE_ANCOVA :
+						return aSubgroup.getTertiaryDescription();
+					default:
+						return RendererNumber.FORMATTER.format(aSubgroup.getTertiaryStatistic());						
 				}
 			case 6:
 			{

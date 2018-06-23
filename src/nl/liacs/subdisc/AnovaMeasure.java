@@ -2,7 +2,7 @@ package nl.liacs.subdisc;
 
 import java.util.*;
 
-public class AncovaMeasure
+public class AnovaMeasure
 {
 	private int itsSampleSize;
 	public static QM itsQualityMeasure; // FIXME MM this should not be static
@@ -12,15 +12,17 @@ public class AncovaMeasure
 	private static String itsFunctionRscript = null; 
 	
 	private String[] itsIVdata;
-	private float[] itsCOVdata;
 	private float[] itsDVdata;
 	
-	private boolean itsIsParametricAncova = true;
+	private String itsMethod;
 	private double itsFstatPval = 0;
 	private ArrayList<String> itsPairwiseComparison = new ArrayList<String>();
+	
+	private String itsRscriptKey = "ANOVA_MEASURE";
+	private String itsRscriptFileName = "cortana_anova.R";
 
 	//make a base model from two columns
-	public AncovaMeasure(QM theType, Column theIVColumn, Column theCOVColumn, Column theDVColumn)
+	public AnovaMeasure(QM theType, Column theIVColumn, Column theDVColumn)
 	{
 		itsQualityMeasure = theType;
 		
@@ -29,42 +31,37 @@ public class AncovaMeasure
 		//itsPairwiseComparison.add("A > B*");
 		
 		if (theIVColumn == null 
-				|| theCOVColumn == null 
-				|| theDVColumn == null
-				|| theCOVColumn.getName().equals(theDVColumn.getName())) {
+				|| theDVColumn == null) {
 			return;
 		}
 		
 		itsSampleSize = theIVColumn.size();
 		itsIVdata = new String[itsSampleSize];
-		itsCOVdata = new float[itsSampleSize];
 		itsDVdata = new float[itsSampleSize];
 		for(int i=0; i<itsSampleSize; i++)
 		{
 			itsIVdata[i] = theIVColumn.getString(i);
-			itsCOVdata[i] = theCOVColumn.getFloat(i);
 			itsDVdata[i] = theDVColumn.getFloat(i);
 		}
 		calc();
 	}
 	
-	public AncovaMeasure(AncovaMeasure theBase, String[] theIVdata, float[] theCOVdata, float[] theDVdata)
+	public AnovaMeasure(AnovaMeasure theBase, String[] theIVdata, float[] theDVdata)
 	{
 		itsQualityMeasure = theBase.itsQualityMeasure;
 		itsSampleSize = theIVdata.length;
 		itsIVdata = theIVdata;
-		itsCOVdata = theCOVdata;
 		itsDVdata = theDVdata;
 		calc();
 	}
 	
 	private void initFunctionRscript() {
 		// Init AncovaMeasure.itsRscriptFoot
-		if (null == AncovaMeasure.itsFunctionRscript) {
-			String aRscript = JARTextFileLoader.load("/r-scripts/cortana_ancova.R", "");
+		if (null == AnovaMeasure.itsFunctionRscript) {
+			String aRscript = JARTextFileLoader.load("/r-scripts/" + itsRscriptFileName, "");
 			String aSplitor = "print(\"script|data\");";
 			int endIndex = aRscript.indexOf(aSplitor);
-			AncovaMeasure.itsFunctionRscript = aRscript.substring(0, endIndex);
+			AnovaMeasure.itsFunctionRscript = aRscript.substring(0, endIndex);
 			//Log.logCommandLine("itsFunctionRscript: " + AncovaMeasure.itsFunctionRscript);
 		}
 	}
@@ -83,15 +80,13 @@ public class AncovaMeasure
 		
 		HashMap<String, Integer> ivLevelCount =  new HashMap<String, Integer>();
 		
-		String aIVData = "cortana_ancova(data.frame(iv = c(";
-		String aCOVData = "),cov = c(";
+		String aIVData = "cortana_anova(data.frame(iv = c(";
 		String aDVData = "),dv = c(";
 		String anEndData = ")));";
 		for(int i=0; i<itsSampleSize; i++)
 		{
 			if (i > 0) {
 				aIVData += ",";
-				aCOVData += ",";
 				aDVData += ",";
 			}
 			
@@ -103,7 +98,6 @@ public class AncovaMeasure
 			}
 			
 			aIVData += "'" + itsIVdata[i] + "'";
-			aCOVData += itsCOVdata[i];
 			aDVData += itsDVdata[i];
 		}
 		
@@ -129,7 +123,7 @@ public class AncovaMeasure
 		// ----------------------
 		
 		//String aData = "iv = c(1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2),cov = c(11,12,19,13,17,15,17,14,13,16,11,14,10,12,12,13,10,15,14,11),dv = c(21,23,25,23,23,24,24,20,22,24,21,24,21,20,23,24,23,21,25,24)";
-		String aDataScript = aIVData + aCOVData + aDVData + anEndData;
+		String aDataScript = aIVData + aDVData + anEndData;
 		//Log.logCommandLine("aDataScript: " + aDataScript);
 		
 		// Init AncovaMeasure.itsRscriptFoot
@@ -138,16 +132,14 @@ public class AncovaMeasure
 		//Log.logCommandLine("aRscript: " + aRscript);
 		
 		
-		String aReturn = RserveUtil.runScript("TRIPLE_ANCOVA", aDataScript, AncovaMeasure.itsFunctionRscript);
+		String aReturn = RserveUtil.runScript(itsRscriptKey, aDataScript, AnovaMeasure.itsFunctionRscript);
 		if (null == aReturn) {
 			return;
 		}
 		
 		String[] aReturnParts = aReturn.split(",");
 		
-		if (aReturnParts[0].equals("FALSE")) {
-			itsIsParametricAncova = false;
-		}
+		itsMethod = aReturnParts[0];
 		itsFstatPval = Double.parseDouble(aReturnParts[1]);
 		//Log.logCommandLine("ANCOVA Result: " + aReturnParts[1]);
 		
@@ -155,17 +147,9 @@ public class AncovaMeasure
 		//itsPairwiseComparison.add(aReturnParts[1] + " (" + aReturnParts[0] + ")");
 		itsPairwiseComparison = new ArrayList<String>( Arrays.asList( aPairwiseComparison ) );
 	}
-	
-	public boolean isParametricAncova() {
-		return itsIsParametricAncova;
-	}
-	
+		
 	public String getMethod() {
-		String aMethod = "ANCOVA";
-		if (false == itsIsParametricAncova) {
-			aMethod = "fANCOVA";
-		}
-		return aMethod;
+		return itsMethod;
 	}
 	
 
@@ -188,10 +172,6 @@ public class AncovaMeasure
 			}
 			output = output + p;
 		}
-		
-		//if (false == itsIsParametricAncova) {
-		//	output = "[NP] " + output;
-		//}
 		
 		return output;
 	}

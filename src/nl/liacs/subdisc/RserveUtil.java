@@ -125,6 +125,10 @@ public class RserveUtil
 	}
 	
 	public static void startup(boolean isForce) {
+
+		if (connection != null) {
+			return;
+		}
 		
 		try (Socket ignored = new Socket("localhost", 6311)) {
 	        //return false;
@@ -133,10 +137,6 @@ public class RserveUtil
 	    	Log.logCommandLine("RserveUtil.startup() Socket failed: " + ignored.getMessage());
 	        return;
 	    }
-		
-		if (connection != null) {
-			return;
-		}
 		
 		initRscript();
 		
@@ -251,9 +251,9 @@ public class RserveUtil
 		} catch (Exception e) {
 			Log.logCommandLine("R script error: \n" + e.getMessage());
 			Log.logCommandLine(aDataScript);
-			return null;
+			//return null;
 			
-			/*
+			
 			e.printStackTrace();
 			
 			try {
@@ -268,7 +268,7 @@ public class RserveUtil
 			catch (Exception e2) {
 				e2.printStackTrace();
 			}
-			*/
+			
 		} finally {
 	        //Log.logCommandLine("" + chiSquareTestRScript);
 			return aReturn;

@@ -116,6 +116,10 @@ public class ConfigIni
 	}
 	*/
 	
+	public static float getFloat(String aHeader, String aKey, double aDefaultValue) {
+		return getFloat(aHeader, aKey, (float) (aDefaultValue));
+	}
+	
 	public static float getFloat(String aHeader, String aKey, float aDefaultValue) {
 		loadIni();
 		if (null == itsIni) {
