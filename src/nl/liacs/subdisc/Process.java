@@ -29,10 +29,10 @@ public class Process
 
 		QM theMeasure = theSearchParameters.getQualityMeasure();
 		
-		if (QM.useRserve(theMeasure)) {
-			RserveUtil.startup();
+		//if (QM.useRserve(theMeasure)) {
+		//	RserveUtil.startup();
 			//RserveUtil.connect();
-		}
+		//}
 		
 		switch (aTargetType)
 		{
@@ -184,9 +184,9 @@ public class Process
 */		// end temp
 
 
-		if (QM.useRserve(theMeasure)) {
+		//if (QM.useRserve(theMeasure)) {
 			//RserveUtil.shutdown();
-		}
+		//}
 		
 		return aSubgroupDiscovery;
 	}

@@ -471,7 +471,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		jTextFieldNumberOfBins = GUI.buildTextField("0");
 		jPanelSearchStrategyFields.add(jTextFieldNumberOfBins);
 
-		jTextFieldNumberOfThreads = GUI.buildTextField(Integer.toString(Runtime.getRuntime().availableProcessors()));
+		//jTextFieldNumberOfThreads = GUI.buildTextField(Integer.toString(Runtime.getRuntime().availableProcessors()));
+		jTextFieldNumberOfThreads = GUI.buildTextField("" + 1);
 		jPanelSearchStrategyFields.add(jTextFieldNumberOfThreads);
 
 		jPanelSearchStrategy.add(jPanelSearchStrategyFields);
@@ -2016,9 +2017,22 @@ public class MiningWindow extends JFrame implements ActionListener
 	{
 		try {
 			setupSearchParameters();
-			Log.logCommandLine("runSubgroupDiscovery() 1");
-			Process.runSubgroupDiscovery(theTable, theFold, theBitSet, itsSearchParameters, true, getNrThreads(), this);
-			Log.logCommandLine("runSubgroupDiscovery() 2");
+			QM theMeasure = itsSearchParameters.getQualityMeasure();
+			int theNrThreads = getNrThreads();
+			if (QM.useRserve(theMeasure)) {
+				RserveUtil.startup();
+				theNrThreads = 1;
+				//RserveUtil.connect();
+			}
+			
+			//Log.logCommandLine("runSubgroupDiscovery() 1");
+			Process.runSubgroupDiscovery(theTable, theFold, theBitSet, itsSearchParameters, true, theNrThreads, this);
+			//Log.logCommandLine("runSubgroupDiscovery() 2");
+			
+
+			if (QM.useRserve(theMeasure)) {
+				RserveUtil.shutdown();
+			}
 		}
 		catch (Exception e) {
 			Log.logCommandLine("runSubgroupDiscovery error: " + e.getMessage());

@@ -107,6 +107,8 @@ public class SubDisc
 		Log.logCommandLine("AncovaMeasure: " + p.getFstatPvalInvert());
 		*/
 		
+		RserveUtil.startup();
+		
 		// 20180414 Open the main window directly without open a file.
 		try {
 			//ConfigIni.set("search strategy", "RPath2", "ccd");

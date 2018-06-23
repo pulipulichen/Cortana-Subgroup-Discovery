@@ -12,6 +12,7 @@ import org.rosuda.REngine.*;
 import org.rosuda.REngine.Rserve.*;
 
 import java.util.HashMap;
+import java.util.concurrent.*;
 
 /**
  * Utility class for JavaScript compatible UTF-8 encoding and decoding.
@@ -132,6 +133,7 @@ public class RserveUtil
 			return;
 		}
 		
+		/*
 		try (Socket ignored = new Socket("localhost", 6311)) {
 	        //return false;
 			//Log.logCommandLine("RserveUtil.startup() 6311 is not occupied.");
@@ -139,16 +141,33 @@ public class RserveUtil
 	    	Log.logCommandLine("RserveUtil.startup() Socket failed: " + ignored.getMessage());
 	        return;
 	    }
+	    */
 		
 		final Runtime rt = Runtime.getRuntime();
 		try {
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
-			//Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"" + (connection != null));
+			Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
 			
 			connect();
 		}
 		catch (Exception e) {
 			Log.logCommandLine("RserveUtil.startup() failed: " + e.getMessage());
+		}
+	}
+	
+	public static void connect() {
+		if (connection != null) {
+			return;
+		}
+		try {
+			connection = new RConnection();
+			Log.logCommandLine("Rserve connectioned. " + (connection != null));
+		}
+		catch (Exception e) {
+			String message = "Rserve connection failed: " + e.getMessage();
+			JOptionPane.showMessageDialog(null, message);
+			connection = null;
+			Log.logCommandLine("Rserve connection failed: " + e.getMessage());
 		}
 	}
 	
@@ -174,22 +193,6 @@ public class RserveUtil
 		}
 	}
 	
-	public static void connect() {
-		if (connection != null) {
-			return;
-		}
-		try {
-			connection = new RConnection();
-			//Log.logCommandLine("Rserve connectioned. " + (connection != null));
-		}
-		catch (Exception e) {
-			String message = "Rserve connection failed: " + e.getMessage();
-			JOptionPane.showMessageDialog(null, message);
-			connection = null;
-			Log.logCommandLine("Rserve connection failed: " + e.getMessage());
-		}
-	}
-	
 	public static void disconnect() {
 		if (connection != null) {
 			connection.close();
@@ -205,6 +208,7 @@ public class RserveUtil
 	private static HashMap<String, String> runScriptCache =  new HashMap<String, String>();
 	private static ArrayList<String> declaredFunctions =  new ArrayList<String>();
 	private static int runScriptConnectCount = 0;
+	private static boolean itsLock = false;
 	
 	@SuppressWarnings("finally")
 	public static String runScript(String aScriptKey, String aDataScript, String aFunctionScript) {
@@ -225,15 +229,26 @@ public class RserveUtil
 			return runScriptCache.get(key);
 		}
 		
+		/*
+		if (runScriptConnectCount % 100 == 99) {
+			try {
+				shutdown();
+				Thread.sleep(1000);
+				startup();
+			}
+			catch (Exception e) {}
+		}
+		*/
+		
 		// ------------------------------------
 		
-		if (connection == null) {
+		if (null == connection) {
 			Log.logCommandLine("No connection. Please excute RserveUtil.startup() first.");
 			return null;
 		}
 		
 		try {
-			Thread.sleep(100);	
+			//Thread.sleep(1000);	
 			
 			if (declaredFunctions.contains(aScriptKey) == false) {
 				Log.logCommandLine("Run Function Script: " + aFunctionScript);
@@ -241,39 +256,60 @@ public class RserveUtil
 				
 				declaredFunctions.add(aScriptKey);
 				runScriptConnectCount++;
-				Thread.sleep(100);	
+				//Thread.sleep(1000);	
 			}
 			
 			runScriptConnectCount++;
 			//Log.logCommandLine("Conntect: " + runScriptConnectCount);
           
 			//Log.logCommandLine("Conntect: " + connection.eval(aDataScript));
+			while (itsLock == true) {
+				Thread.sleep(3000 + ThreadLocalRandom.current().nextInt(0, 10 + 1));
+			}
+			
+			itsLock = true;
+			//connection.eval(aFunctionScript);
 			aReturn = connection.eval(aDataScript).asString();
+			itsLock = false;
 			runScriptCache.put(key, aReturn);
 			return aReturn;
 		} catch (Exception e) {
-			Log.logCommandLine("R script error: \n" + e.getMessage());
-			Log.logCommandLine(aFunctionScript);
-			Log.logCommandLine(aDataScript);
-			
-			declaredFunctions.remove(aScriptKey);
-			//return null;
-			
-			
-			e.printStackTrace();
-			
 			try {
-				Thread.sleep(1000);
-				//disconnect();
-				shutdown();
-				Thread.sleep(1000);
-				//startup();
-				//connect();
-				return runScript(aScriptKey, aDataScript, aFunctionScript);
+				Log.logCommandLine("declaredFunctions: " + aFunctionScript);
+				connection.eval(aFunctionScript);
+				aReturn = connection.eval(aDataScript).asString();
+				itsLock = false;
+				runScriptCache.put(key, aReturn);
+				return aReturn;
 			}
 			catch (Exception e2) {
+				Log.logCommandLine("R script error: " + e2.getMessage());
+				Log.logCommandLine(aFunctionScript);
+				Log.logCommandLine(aDataScript);
+				Log.logCommandLine("" + (connection == null));
+				Log.logCommandLine("" + declaredFunctions.toString());
+				
+				declaredFunctions.remove(aScriptKey);
+				itsLock = false;
+				//return null;
+				
+				
 				e2.printStackTrace();
-				return aReturn;
+				//throw new Exception("Stop Rserve");
+				
+				try {
+					Thread.sleep(10000);
+					//disconnect();
+					shutdown();
+					Thread.sleep(10000);
+					//startup();
+					//connect();
+					return runScript(aScriptKey, aDataScript, aFunctionScript);
+				}
+				catch (Exception e3) {
+					e2.printStackTrace();
+					return aReturn;
+				}
 			}
 		}
 	}
