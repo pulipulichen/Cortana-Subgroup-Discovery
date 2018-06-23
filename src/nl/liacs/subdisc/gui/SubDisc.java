@@ -100,6 +100,8 @@ public class SubDisc
 		
 		// 20180414 Open the main window directly without open a file.
 		try {
+			//ConfigIni.set("search strategy", "RPath2", "ccd");
+			
 			MiningWindow w = new MiningWindow();
 			
 			//Log.logCommandLine("start cortana 5");

@@ -16,7 +16,7 @@ public class AncovaMeasure
 	private float[] itsDVdata;
 	
 	private boolean itsIsParametricAncova = true;
-	private double itsFstatPval = 1;
+	private double itsFstatPval = 0;
 	private ArrayList<String> itsPairwiseComparison = new ArrayList<String>();
 
 	//make a base model from two columns
@@ -28,7 +28,9 @@ public class AncovaMeasure
 		// 20180616 we have to init ANCOVA result based on theIVColumn, theCOVColumn, and the DVColumn
 		//itsPairwiseComparison.add("A > B*");
 		
-		if (theIVColumn == null) {
+		if (theIVColumn == null 
+				|| theCOVColumn == null 
+				|| theDVColumn == null) {
 			return;
 		}
 		
@@ -186,9 +188,9 @@ public class AncovaMeasure
 			output = output + p;
 		}
 		
-		if (false == itsIsParametricAncova) {
-			output = "[NP] " + output;
-		}
+		//if (false == itsIsParametricAncova) {
+		//	output = "[NP] " + output;
+		//}
 		
 		return output;
 	}

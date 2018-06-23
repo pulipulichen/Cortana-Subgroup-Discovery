@@ -50,6 +50,10 @@ public class RegressionMeasure
 	public RegressionMeasure(QM theType, Column thePrimaryColumn, Column theSecondaryColumn)
 	{
 		itsQualityMeasure = theType;
+		if (thePrimaryColumn == null) {
+			return;
+		}
+		
 		itsSampleSize = thePrimaryColumn.size();
 		itsData = new ArrayList<Point2D.Float>(itsSampleSize);
 		for(int i=0; i<itsSampleSize; i++)

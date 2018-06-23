@@ -102,7 +102,7 @@ public class MiningWindow extends JFrame implements ActionListener
 
 		// MENU BAR - FILE
 		jMenuFile = initMenu(STD.FILE);
-
+		
 		jMenuItemOpenFile = initMenuItem(STD.OPEN_FILE);
 		jMenuFile.add(jMenuItemOpenFile);
 
@@ -143,6 +143,9 @@ public class MiningWindow extends JFrame implements ActionListener
 
 		// MENU BAR - ENRICHMENT
 		jMenuEnrichment = initMenu(STD.ENRICHMENT);
+		
+		jMenuItemRPathConfig = initMenuItem(STD.R_PATH_CONFIG);
+		jMenuEnrichment.add(jMenuItemRPathConfig);
 
 		jMenuItemAddCuiEnrichmentSource = initMenuItem(STD.ADD_CUI_DOMAIN);
 		jMenuEnrichment.add(jMenuItemAddCuiEnrichmentSource);
@@ -778,6 +781,7 @@ public class MiningWindow extends JFrame implements ActionListener
 						jMenuItemCreateAutorunFile,
 						jMenuItemAddToAutorunFile,
 						jMenuItemLoadSampledSubgroups,
+						jMenuItemRPathConfig,
 						jMenuItemAddCuiEnrichmentSource,
 						jMenuItemAddGoEnrichmentSource,
 						jMenuItemAddCustomEnrichmentSource,
@@ -1359,6 +1363,47 @@ public class MiningWindow extends JFrame implements ActionListener
 					jMenuItemRemoveEnrichmentSource
 						.setEnabled(aDomainList == null || aComponentCount == 0);
 				}
+			}
+		});
+	}
+	
+	private void jMenuItemRPathConfigActionPerformed()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				String itsRPath = ConfigIni.get("global", "RPath");
+				Log.logCommandLine("itsRPath: " + itsRPath);
+				if (null == itsRPath) {
+					itsRPath = "";
+				}
+				String selectRPath = JOptionPane.showInputDialog(null, "R path:", itsRPath);
+				//selectRPath = selectRPath.replaceAll("\\", "\\\\");
+				Log.logCommandLine("selectRPath: " + selectRPath);
+				
+				if (RserveUtil.tryRPath(selectRPath) == true) {
+					ConfigIni.set("global", "RPath", selectRPath);
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "R path is not existed");
+				}
+				/*
+				int dialogButton = JOptionPane.YES_NO_OPTION;
+				int dialogResult = JOptionPane.showConfirmDialog(null, "R has not been installed. \n" 
+						+ "Pleasse check the config.ini setting. \n"
+						+ "Subgroup result would not be analysed correctly. \n"
+						+ "Do you want to open R's download page?", "R is not found", dialogButton);
+				if(dialogResult == 0) {
+					//System.out.println("Yes option");
+					try {
+						Desktop.getDesktop().browse(new URI("https://cloud.r-project.org/"));
+					}
+					catch (Exception e) {
+						Log.logCommandLine("Open URI error: " + e.getMessage());
+					}
+				}
+				*/
 			}
 		});
 	}
@@ -2112,14 +2157,24 @@ public class MiningWindow extends JFrame implements ActionListener
 	private String getTargetAttributeName() { return (String) jComboBoxTargetAttribute.getSelectedItem(); }
 	private void setTargetAttribute(String aName) { jComboBoxTargetAttribute.setSelectedItem(aName); }
 	private void addTargetAttributeItem(String anItem) { jComboBoxTargetAttribute.addItem(anItem); }
-	private void selectTargetAttributeItem(int selectedIndex) { jComboBoxTargetAttribute.setSelectedIndex(selectedIndex); }
+	private void selectTargetAttributeItem(int selectedIndex) {
+		if (selectedIndex < 0) {
+			selectedIndex = 0;
+		}
+		jComboBoxTargetAttribute.setSelectedIndex(selectedIndex); 
+	}
 	private int getTargetAttributeItemCount() { return jComboBoxTargetAttribute.getItemCount(); }
 	private void removeAllTargetAttributeItems() { jComboBoxTargetAttribute.removeAllItems(); }
 	
 	// target concept - misc field (target value / secondary target)
 	private void addMiscFieldItem(String anItem) { jComboBoxMiscField.addItem(anItem); }
 	private void removeAllMiscFieldItems() { jComboBoxMiscField.removeAllItems(); }
-	private void selectMiscFieldItem(int selectedIndex) { jComboBoxMiscField.setSelectedIndex(selectedIndex); }
+	private void selectMiscFieldItem(int selectedIndex) {
+		if (selectedIndex < 0) {
+			selectedIndex = 0;
+		}
+		jComboBoxMiscField.setSelectedIndex(selectedIndex); 
+	}
 	private int getMiscFieldItemCount() { return jComboBoxMiscField.getItemCount(); }
 	private String getMiscFieldName() { return (String) jComboBoxMiscField.getSelectedItem(); }
 	private void setMiscFieldName(String aValue) { jComboBoxMiscField.setSelectedItem(aValue); }
@@ -2127,7 +2182,12 @@ public class MiningWindow extends JFrame implements ActionListener
 	// target concept - third target field (for TRIPLE_ANCOVA)
 	private void addThirdTargetItem(String anItem) { jComboBoxThirdTarget.addItem(anItem); }
 	private void removeAllThirdTargetItems() { jComboBoxThirdTarget.removeAllItems(); }
-	private void selectThirdTargetItem(int selectedIndex) { jComboBoxThirdTarget.setSelectedIndex(selectedIndex); }
+	private void selectThirdTargetItem(int selectedIndex) {
+		if (selectedIndex < 0) {
+			selectedIndex = 0;
+		}
+		jComboBoxThirdTarget.setSelectedIndex(selectedIndex); 
+	}
 	private int getThirdTargetItemCount() { return jComboBoxThirdTarget.getItemCount(); }
 	private String getThirdTargetName() { return (String) jComboBoxThirdTarget.getSelectedItem(); }
 	private void setThirdTargetName(String aValue) { jComboBoxThirdTarget.setSelectedItem(aValue); }
@@ -2227,6 +2287,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	private JMenuItem jMenuItemLoadSampledSubgroups;
 	// MENU - Enrichment
 	private JMenu jMenuEnrichment;
+	private JMenuItem jMenuItemRPathConfig;
 	private JMenuItem jMenuItemAddCuiEnrichmentSource;
 	private JMenuItem jMenuItemAddGoEnrichmentSource;
 	private JMenuItem jMenuItemAddCustomEnrichmentSource;
@@ -2441,6 +2502,7 @@ public class MiningWindow extends JFrame implements ActionListener
 		ADD_GO_DOMAIN(		"Add GO Domain",	KeyEvent.VK_G,	false),
 		ADD_CUSTOM_DOMAIN(	"Add Custom Domain",	KeyEvent.VK_U,	false),
 		REMOVE_ENRICHMENT_SOURCE("Remove Enrichment Source", KeyEvent.VK_R, false),
+		R_PATH_CONFIG(	"R Path Config",	KeyEvent.VK_V,	false),
 		ABOUT(			"About",		KeyEvent.VK_A,	false),
 		ABOUT_CORTANA(		"Cortana",		KeyEvent.VK_I,	true),
 		// TARGET CONCEPT
@@ -2510,6 +2572,8 @@ public class MiningWindow extends JFrame implements ActionListener
 			jMenuItemAddEnrichmentSourceActionPerformed(EnrichmentType.CUSTOM);
 		else if (STD.REMOVE_ENRICHMENT_SOURCE.GUI_TEXT.equals(aCommand))
 			jMenuItemRemoveEnrichmentSourceActionPerformed();
+		else if (STD.R_PATH_CONFIG.GUI_TEXT.equals(aCommand))
+			jMenuItemRPathConfigActionPerformed();
 
 		else if (STD.ABOUT_CORTANA.GUI_TEXT.equals(aCommand))
 			jMenuItemAboutCortanaActionPerformed();

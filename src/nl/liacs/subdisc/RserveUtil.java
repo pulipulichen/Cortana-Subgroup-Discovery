@@ -72,6 +72,7 @@ public class RserveUtil
 
 						        	if (new File(itsRPath).exists()) {
 						        		Log.logCommandLine("Find RPath: " + itsRPath);
+						        		ConfigIni.set("global", "RPath", itsRPath);
 						        		break;
 						        	}
 						        }
@@ -109,9 +110,9 @@ public class RserveUtil
 		}
 	}
 	
-	private static boolean tryRPath(String theRPath) {
+	public static boolean tryRPath(String theRPath) {
 		try {
-			Runtime.getRuntime().exec("\"" + itsRPath + "\"");
+			Runtime.getRuntime().exec("\"" + theRPath + "\"");
 			return true;
 		}
 		catch (Exception e) {
@@ -248,6 +249,11 @@ public class RserveUtil
 			runScriptCache.put(key, aReturn);
 			return aReturn;
 		} catch (Exception e) {
+			Log.logCommandLine("R script error: \n" + e.getMessage());
+			Log.logCommandLine(aDataScript);
+			return null;
+			
+			/*
 			e.printStackTrace();
 			
 			try {
@@ -262,6 +268,7 @@ public class RserveUtil
 			catch (Exception e2) {
 				e2.printStackTrace();
 			}
+			*/
 		} finally {
 	        //Log.logCommandLine("" + chiSquareTestRScript);
 			return aReturn;

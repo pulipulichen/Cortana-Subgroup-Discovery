@@ -23,6 +23,10 @@ public class CorrelationMeasure
 
 		itsBase = null; //no base model to refer to yet
 		itsType = theType;
+		
+		if (null == thePrimaryColumn) {
+			return;
+		}
 
 		for (int i = 0, j = thePrimaryColumn.size(); i < j; i++)
 			addObservation(thePrimaryColumn.getFloat(i), theSecondaryColumn.getFloat(i));
