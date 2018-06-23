@@ -61,7 +61,7 @@ public class AncovaMeasure
 		// Init AncovaMeasure.itsRscriptFoot
 		if (null == AncovaMeasure.itsFunctionRscript) {
 			String aRscript = JARTextFileLoader.load("/r-scripts/cortana_ancova.R", "");
-			String aSplitor = "print(\"data|script\");";
+			String aSplitor = "print(\"script|data\");";
 			int endIndex = aRscript.indexOf(aSplitor);
 			AncovaMeasure.itsFunctionRscript = aRscript.substring(0, endIndex);
 			//Log.logCommandLine("itsFunctionRscript: " + AncovaMeasure.itsFunctionRscript);

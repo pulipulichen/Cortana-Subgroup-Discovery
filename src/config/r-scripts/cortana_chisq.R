@@ -19,7 +19,7 @@ cortana_chisq <- function (data, row_num) {
     qualityMeasure <- chisq.result$p.value;
     paste(sprintf("%.5f", qualityMeasure), sprintf("%.5f", adj.stdres),is.fisher.test, sep=",");
 };
-print("data|script");
+print("script|data");
 cortana_chisq(c(3, 1, 1, 3, 6, 6), 2);
 # 3 1 6
 # 1 3 6

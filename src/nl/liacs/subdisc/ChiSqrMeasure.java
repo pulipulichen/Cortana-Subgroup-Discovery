@@ -46,7 +46,7 @@ public class ChiSqrMeasure
 		// Init AncovaMeasure.itsRscriptFoot
 		if (null == ChiSqrMeasure.itsFunctionRscript) {
 			String aRscript = JARTextFileLoader.load("/r-scripts/cortana_chisq.R", "");
-			String aSplitor = "print(\"data|script\");";
+			String aSplitor = "print(\"script|data\");";
 			int endIndex = aRscript.indexOf(aSplitor);
 			ChiSqrMeasure.itsFunctionRscript = aRscript.substring(0, endIndex);
 			Log.logCommandLine("itsFunctionRscript: " + ChiSqrMeasure.itsFunctionRscript);

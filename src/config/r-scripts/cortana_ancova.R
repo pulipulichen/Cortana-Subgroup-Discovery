@@ -78,5 +78,5 @@ cortana_ancova <- function (input) {
     };
     paste(is.parametric.ancova, sprintf("%.5f", p.value), paste(pairwise.result, collapse=";"), sep=",");
 };
-print("data|script");
+print("script|data");
 cortana_ancova(data.frame(iv = c('C','C','C','C','C','C','C','C','C','C','E','E','E','E','E','E','E','E','E','E'),cov = c(21.0,23.0,25.0,23.0,23.0,24.0,24.0,20.0,22.0,24.0,21.0,24.0,21.0,20.0,23.0,24.0,23.0,21.0,25.0,24.0),dv = c(21.0,23.0,25.0,23.0,23.0,24.0,24.0,20.0,22.0,24.0,21.0,24.0,21.0,20.0,23.0,24.0,23.0,21.0,25.0,24.0)));
