@@ -541,7 +541,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		TargetType aTargetType = itsTargetConcept.getTargetType();
 		
 		// search conditions
-		setSearchDepthMaximum("1");
+		int aRefinementDepth = ConfigIni.getInt("search strategy", "RefinementDepth", 1);
+		setSearchDepthMaximum("" + aRefinementDepth);
 		
 		//float aMinimumCoverage = ConfigIni.getFloat("search strategy", "MinimumCoverage", (float) 0.33);
 		setSearchCoverageMinimum("1");

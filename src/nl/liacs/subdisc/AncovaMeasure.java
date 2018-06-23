@@ -123,6 +123,7 @@ public class AncovaMeasure
 		
 		if (false == isDataValided) {
 			setNullResult();
+			Log.logCommandLine("isDataValided");
 			return;
 		}
 		
@@ -135,11 +136,15 @@ public class AncovaMeasure
 		// Init AncovaMeasure.itsRscriptFoot
 		initFunctionRscript();
 		
-		//Log.logCommandLine("aRscript: " + aRscript);
+		
+		Log.logCommandLine("" + AncovaMeasure.itsFunctionRscript);
+		Log.logCommandLine("" + aDataScript);
 		
 		
 		String aReturn = RserveUtil.runScript("TRIPLE_ANCOVA", aDataScript, AncovaMeasure.itsFunctionRscript);
+		
 		if (null == aReturn) {
+			Log.logCommandLine("aReturn null");
 			return;
 		}
 		

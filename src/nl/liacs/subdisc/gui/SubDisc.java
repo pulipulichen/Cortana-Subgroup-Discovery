@@ -98,6 +98,15 @@ public class SubDisc
 		Log.logCommandLine("save: " + input + input.indexOf("\""));
 		*/
 		
+		
+		/*
+		String [] iv = {"C","C","C","C","C","C","C","E","E","E","E","E","E"};
+		float[] cov = {11,12,19,13,15,17,13,11,14,10,12,12,11};
+		float[] dv = { 21,23,25,23,24,24,22,21,24,21,20,23,24 };
+		AncovaMeasure p = new AncovaMeasure(null, iv, cov, dv) ;
+		Log.logCommandLine("AncovaMeasure: " + p.getFstatPvalInvert());
+		*/
+		
 		// 20180414 Open the main window directly without open a file.
 		try {
 			//ConfigIni.set("search strategy", "RPath2", "ccd");

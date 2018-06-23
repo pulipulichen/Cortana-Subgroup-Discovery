@@ -1,4 +1,6 @@
 @echo off
+cd /D "%~dp0"
+
 echo.
 echo ##################################################
 echo ####### CORTANA COMPILE SCRIPT FOR WINDOWS #######

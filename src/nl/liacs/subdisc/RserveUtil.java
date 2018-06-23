@@ -126,6 +126,8 @@ public class RserveUtil
 	
 	public static void startup(boolean isForce) {
 
+		initRscript();
+		
 		if (connection != null) {
 			return;
 		}
@@ -137,8 +139,6 @@ public class RserveUtil
 	    	Log.logCommandLine("RserveUtil.startup() Socket failed: " + ignored.getMessage());
 	        return;
 	    }
-		
-		initRscript();
 		
 		final Runtime rt = Runtime.getRuntime();
 		try {
@@ -159,12 +159,12 @@ public class RserveUtil
 			return;
 		}
 		
+		disconnect();
 		final Runtime rt = Runtime.getRuntime();
 		try {
-			disconnect();
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
-			//Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
-			connection = null;
+			Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
+			//connection = null;
 		}
 		catch (Exception e) {
 			
@@ -194,7 +194,8 @@ public class RserveUtil
 		if (connection != null) {
 			connection.close();
 			connection = null;
-			//Log.logCommandLine("Rserve disconnectioned. " + (connection != null));
+			declaredFunctions =  new ArrayList<String>();
+			Log.logCommandLine("Rserve disconnectioned. " + (connection != null));
 		}
 	}
 	
@@ -208,11 +209,12 @@ public class RserveUtil
 	@SuppressWarnings("finally")
 	public static String runScript(String aScriptKey, String aDataScript, String aFunctionScript) {
 
-		if (true == itsLazyStartup) {
-			startup(true);
-		}
+		//if (true == itsLazyStartup) {
+		startup(true);
+		//}
 		
 		if (null == itsRPath) {
+			Log.logCommandLine("No itsRPath.");
 			return null;
 		}
 		
@@ -234,7 +236,7 @@ public class RserveUtil
 			Thread.sleep(100);	
 			
 			if (declaredFunctions.contains(aScriptKey) == false) {
-				//Log.logCommandLine("Run Function Script: " + aFunctionScript);
+				Log.logCommandLine("Run Function Script: " + aFunctionScript);
 				connection.eval(aFunctionScript);
 				
 				declaredFunctions.add(aScriptKey);
@@ -245,12 +247,16 @@ public class RserveUtil
 			runScriptConnectCount++;
 			//Log.logCommandLine("Conntect: " + runScriptConnectCount);
           
-			aReturn = (String) connection.eval(aDataScript).asString();
+			//Log.logCommandLine("Conntect: " + connection.eval(aDataScript));
+			aReturn = connection.eval(aDataScript).asString();
 			runScriptCache.put(key, aReturn);
 			return aReturn;
 		} catch (Exception e) {
 			Log.logCommandLine("R script error: \n" + e.getMessage());
+			Log.logCommandLine(aFunctionScript);
 			Log.logCommandLine(aDataScript);
+			
+			declaredFunctions.remove(aScriptKey);
 			//return null;
 			
 			
@@ -258,20 +264,17 @@ public class RserveUtil
 			
 			try {
 				Thread.sleep(1000);
-				disconnect();
+				//disconnect();
 				shutdown();
 				Thread.sleep(1000);
-				startup();
-				connect();
+				//startup();
+				//connect();
 				return runScript(aScriptKey, aDataScript, aFunctionScript);
 			}
 			catch (Exception e2) {
 				e2.printStackTrace();
+				return aReturn;
 			}
-			
-		} finally {
-	        //Log.logCommandLine("" + chiSquareTestRScript);
-			return aReturn;
 		}
 	}
 }

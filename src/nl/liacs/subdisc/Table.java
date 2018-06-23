@@ -402,15 +402,18 @@ public class Table implements XMLNodeInterface
 	//Arno needs to fix this, at some point.
 	public Condition getNextCondition(Condition theCurrentCondition)
 	{
-		if (theCurrentCondition.hasNextOperator())
+		if (theCurrentCondition.hasNextOperator()) {
 			return new Condition(theCurrentCondition.getColumn(), theCurrentCondition.getNextOperator());
+		}
 		else
 		{
 			int anIndex = theCurrentCondition.getColumn().getIndex();
-			if (anIndex == itsNrColumns-1) // No more attributes
+			if (anIndex == itsNrColumns-1) { // No more attributes
 				return null;
-			else
+			}
+			else {
 				return new Condition(itsColumns.get(anIndex + 1));
+			}
 		}
 	}
 

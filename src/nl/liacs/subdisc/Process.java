@@ -185,7 +185,7 @@ public class Process
 
 
 		if (QM.useRserve(theMeasure)) {
-			RserveUtil.shutdown();
+			//RserveUtil.shutdown();
 		}
 		
 		return aSubgroupDiscovery;
