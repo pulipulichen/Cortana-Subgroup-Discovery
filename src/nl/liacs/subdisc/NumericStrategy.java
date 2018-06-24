@@ -8,7 +8,7 @@ import java.util.*;
 public enum NumericStrategy implements EnumInterface
 {
 	NUMERIC_DISTRIBUTION("distribution"),
-	NUMERIC_BINS("bins"),
+	NUMERIC_BINS("bins (equi-depth)"),
 	NUMERIC_BEST("best"),
 	NUMERIC_ALL("all"),
 	NUMERIC_INTERVALS("intervals");

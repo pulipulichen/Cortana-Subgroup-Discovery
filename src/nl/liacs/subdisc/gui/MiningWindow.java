@@ -934,7 +934,7 @@ public class MiningWindow extends JFrame implements ActionListener
 							defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-1;
 						}
 						else if (c.getName().equals("dv") || c.getName().equals("post")) {
-							defaultThirdAttributeItemIndex = getMiscFieldItemCount()-1;
+							defaultThirdAttributeItemIndex = getThirdTargetItemCount()-1;
 						}
 						break;
 					}
@@ -1047,7 +1047,7 @@ public class MiningWindow extends JFrame implements ActionListener
 				defaultSecondaryAttributeItemIndex = getMiscFieldItemCount()-2;
 			}
 			if (defaultThirdAttributeItemIndex == -1) {
-				defaultThirdAttributeItemIndex = getMiscFieldItemCount()-1;
+				defaultThirdAttributeItemIndex = getThirdTargetItemCount()-1;
 			}
 			
 			selectTargetAttributeItem(defaultTargetAttributeItemIndex);

@@ -28,13 +28,14 @@ public class RserveUtil
 	private static String itsRscriptStartup = null;
 	private static String itsRscriptShutdown = null;
 	private static boolean itsLazyStartup = false;
+	private static Runtime rt;
 	
 	private static void initRscript() {
 		// Init AncovaMeasure.itsRscriptFoot
 		if (null == itsRscriptStartup) {
 			//return;
 			
-			itsRPath = ConfigIni.get("global", "RPath");
+			itsRPath = ConfigIni.get("rserve", "RPath");
 			
 			// Check the RPath
 			if (tryRPath(itsRPath) == false) {
@@ -112,8 +113,11 @@ public class RserveUtil
 	}
 	
 	public static boolean tryRPath(String theRPath) {
+		if (rt == null) {
+			rt = Runtime.getRuntime();
+		}
 		try {
-			Runtime.getRuntime().exec("\"" + theRPath + "\"");
+			rt.exec("\"" + theRPath + "\"");
 			return true;
 		}
 		catch (Exception e) {
@@ -143,7 +147,10 @@ public class RserveUtil
 	    }
 	    */
 		
-		final Runtime rt = Runtime.getRuntime();
+		if (rt == null) {
+			rt = Runtime.getRuntime();
+		}
+		
 		try {
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
 			Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
@@ -161,6 +168,7 @@ public class RserveUtil
 		}
 		try {
 			connection = new RConnection();
+			connection.setStringEncoding("utf8");
 			Log.logCommandLine("Rserve connectioned. " + (connection != null));
 		}
 		catch (Exception e) {
@@ -179,7 +187,9 @@ public class RserveUtil
 		}
 		
 		disconnect();
-		final Runtime rt = Runtime.getRuntime();
+		if (rt == null) {
+			rt = Runtime.getRuntime();
+		}
 		try {
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
 			Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
@@ -202,7 +212,34 @@ public class RserveUtil
 		}
 	}
 	
+	public static void taskkill() {
+		if (rt == null) {
+			rt = Runtime.getRuntime();
+		}
+		try {
+			rt.exec("taskkill /f /im Rserve.exe");
+			Log.logCommandLine("Rserve processes are killed.");
+			//connection = null;
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
 	// --------------------
+	
+	public static String run(String theRscript) {
+		startup(true);
+		String result;
+		try {
+			result = connection.eval(theRscript).asString();
+			//connection.setStringEncoding(arg0);
+		}
+		catch (Exception e) {
+			result = e.getMessage();
+		}
+		return result; 
+	}
 	
 	
 	private static HashMap<String, String> runScriptCache =  new HashMap<String, String>();
