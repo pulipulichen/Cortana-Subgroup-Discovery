@@ -25,6 +25,7 @@ public class BrowseWindow extends JFrame implements ActionListener//, MouseListe
 	private JComboBox itsColumnsBox;
 	// problematic in case of double columnNames
 	private Map<String, Integer> itsMap;
+	private String itsConditions;
 
 	public BrowseWindow(Table theTable, Subgroup theSubgroup)
 	{
@@ -41,10 +42,12 @@ public class BrowseWindow extends JFrame implements ActionListener//, MouseListe
 
 			if (theSubgroup == null)
 				setTitle("Data for: " + itsTable.getName());
-			else
+			else {
+				itsConditions = theSubgroup.getConditions().toString();
 				setTitle(theSubgroup.getCoverage() +
 						" members in subgroup: " +
 						theSubgroup.getConditions());
+			}
 
 			setIconImage(MiningWindow.ICON);
 			setLocation(100, 100);
@@ -140,8 +143,13 @@ public class BrowseWindow extends JFrame implements ActionListener//, MouseListe
 			;//comboBoxCheck();
 		else if("comboBoxChanged".equals(anEvent))
 			updateItsColumnsBox();
-		else if ("save".equals(anEvent))
-			itsTable.toFile(itsSubgroupMembers);
+		else if ("save".equals(anEvent)) {
+			String aFileName = itsTable.getName()
+					+ "_"
+					+ itsConditions.replaceAll(" ", "")
+					+ ".csv";
+			itsTable.toFile(itsSubgroupMembers, aFileName);
+		}
 		else if ("close".equals(anEvent))
 			dispose();
 	}

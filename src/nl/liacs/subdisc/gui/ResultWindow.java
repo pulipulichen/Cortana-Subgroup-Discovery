@@ -209,15 +209,19 @@ public class ResultWindow extends JFrame implements ActionListener
 		TargetType aTargetType = itsSearchParameters.getTargetType();
 		if (TargetType.hasTargetValue(aTargetType))
 		{
-			s.append(";  target value = ");
+			s.append(";  target concept: " + itsSearchParameters.getTargetConcept().getTargetConceptString(", "));
+			
+			/*
 			if (aTargetType == TargetType.SINGLE_NOMINAL)
 				s.append(itsSearchParameters.getTargetConcept().getTargetValue());
 			// else DOUBLE_REGRESSION or DOUBLE_CORRELATION
 			else
 				s.append(itsSearchParameters.getTargetConcept().getSecondaryTarget().getName());
+			*/
 		}
-		if (itsFold != 0)
+		if (itsFold != 0) {
 			s.append(";  fold = " + itsFold);
+		}
 
 		NumberFormat aFormatter = NumberFormat.getNumberInstance();
 		aFormatter.setMaximumFractionDigits(3);
@@ -558,8 +562,11 @@ public class ResultWindow extends JFrame implements ActionListener
 	{
 		//Log.logCommandLine("jButtonSaveActionPerformed()");
 		
-		String aFileName = itsTable.getName() + "_"
+		String aFileName = itsTable.getName() 
+				+ "_"
 				+ itsSearchParameters.getQualityMeasure().getFormattedGUIText()
+				+ "_"
+				+ itsSearchParameters.getTargetConcept().getTargetConceptString(",")
 				+ ".csv";
 		
 		File aFile = new FileHandler(Action.SAVE, aFileName, FileType.TXT).getFile();

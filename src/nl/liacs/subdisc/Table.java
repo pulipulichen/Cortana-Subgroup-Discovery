@@ -578,11 +578,11 @@ public class Table implements XMLNodeInterface
 	 * the output <code>File</code>. If the parameter is <code>null</code>,
 	 * the whole Table will be written.
 	 */
-	public void toFile(BitSet theMembers)
+	public void toFile(BitSet theMembers, String theFilename)
 	{
 		BufferedWriter aWriter = null;
 
-		File aFile = new FileHandler(Action.SAVE).getFile();
+		File aFile = new FileHandler(Action.SAVE, theFilename).getFile();
 
 		if (aFile == null)
 			return;
@@ -653,6 +653,11 @@ public class Table implements XMLNodeInterface
 				}
 			}
 		}
+	}
+	
+	public void toFile(BitSet theMembers)
+	{
+		toFile(theMembers, null);
 	}
 
 	// as above, but writes whole Table (no row inclusion test)

@@ -248,8 +248,12 @@ public enum QM implements EnumInterface
 	public String toString() { return GUI_TEXT; };
 	
 	public String getFormattedGUIText() {
-		return GUI_TEXT
+		String output = GUI_TEXT
 				.replaceAll(" ", "")
 				.replaceAll("\\.", "");
+		if (output.length() > 10) {
+			output = output.substring(0, 10);
+		}
+		return output;
 	}
 }

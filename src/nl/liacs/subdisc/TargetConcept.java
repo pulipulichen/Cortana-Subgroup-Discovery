@@ -273,4 +273,36 @@ public class TargetConcept implements XMLNodeInterface
 
 	public String getGlobalRegressionModel() { return itsGlobalRegressionModel; }
 	public void setGlobalRegressionModel(String theModel) { itsGlobalRegressionModel = theModel; }
+	
+	public String getTargetConceptString() {
+		return getTargetConceptString("_");
+	}
+	
+	public String getTargetConceptString(String aSeperator) {
+		ArrayList<String> output = new ArrayList<String>();
+
+		if (null != itsPrimaryTarget && itsPrimaryTarget.getName() != null) {
+			String name = itsPrimaryTarget.getName();
+			if (null != itsTargetValue) {
+				name = name + "=" + itsTargetValue;
+			}			
+			output.add(name);
+		}
+		
+		if (null != itsSecondaryTarget && itsSecondaryTarget.getName() != null) {
+			output.add(itsSecondaryTarget.getName());
+		}
+		if (null != itsThirdTarget && itsThirdTarget.getName() != null) {
+			output.add(itsThirdTarget.getName());
+		}
+
+		String listString = "";
+		for (String s : output) {
+			if (listString.equals("") == false) {
+				listString += aSeperator;				
+			}
+		    listString += s;
+		}
+		return listString;
+	}
 }
