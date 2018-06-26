@@ -156,7 +156,7 @@ public class AncovaMeasure
 		Log.logCommandLine("" + aDataScript);
 		
 		
-		String aReturn = RserveUtil.runScript("TRIPLE_ANCOVA", aDataScript, aFunctionRscript);
+		String aReturn = RserveUtil.runScript(itsQualityMeasure.GUI_TEXT, aDataScript, aFunctionRscript);
 		
 		if (null == aReturn) {
 			Log.logCommandLine("aReturn null");
