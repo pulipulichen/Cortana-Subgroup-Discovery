@@ -154,7 +154,7 @@ public class RserveUtil
 		try {
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
 			Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
-			
+			Thread.sleep(1000);
 			connect();
 		}
 		catch (Exception e) {
@@ -172,10 +172,22 @@ public class RserveUtil
 			Log.logCommandLine("Rserve connectioned. " + (connection != null));
 		}
 		catch (Exception e) {
-			String message = "Rserve connection failed: " + e.getMessage();
-			JOptionPane.showMessageDialog(null, message);
-			connection = null;
-			Log.logCommandLine("Rserve connection failed: " + e.getMessage());
+			try {
+				Thread.sleep(3000);
+				startup(true);
+				
+				Thread.sleep(3000);
+				
+				connection = new RConnection();
+				connection.setStringEncoding("utf8");
+				Log.logCommandLine("Rserve connectioned. " + (connection != null));
+			}
+			catch (Exception e2) {
+				String message = "Rserve connection failed: " + e.getMessage();
+				JOptionPane.showMessageDialog(null, message);
+				connection = null;
+				Log.logCommandLine("Rserve connection failed: " + e.getMessage());
+			}
 		}
 	}
 	
