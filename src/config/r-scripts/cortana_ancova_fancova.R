@@ -1,4 +1,3 @@
-print("1550");
 if(!require(car)){install.packages("car")};
 if(!require(emmeans)){install.packages("emmeans")};
 if(!require(gtools)){install.packages("gtools")};

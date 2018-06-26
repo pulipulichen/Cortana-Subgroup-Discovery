@@ -152,6 +152,7 @@ public class SubDisc
 		}
 		catch (Exception e) {
 			Log.logCommandLine("MiningWindow error:" + e.getMessage());
+			e.printStackTrace();
 		}
 			
 		

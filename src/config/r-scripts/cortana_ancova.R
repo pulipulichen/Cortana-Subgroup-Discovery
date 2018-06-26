@@ -1,4 +1,3 @@
-print("1550");
 if(!require(car)){install.packages("car")};
 if(!require(emmeans)){install.packages("emmeans")};
 if(!require(gtools)){install.packages("gtools")};
@@ -10,7 +9,6 @@ cortana_ancova <- function (input) {
     p.value <- 1;
     pairwise.result <- c('null');
     is.parametric.ancova <- TRUE;
-
     ancova.model <- aov(dv~as.factor(iv)+cov,data=input);
     ancova.model.type3 <- Anova(ancova.model, type=3);
     p.value <- ancova.model.type3["Pr(>F)"][[1]][2];

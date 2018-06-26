@@ -39,9 +39,9 @@ public enum QM implements EnumInterface
 	// NOTE when adding a new SINGLE_NUMERIC QM -> add it to requiredStats()
 	T_TEST_P_VALUE_O		("t-Test (1-p)[O]",		"-1.0",	TargetType.SINGLE_NUMERIC),
 	T_TEST_P_VALUE_C		("t-Test (1-p)[C]",		"-1.0",	TargetType.SINGLE_NUMERIC),
-	ABS_Z_SCORE	("Abs Z-Score",		"1.0",	TargetType.SINGLE_NUMERIC),
-	Z_SCORE		("Z-Score",		"1.0",	TargetType.SINGLE_NUMERIC),
-	INVERSE_Z_SCORE	("Inverse Z-Score",	"1.0",	TargetType.SINGLE_NUMERIC),
+	ABS_Z_SCORE	("Abs Z-Score",		"0.0",	TargetType.SINGLE_NUMERIC),
+	Z_SCORE		("Z-Score",		"0.0",	TargetType.SINGLE_NUMERIC),
+	INVERSE_Z_SCORE	("Inverse Z-Score",	"0.0",	TargetType.SINGLE_NUMERIC),
 	
 	AVERAGE		("Average",		"0.0",	TargetType.SINGLE_NUMERIC),	// bogus minimum value, should come from data
 	INVERSE_AVERAGE	("Inverse Average",	"0.0",	TargetType.SINGLE_NUMERIC),	// bogus minimum value, should come from data
@@ -90,7 +90,8 @@ public enum QM implements EnumInterface
 	ANOVA	("ANOVA F stat. (p-val)", "-1.0", TargetType.GROUP_ANOVA),
 	
 	// TRIPLE_ANCOVA
-	ANCOVA	("ANCOVA F stat. (p-val)", "-1.0", TargetType.TRIPLE_ANCOVA);
+	ANCOVA	("ANCOVA", "-1.0", TargetType.TRIPLE_ANCOVA),
+	ANCOVA_FANCOVA	("ANCOVA or fANOCVA", "-1.0", TargetType.TRIPLE_ANCOVA);
 
 	// to enforce implementation of SINGLE_NUMERIC and SINGLE_ORDINAL QMs
 	static { requiredStatsTest(); };
