@@ -2029,8 +2029,6 @@ public class Column implements XMLNodeInterface
 			
 			String comment = comments[i];
 			
-			
-			
 			if (itsDistributionComments.containsKey(key) == false) {
 				itsDistributionComments.put(key, comment);
 			}

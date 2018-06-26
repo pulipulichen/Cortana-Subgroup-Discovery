@@ -122,6 +122,7 @@ public class Condition implements Comparable<Condition>
 			aCopy.itsNominalValue = new String(itsNominalValue);
 		aCopy.itsNominalValueSet = this.itsNominalValueSet; //shallow copy!
 		aCopy.itsNumericValue = this.itsNumericValue;
+		aCopy.itsNumericValueComment = this.itsNumericValueComment;
 		aCopy.itsInterval = this.itsInterval; //shallow copy!
 		aCopy.itsBinaryValue = this.itsBinaryValue;
 		return aCopy;
@@ -349,8 +350,14 @@ public class Condition implements Comparable<Condition>
 				return String.format("%s %s %s (%s)", itsColumn.getName(), itsOperator, getValue(), itsNumericValueComment);
 			}
 		}
-		else
-			return String.format("%s %s '%s'", itsColumn.getName(), itsOperator, getValue());
+		else {
+			if (null == itsNumericValueComment) {
+				return String.format("%s %s '%s'", itsColumn.getName(), itsOperator, getValue());
+			}
+			else {
+				return String.format("%s %s '%s' (%s)", itsColumn.getName(), itsOperator, getValue(), itsNumericValueComment);
+			}
+		}
 	}
 	
 	public String getNumericValueComment() {

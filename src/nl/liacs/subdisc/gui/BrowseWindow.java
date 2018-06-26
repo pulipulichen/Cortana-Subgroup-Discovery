@@ -158,8 +158,9 @@ public class BrowseWindow extends JFrame implements ActionListener//, MouseListe
 	{
 		String aText = ((JTextComponent)itsColumnsBox.getEditor().getEditorComponent()).getText();
 
-		if (itsMap.containsKey(aText))
+		if (itsMap.containsKey(aText)) {
 			itsBrowseJTable.focusColumn(itsMap.get(aText));
+		}
 		else
 		{
 			String aNewText = aText.toLowerCase();
@@ -169,9 +170,11 @@ public class BrowseWindow extends JFrame implements ActionListener//, MouseListe
 			itsColumnsBox.removeAllItems();
 
 			// special case (aText == ""), true for all items, resets full list
-			for (Entry<String, Integer> e : itsMap.entrySet())
-				if (e.getKey().toLowerCase().startsWith(aNewText))
+			for (Entry<String, Integer> e : itsMap.entrySet()) {
+				if (e.getKey().toLowerCase().startsWith(aNewText)) {
 					itsColumnsBox.addItem(e.getKey());
+				}
+			}
 
 			if (itsColumnsBox.getItemCount() > 0)
 			{
