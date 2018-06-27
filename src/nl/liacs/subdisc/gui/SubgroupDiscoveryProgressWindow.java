@@ -50,36 +50,42 @@ public class SubgroupDiscoveryProgressWindow extends JFrame implements ActionLis
 		if (itsContainer == null) {
 			itsContainer = this.getContentPane();
 		}
-		//itsContainer.removeAll();
+		itsContainer.removeAll();
 		
 		final JPanel aProgressPanel = new JPanel();
 		
-		jLabelProgress = new JLabel("Loading...");
+		if (jLabelProgress == null) {
+			jLabelProgress = new JLabel("Loading...");
+		}
 		jLabelProgress.setFont(GUI.DEFAULT_TEXT_FONT);
 		aProgressPanel.add(jLabelProgress);
 		
-		itsContainer.add(aProgressPanel);
-		
-		
+		itsContainer.add(aProgressPanel, BorderLayout.NORTH);
 		
 		// -------------------
 
 		final JPanel aButtonPanel = new JPanel();
 
-		
-		itsCloseButton = GUI.buildButton("stop", 'C', "stop", this);
+		if (itsCloseButton == null) {
+			itsCloseButton = GUI.buildButton("stop", 'C', "stop", this);
+		}
 		aButtonPanel.add(itsCloseButton);
 		
-		itsContainer.add(aButtonPanel);
+		itsContainer.add(aButtonPanel, BorderLayout.SOUTH);
 
 		GUI.focusComponent(itsCloseButton, this);
 	}
 	
 	public void start() {
 		jLabelProgress.setText("Loading...");
-		initComponents();
+		//initComponents();
 		itsCloseButton.setText("stop");
 		itsCloseButton.setEnabled(true);
+
+		try {
+			Thread.sleep(10);
+		} catch (Exception e) {}
+		
 		setVisible(true);
 	}
 	
@@ -91,12 +97,24 @@ public class SubgroupDiscoveryProgressWindow extends JFrame implements ActionLis
 		this.itsSubgroupDiscovery = aSubgroupDiscovery;
 	}
 	
+	private String itsProgress;
+	
 	public void setProgress(SubgroupDiscovery aSubgroupDiscovery, String theProgress) {
-		if (null != aSubgroupDiscovery) {
-			this.itsSubgroupDiscovery = aSubgroupDiscovery;
-		}
+
+		itsSubgroupDiscovery = aSubgroupDiscovery;
+		itsProgress = theProgress;
+		
+		SwingUtilities.invokeLater(new Runnable() {
+
+	        @Override
+	        public void run() {
+	        	jLabelProgress.setText(itsProgress);
+	        }
+
+	    });
+		
 		//Log.logCommandLine("setProgress(): [" + theProgress + "]");
-		jLabelProgress.setText(theProgress);
+		
 	}
 
 	@Override

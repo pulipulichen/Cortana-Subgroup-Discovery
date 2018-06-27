@@ -23,7 +23,7 @@ cd ..\src
 %COMPILE% -d ..\bin nl\liacs\subdisc\gui\*.java
 xcopy /s /-y /y /i config ..\bin\config
 
-pause
+RAM pause
 
 echo.
 echo Compiling done...
@@ -67,7 +67,7 @@ move rosuda ..\bin\
 echo extracting external jars done...
 :NO_EXTRACT
 
-pause
+RAM pause
 
 del ..\cortana.jar
 echo creating cortana.jar

@@ -111,7 +111,10 @@ public class SubDisc
 		Log.logCommandLine("AncovaMeasure: " + p.getFstatPvalInvert());
 		*/
 		
-		//new SubgroupDiscoveryProgressWindow(null);
+		//SubgroupDiscoveryProgressWindow a = new SubgroupDiscoveryProgressWindow();
+		//a.start();
+		//a.stop();
+		//a.start();
 		//new SubgroupDiscoveryProgressWindow(null);
 		//new SubgroupDiscoveryProgressWindow(null);
 		

@@ -1169,6 +1169,8 @@ public class MiningWindow extends JFrame implements ActionListener
 	// see jComboBoxTargetTypeActionPerformed
 	private void initTargetInfo()
 	{
+
+		this.jButtonSubgroupDiscovery.setEnabled(false);
 		TargetType aTargetType = itsTargetConcept.getTargetType();
 		switch (aTargetType)
 		{
@@ -1312,6 +1314,7 @@ public class MiningWindow extends JFrame implements ActionListener
 				break;
 			}
 		}
+		this.jButtonSubgroupDiscovery.setEnabled(true);
 	}
 
 	// see jComboBoxTargetTypeActionPerformed
@@ -2020,12 +2023,27 @@ public class MiningWindow extends JFrame implements ActionListener
 	/* MINING BUTTONS */
 	private void subgroupDiscoveryActionPerformed()
 	{
+		
+		this.itsSubgroupDiscoveryProgressWindow = new SubgroupDiscoveryProgressWindow();
+		
+		//try {
+		//	Thread.sleep(1000);
+		//} catch (Exception e) {}
+		
 		setBusy(true);
-		this.itsSubgroupDiscoveryProgressWindow.start();
-		runSubgroupDiscovery(itsTable, 0, null);
-		this.itsSubgroupDiscoveryProgressWindow.stop();
-		setBusy(false);
-		initTitle(); // reset the window's title
+		//this.itsSubgroupDiscoveryProgressWindow.start();
+		
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				runSubgroupDiscovery(itsTable, 0, null);
+				itsSubgroupDiscoveryProgressWindow.stop();
+				setBusy(false);
+				initTitle(); // reset the window's title
+			}
+		});
+		
 	}
 
 	private void runSubgroupDiscovery(Table theTable, int theFold, BitSet theBitSet)
