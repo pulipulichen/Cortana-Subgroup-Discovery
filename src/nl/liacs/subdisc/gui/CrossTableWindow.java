@@ -40,7 +40,10 @@ public class CrossTableWindow extends JFrame implements ActionListener
 
 		setTitle("CrossTable");
 		setIconImage(MiningWindow.ICON);
-		setLocation(50, 50);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		//setLocation(50, 50);
 		//setSize(GUI.WINDOW_DEFAULT_SIZE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		pack();

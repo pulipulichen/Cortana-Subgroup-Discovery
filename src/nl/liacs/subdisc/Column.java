@@ -760,7 +760,7 @@ public class Column implements XMLNodeInterface
 	
 	public void validateBinary() {
 		if (itsType == AttributeType.NOMINAL && itsCardinality < 3) {
-			Log.logCommandLine("validateBinary(): " + this.getName() + " may be binary");
+			//Log.logCommandLine("validateBinary(): " + this.getName() + " may be binary");
 			
 			boolean isBinary = true;
 			for (String aMember: getNominalMembers()) {
@@ -1995,30 +1995,7 @@ public class Column implements XMLNodeInterface
 		
 		Log.logCommandLine("getDistributionSplitPoints aSplitPointCandidatesRaw: " + Arrays.toString(aSplitPointCandidatesRaw));
 		
-		String[] comments = {
-				"Avg",
-				"Avg -0.5 StD",
-				"Avg +0.5 StD",
-				"Avg -1 StD",
-				"Avg +1 StD",
-				"Avg -1.5 StD",
-				"Avg +1.5 StD",
-				"Avg -2 StD",
-				"Avg +2 StD",
-				"Avg -2.5 StD",
-				"Avg +2.5 StD",
-				"Avg -3 StD",
-				"Avg +3 StD",
-				"P20",
-				"P25",
-				"P33",
-				"P40",
-				"P50",
-				"P60",
-				"P66",
-				"P75",
-				"P80"
-		};
+		String[] comments = itsDistributionSplitorComment;
 		
 		itsDistributionComments = new HashMap<Float, String>();
 		for (int i = 0; i < aSplitPointCandidatesRaw.length; i++) {
@@ -2037,6 +2014,35 @@ public class Column implements XMLNodeInterface
 				itsDistributionComments.put(key, prevComment + " / " + comment);
 			}
 		}
+	}
+	
+	private String[] itsDistributionSplitorComment = {
+			"Avg",
+			"Avg -0.5 StD",
+			"Avg +0.5 StD",
+			"Avg -1 StD",
+			"Avg +1 StD",
+			"Avg -1.5 StD",
+			"Avg +1.5 StD",
+			"Avg -2 StD",
+			"Avg +2 StD",
+			"Avg -2.5 StD",
+			"Avg +2.5 StD",
+			"Avg -3 StD",
+			"Avg +3 StD",
+			"P20",
+			"P25",
+			"P33",
+			"P40",
+			"P50",
+			"P60",
+			"P66",
+			"P75",
+			"P80"
+	};
+	
+	public int getDistributionSplitorNr() {
+		return itsDistributionSplitorComment.length;
 	}
 	
 	public String getDistributionComment(String theValue) {
@@ -2058,6 +2064,12 @@ public class Column implements XMLNodeInterface
 	 */
 	public float[] getDistributionSplitPoints(BitSet theBitSet) throws IllegalArgumentException
 	{
+		if (itsType != AttributeType.NOMINAL)
+		{
+			logMessage("getDistributionSplitPoints", getTypeError("NOMINAL"));
+			return null;
+		}
+		
 		initDistributionComments(theBitSet);
 		
 		Object[] keys = (itsDistributionComments.keySet()).toArray();

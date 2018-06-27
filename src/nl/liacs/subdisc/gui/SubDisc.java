@@ -111,11 +111,14 @@ public class SubDisc
 		Log.logCommandLine("AncovaMeasure: " + p.getFstatPvalInvert());
 		*/
 		
+		//new SubgroupDiscoveryProgressWindow(null);
+		//new SubgroupDiscoveryProgressWindow(null);
+		//new SubgroupDiscoveryProgressWindow(null);
+		
 		//RserveUtil.startup();
 		if (ConfigIni.getBoolean("rserve", "TaskkillWhenStartup")) {
 			RserveUtil.taskkill();
 		}
-		
 		
 		// 20180414 Open the main window directly without open a file.
 		try {

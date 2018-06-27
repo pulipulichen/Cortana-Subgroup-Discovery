@@ -39,8 +39,13 @@ public class CAUCWindow extends JFrame implements ActionListener
 
 		setTitle("CAUC Window " + theTarget.getName());
 		setIconImage(MiningWindow.ICON);
-		setLocation(50, 50);
 		setSize(GUI.WINDOW_DEFAULT_SIZE); // TODO bigger + squared 700 x 800
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		
+		//setLocation(50, 50);
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		//pack();
 		setVisible(true);

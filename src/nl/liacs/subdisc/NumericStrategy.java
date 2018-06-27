@@ -7,11 +7,11 @@ import java.util.*;
  */
 public enum NumericStrategy implements EnumInterface
 {
-	NUMERIC_DISTRIBUTION("distribution"),
-	NUMERIC_BINS("bins (equi-depth)"),
-	NUMERIC_BEST("best"),
 	NUMERIC_ALL("all"),
-	NUMERIC_INTERVALS("intervals");
+	NUMERIC_DISTRIBUTION("distribution"),	
+	NUMERIC_BINS("bins (equi-depth)"),
+	NUMERIC_INTERVALS("intervals"),
+	NUMERIC_BEST("best");
 
 	/**
 	 * For each NumericStrategy, this is the text that will be used in the GUI.

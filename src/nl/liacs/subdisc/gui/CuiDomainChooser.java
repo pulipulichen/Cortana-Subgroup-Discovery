@@ -59,7 +59,10 @@ public class CuiDomainChooser extends JDialog implements ActionListener
 		super.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
 		super.setTitle("CUI Domain Chooser");
 		super.setIconImage(MiningWindow.ICON);
-		super.setLocation(100, 100);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		super.setLocation(dim.width/2-super.getSize().width/2, dim.height/2-super.getSize().height/2);
+		//super.setLocation(100, 100);
 		initComponents();
 //		setSize(GUI.DEFAULT_WINDOW_DIMENSION);	// TODO
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

@@ -2,6 +2,7 @@ package nl.liacs.subdisc;
 
 import java.awt.geom.*;
 import java.io.*;
+import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -9,6 +10,7 @@ import java.util.concurrent.atomic.*;
 import javax.swing.*;
 
 import nl.liacs.subdisc.Process;
+import nl.liacs.subdisc.gui.*;
 
 public class SubgroupDiscovery extends MiningAlgorithm
 {
@@ -53,10 +55,13 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	private int itsRankDefCount;
 
 	private TreeSet<Candidate> itsBuffer;
-	private JFrame itsMainWindow; //for feeding back progress info
+	private MiningWindow itsMainWindow; //for feeding back progress info
+	
+	private boolean itsRunning = false;
+	//private SubgroupDiscoveryProgressWindow itsSubgroupDiscoveryProgressWindow;
 
 	//SINGLE_NOMINAL
-	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, int theNrPositive, JFrame theMainWindow)
+	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, int theNrPositive, MiningWindow theMainWindow)
 	{
 		super(theSearchParameters);
 		itsTable = theTable;
@@ -76,7 +81,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	}
 
 	//SINGLE_NUMERIC, float > signature differs from multi-label constructor
-	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, float theAverage, JFrame theMainWindow)
+	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, float theAverage, MiningWindow theMainWindow)
 	{
 		super(theSearchParameters);
 		itsTable = theTable;
@@ -100,7 +105,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	}
 
 	//DOUBLE_CORRELATION and DOUBLE_REGRESSION
-	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, boolean isRegression, JFrame theMainWindow)
+	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, boolean isRegression, MiningWindow theMainWindow)
 	{
 		super(theSearchParameters);
 		itsTable = theTable;
@@ -159,7 +164,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 	}
 	
 	//DOUBLE_CORRELATION and DOUBLE_REGRESSION
-		public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, TargetType aTargetType, JFrame theMainWindow)
+		public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, TargetType aTargetType, MiningWindow theMainWindow)
 		{
 			super(theSearchParameters);
 
@@ -198,7 +203,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		}
 
 	//MULTI_LABEL
-	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, JFrame theMainWindow)
+	public SubgroupDiscovery(SearchParameters theSearchParameters, Table theTable, MiningWindow theMainWindow)
 	{
 		super(theSearchParameters);
 		itsTable = theTable;
@@ -247,6 +252,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		Subgroup aStart = new Subgroup(null, aBitSet, itsResult);
 
 		itsCandidateQueue = new CandidateQueue(itsSearchParameters, new Candidate(aStart));
+		//Log.logCommandLine("calcPossibleCandidate(): " + calcPossibleCandidate());
 
 		int aSearchDepth = itsSearchParameters.getSearchDepth();
 
@@ -255,8 +261,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 			theEndTime = Long.MAX_VALUE;
 		}
 		
-		while ((itsCandidateQueue.size() > 0 ) && (System.currentTimeMillis() <= theEndTime))
+		while ((itsCandidateQueue.size() > 0 ) 
+				&& (System.currentTimeMillis() <= theEndTime))
 		{
+			
 			Candidate aCandidate = itsCandidateQueue.removeFirst(); // take off first Candidate from Queue
 			Subgroup aSubgroup = aCandidate.getSubgroup();
 
@@ -266,23 +274,31 @@ public class SubgroupDiscovery extends MiningAlgorithm
 
 				for (int i = 0, j = aRefinementList.size(); i < j; i++)
 				{
-					if (System.currentTimeMillis() > theEndTime)
+					if (System.currentTimeMillis() > theEndTime 
+							|| itsRunning == false ) {
 						break;
+					}
 
 					Refinement aRefinement = aRefinementList.get(i);
 					Condition aCondition = aRefinement.getCondition();
 					// if refinement is (num_attr = value) then treat it as nominal
-					if (aCondition.getColumn().getType() == AttributeType.NUMERIC && aCondition.getOperator() != Operator.EQUALS)
-						evaluateNumericRefinements(aSubgroup, aRefinement);
-					else
-						evaluateNominalBinaryRefinements(aSubgroup, aRefinement);
+					if (aCondition.getColumn().getType() == AttributeType.NUMERIC && aCondition.getOperator() != Operator.EQUALS) {
+						evaluateNumericRefinements(aSubgroup, aRefinement, aCandidate);
+					}
+					else {
+						evaluateNominalBinaryRefinements(aSubgroup, aRefinement, aCandidate);
+					}
+					//updateProgress(aCandidate);
 				}
 			}
 
 			if (itsCandidateQueue.size() == 0) {
 				flushBuffer();
 			}
+			
+			//updateProgress(aCandidate);
 		}
+		
 		Log.logCommandLine("number of candidates: " + itsCandidateCount.get());
 		if (itsSearchParameters.getQualityMeasure() == QM.COOKS_DISTANCE)
 		{
@@ -299,8 +315,9 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		Log.logCommandLine("number of subgroups: " + getNumberOfSubgroups());
 
 		itsResult.setIDs(); //assign 1 to n to subgroups, for future reference in subsets
-		if ((itsSearchParameters.getTargetType() == TargetType.MULTI_LABEL) && itsSearchParameters.getPostProcessingDoAutoRun())
+		if ((itsSearchParameters.getTargetType() == TargetType.MULTI_LABEL) && itsSearchParameters.getPostProcessingDoAutoRun()) {
 			postprocess();
+		}
 
 		//now just for cover-based beam search post selection
 		// TODO MM see note at SubgroupSet.postProcess(), all itsResults will remain in memory
@@ -311,7 +328,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		itsResult.setIDs(); //assign 1 to n to subgroups, for future reference in subsets
 	}
 
-	private void evaluateNumericRefinements(Subgroup theSubgroup, Refinement theRefinement)
+	private void evaluateNumericRefinements(Subgroup theSubgroup, Refinement theRefinement, Candidate aCandidate)
 	{
 		final int anOldCoverage = theSubgroup.getCoverage();
 
@@ -322,9 +339,15 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				float[] aSplitPoints = theRefinement.getCondition().getColumn().getUniqueNumericDomain(theSubgroup.getMembers());
 				for (float aSplit : aSplitPoints)
 				{
+					if (itsRunning == false ) {
+						break;
+					}
+					
 					Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(Float.toString(aSplit));
 					//addToBuffer(aNewSubgroup);
 					checkAndLog(aNewSubgroup, anOldCoverage);
+					updateProgress(aCandidate);
+					
 				}
 				break;
 			}
@@ -336,9 +359,15 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				boolean first = true;
 				for (int j=0; j<aSplitPoints.length; j++)
 				{
+					if (itsRunning == false ) {
+						break;
+					}
+					
 					Subgroup aNewSubgroup = theRefinement.getRefinedSubgroupWithDistribution(Float.toString(aSplitPoints[j]));
 					//addToBuffer(aNewSubgroup);
 					checkAndLog(aNewSubgroup, anOldCoverage);
+					updateProgress(aCandidate);
+					
 				}
 				break;
 			}
@@ -352,13 +381,23 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				boolean first = true;
 				for (int j=0; j<aNrSplitPoints; j++)
 				{
+
+					if (itsRunning == false ) {
+						break;
+					}
+					
 					if (first || aSplitPoints[j] != aSplitPoints[j-1])
 					{
 						Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(Float.toString(aSplitPoints[j]));
 						//addToBuffer(aNewSubgroup);
 						checkAndLog(aNewSubgroup, anOldCoverage);
+						updateProgress(aCandidate);
 					}
 					first = false;
+					
+					if (itsRunning == false ) {
+						break;
+					}
 				}
 				break;
 			}
@@ -370,6 +409,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				Subgroup aNewSubgroup;
 				for (float aSplit : aSplitPoints)
 				{
+					if (itsRunning == false ) {
+						break;
+					}
+					
 					aNewSubgroup = theRefinement.getRefinedSubgroup(Float.toString(aSplit));
 
 					final int aNewCoverage = aNewSubgroup.getCoverage();
@@ -383,13 +426,17 @@ public class SubgroupDiscovery extends MiningAlgorithm
 							aBestSubgroup = aNewSubgroup;
 						}
 					}
+					
 				}
 
 				//add best
-				if (aBestSubgroup!=null) //at least one threshold found that has enough quality and coverage
+				if (aBestSubgroup!=null) {
+					//at least one threshold found that has enough quality and coverage
 					//addToBuffer(aBestSubgroup);
 					// unnecessarily re-evaluates result
 					checkAndLog(aBestSubgroup, anOldCoverage);
+				}
+				updateProgress(aCandidate);
 
 				break;
 			}
@@ -423,6 +470,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 
 					for (int i = 0; i < aRBICT.getNrBaseIntervals(); i++)
 					{
+						if (itsRunning == false ) {
+							break;
+						}
+						
 						long anH = aPr * aNg - aNr * aPg;
 						if (anH > aMaxH)
 						{
@@ -491,6 +542,11 @@ public class SubgroupDiscovery extends MiningAlgorithm
 
 					for (int k = aRBICT.getNrBaseIntervals(); k > 1; k = (k+1)/2)
 					{
+
+						if (itsRunning == false ) {
+							break;
+						}
+						
 						for (int l = 0; l+1 < k; l += 2)
 						{
 							ConvexHull aMinkDiff = aHulls[l].minkowskiDifference(aHulls[l+1], true);
@@ -500,12 +556,13 @@ public class SubgroupDiscovery extends MiningAlgorithm
 								{
 									if (aSide == 1 && (i == 0 || i == aMinkDiff.getSize(aSide)-1) )
 										continue; // no need to check duplicate hull points
-									HullPoint aCandidate = aMinkDiff.getPoint(aSide, i);
-									double aQuality = itsQualityMeasure.calculate(aCandidate.itsY, aCandidate.itsX + aCandidate.itsY);
+									HullPoint aCandidateHullPoint = aMinkDiff.getPoint(aSide, i);
+									double aQuality = itsQualityMeasure.calculate(aCandidateHullPoint.itsY
+											, aCandidateHullPoint.itsX + aCandidateHullPoint.itsY);
 									anEvalCounter++;
 									if (aQuality > aBestQuality) {
 										aBestQuality = aQuality;
-										aBestInterval = new Interval(aCandidate.itsLabel2, aCandidate.itsLabel1);
+										aBestInterval = new Interval(aCandidateHullPoint.itsLabel2, aCandidateHullPoint.itsLabel1);
 									}
 								}
 							}
@@ -515,6 +572,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 							aHulls[l/2] = aHulls[l].concatenate(aHulls[l+1]);
 						if (k % 2 == 1)
 							aHulls[k/2] = aHulls[k-1];
+						
+						if (itsRunning == false ) {
+							break;
+						}
 					}
 
 					//Log.logCommandLine("Evalutations: " + anEvalCounter);
@@ -522,6 +583,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 
 				Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(aBestInterval);
 				checkAndLog(aNewSubgroup, anOldCoverage);
+				updateProgress(aCandidate);
 
 				break;
 			}
@@ -534,7 +596,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 		}
 	}
 
-	private void evaluateNominalBinaryRefinements(Subgroup theSubgroup, Refinement theRefinement)
+	private void evaluateNominalBinaryRefinements(Subgroup theSubgroup, Refinement theRefinement, Candidate aCandidate)
 	{
 		final QM aQualityMeasure = itsSearchParameters.getQualityMeasure();
 		Condition aCondition = theRefinement.getCondition();
@@ -550,11 +612,17 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				float aRatio = itsQualityMeasure.getNrPositives() / (float)(itsQualityMeasure.getNrRecords());
 				for (int i = 0; i < aNCT.size(); i++)
 				{
+					if (itsRunning == false ) {
+						break;
+					}
+					
 					int aPi = aNCT.getPositiveCount(i);
 					int aNi = aNCT.getNegativeCount(i);
 					// include values with WRAcc=0 too, result has same WRAcc but higher support
-					if (aPi >= aRatio * (aPi + aNi))
+					if (aPi >= aRatio * (aPi + aNi)) {
 						aDomainBestSubSet.add(aNCT.getValue(i));
+					}
+					
 				}
 			}
 			else // not WRACC
@@ -570,6 +638,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				int aPrevBestI = -1;
 				for (int i = 0; i < aSortedDomainIndicesSize - 1; i++)
 				{
+					if (itsRunning == false ) {
+						break;
+					}
+					
 					int anIndex = aSortedDomainIndices.get(i);
 					int aPi = aNCT.getPositiveCount(anIndex);
 					int aNi = aNCT.getNegativeCount(anIndex);
@@ -589,6 +661,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 						}
 						aPrevBestI = i;
 					}
+					
 				}
 
 				// lower part of the hull
@@ -624,6 +697,10 @@ public class SubgroupDiscovery extends MiningAlgorithm
 					aPrevBestI = -1;
 					for (int i = aSortedDomainIndicesSize - 1; i > 0; i--)
 					{
+						if (itsRunning == false ) {
+							break;
+						}
+						
 						int anIndex = aSortedDomainIndices.get(i).intValue();
 						int aPi = aNCT.getPositiveCount(anIndex);
 						int aNi = aNCT.getNegativeCount(anIndex);
@@ -649,6 +726,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 							aPrevBestI = i;
 						}
 					}
+					
 				}
 			}
 
@@ -658,6 +736,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(aBestSubset);
 				Log.logCommandLine("values: "  + aBestSubset);
 				checkAndLog(aNewSubgroup, anOldCoverage);
+				updateProgress(aCandidate);
 			}
 		}
 		else //regular single-value conditions
@@ -671,6 +750,7 @@ public class SubgroupDiscovery extends MiningAlgorithm
 				
 				Subgroup aNewSubgroup = theRefinement.getRefinedSubgroup(aValue);
 				checkAndLog(aNewSubgroup, anOldCoverage);
+				updateProgress(aCandidate);
 			}
 		}
 	}
@@ -704,6 +784,8 @@ public class SubgroupDiscovery extends MiningAlgorithm
 			logCandidateAddition(theSubgroup);
 		}
 		itsCandidateCount.getAndIncrement();
+		
+		//Log.logCommandLine("itsCandidateCount: " + itsCandidateCount.get());
 	}
 
 	private void logCandidateAddition(Subgroup theSubgroup)
@@ -1111,8 +1193,9 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 
 	private void postprocess()
 	{
-		if (itsResult.isEmpty())
+		if (itsResult.isEmpty()) {
 			return;
+		}
 
 		// Create quality measures on whole dataset
 		Log.logCommandLine("Creating quality measures.");
@@ -1163,6 +1246,7 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 	public QualityMeasure getQualityMeasure() { return itsQualityMeasure; }
 	public SearchParameters getSearchParameters() { return itsSearchParameters; }
 
+	public int itsPossibleCandidateNr = 0;
 
 	/*
 	 * TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
@@ -1173,8 +1257,26 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 	 */
 	public void mine(long theBeginTime, int theNrThreads)
 	{
+		this.itsRunning = true;
+		itsProgressLastPercent = 0d;
+		this.itsProgressLastCurrent = "(empty)";
+		this.itsProgressLastDepth = 1;
+		//if (itsSubgroupDiscoveryProgressWindow == null) {
+		//	this.itsSubgroupDiscoveryProgressWindow = new SubgroupDiscoveryProgressWindow(this);
+		//}
+		//if (this.itsMainWindow != null) {
+			
+		//}
+		
+		try {
+			//Thread.sleep(1000);	
+		}
+		catch (Exception e) {}
+		
 		final QM aQualityMeasure = itsSearchParameters.getQualityMeasure();
-
+		itsPossibleCandidateNr = calcPossibleCandidateNr();
+		Log.logCommandLine("calcPossibleCandidateNr(): " + itsPossibleCandidateNr);
+		
 		//fill the conditionList of local and global knowledge, Rob
 		if (aQualityMeasure == QM.PROP_SCORE_WRACC || aQualityMeasure == QM.PROP_SCORE_RATIO)
 		{
@@ -1191,8 +1293,9 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 			mine(theBeginTime);
 			return;
 		}
-		else if (theNrThreads == 0)
+		else if (theNrThreads == 0) {
 			theNrThreads = Runtime.getRuntime().availableProcessors();
+		}
 
 		// make subgroup to start with, containing all elements
 		BitSet aBitSet = new BitSet(itsNrRows);
@@ -1200,6 +1303,8 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 		Subgroup aStart = new Subgroup(null, aBitSet, itsResult);
 
 		itsCandidateQueue = new CandidateQueue(itsSearchParameters, new Candidate(aStart));
+		//Log.logCommandLine("itsCandidateQueue.size(): " + itsCandidateQueue.size());
+		//Log.logCommandLine("itsCandidateQueue.size(): " + itsSearchParameters.getSearchStrategy().);
 
 		final int aSearchDepth = itsSearchParameters.getSearchDepth();
 
@@ -1216,6 +1321,7 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 		 */
 		ExecutorService es = Executors.newFixedThreadPool(theNrThreads);
 		Semaphore s = new Semaphore(theNrThreads);
+		
 
 		while (System.currentTimeMillis() <= theEndTime)
 		{
@@ -1251,6 +1357,8 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 			try {
 				synchronized (itsCandidateQueue)
 				{
+					//Log.logCommandLine("itsCandidateCount :" + itsCandidateCount.get());
+					
 					final int aTotalSize = itsCandidateQueue.size();
 					final boolean alone = (s.availablePermits() == theNrThreads-1);
 					// take off first Candidate from Queue
@@ -1274,13 +1382,16 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 						aDepth = aCandidate.getSubgroup().getDepth()+1;
 						aCurrent = aCandidate.getSubgroup().toString();
 					}
+					
 					if (itsMainWindow != null) {
-						itsMainWindow.setTitle(new StringBuilder(aCurrent.length() + 32).append("d=")
-														.append(aDepth)
-														.append(", cands=")
-														.append(itsCandidateCount.get())
-														.append(", refining ")
-														.append(aCurrent).toString());
+						try {
+							//Thread.sleep(1000);	
+						}
+						catch (Exception e) {}
+						
+						//Log.logCommandLine("aCurrent :" + aCurrent);
+						
+						updateProgress(aCandidate);
 					}
 				}
 			}
@@ -1335,6 +1446,10 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 		// wait for last active threads to complete
 		while(!es.isTerminated()) {};
 
+		this.itsRunning = false;
+		//itsSubgroupDiscoveryProgressWindow.setVisible(false);
+		//itsSubgroupDiscoveryProgressWindow.dispose();
+		
 		Log.logCommandLine("number of candidates: " + itsCandidateCount.get());
 		if (aQualityMeasure == QM.COOKS_DISTANCE)
 		{
@@ -1361,6 +1476,146 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 		// in MULTI_LABEL, order may have changed
 		// in COVER_BASED_BEAM_SELECTION, subgroups may have been removed
 		itsResult.setIDs(); //assign 1 to n to subgroups, for future reference in subsets
+		
+	}
+	
+	private int itsProgressLastDepth = 1;
+	private String itsProgressLastCurrent = "(empty)";
+	private double itsProgressLastPercent = 0d;
+	
+	private void updateProgress(Candidate aCandidate) {
+		//Log.logCommandLine("updateProgress: " + itsCandidateCount.get());
+		if (itsMainWindow == null) {
+			return;
+		}
+		
+		try {
+			//Thread.sleep(1000);	
+		}
+		catch (Exception e) {}
+		
+		if (aCandidate != null)
+		{
+			itsProgressLastDepth = aCandidate.getSubgroup().getDepth()+1;
+			itsProgressLastCurrent = aCandidate.getSubgroup().toString();
+		}
+		
+		
+		NumberFormat aFormatter = NumberFormat.getNumberInstance();
+		aFormatter.setMaximumFractionDigits(1);
+		double aPercent = 100 * itsCandidateCount.get() / itsPossibleCandidateNr;
+		if (aPercent > itsProgressLastPercent) {
+			itsProgressLastPercent = aPercent;
+		}
+		
+		String aTitle = new StringBuilder(itsProgressLastCurrent.length() + 32)
+				.append(aFormatter.format(itsProgressLastPercent) + "%")
+				.append(",d=")
+				.append(itsProgressLastDepth)
+				.append(", cands=")
+				.append(itsCandidateCount.get())
+				.append(", refining ")
+				.append(itsProgressLastCurrent).toString();
+		
+		//itsSubgroupDiscoveryProgressWindow.setProgress(aTitle);
+		
+		//itsMainWindow.setTitle(aTitle);
+		itsMainWindow.setSubgroupDiscoveryProgress(this, aTitle);
+	}
+	
+	public int calcPossibleCandidateNr() {
+		int columnNumbers = 0;
+		
+		/*
+		if (null != itsTable) {
+			columnNumbers = itsTable.getNrColumns() - this.itsSearchParameters.getTargetConcept().getNrTargets();
+		}
+		
+		if (null != itsSecondaryColumn) {
+			columnNumbers--;
+		}
+		if (null != itsThirdColumn) {
+			columnNumbers--;
+		}
+		*/
+		
+		NumericStrategy aNumericStrategy = itsSearchParameters.getNumericStrategy();
+		NumericOperatorSetting aNumericOperatorSetting = itsSearchParameters.getNumericOperatorSetting();
+		int aDepth = itsSearchParameters.getSearchDepth();
+		if (aDepth > itsTable.getNrColumns()) {
+			aDepth = itsTable.getNrColumns();
+		}
+		
+		ArrayList<Integer> aColumnNumberList = new ArrayList<Integer>();
+		
+		for (Column c: itsTable.getColumns()) {
+			if (c == itsPrimaryColumn
+					|| c == itsSecondaryColumn
+					|| c == itsThirdColumn) {
+				continue;
+			}
+			
+			int aCount = c.getCardinality();
+			if (c.getType() != AttributeType.NOMINAL) {
+				switch (aNumericStrategy) {
+					case NUMERIC_BINS: {
+						if (aCount > itsSearchParameters.getNrBins()) {
+							aCount = itsSearchParameters.getNrBins();
+						}
+					}
+					case NUMERIC_DISTRIBUTION: {
+						aCount = c.getDistributionSplitorNr();
+					}
+					default: {
+						// do nothing
+					}
+				}
+				
+				switch (aNumericOperatorSetting) {
+					case NUMERIC_NORMAL:
+						aCount = aCount*2;
+						if (aNumericStrategy == aNumericStrategy.NUMERIC_ALL) {
+							aCount = aCount - 2;
+						}
+					default: {
+						// do nothing
+					}
+				}
+			}
+			
+			//columnNumbers += aCount;
+			aColumnNumberList.add(aCount);
+		}
+		
+		Log.logCommandLine("calcPossibleCandidateNr(): " + Arrays.toString(aColumnNumberList.toArray()));
+		
+		//int aCurrentDepth = 1;
+		for (int i = 0; i < aColumnNumberList.size(); i++) {
+			ArrayList<Integer> aColumnIndexList = new ArrayList<Integer>();
+			aColumnIndexList.add(i);
+			columnNumbers = columnNumbers + calcColumnPossibleCandidateNr(aColumnNumberList, aColumnIndexList, aDepth);
+		}
+		
+		return columnNumbers;
+	}
+	
+	private int calcColumnPossibleCandidateNr(ArrayList<Integer> aColumnNumberList, ArrayList<Integer> aColumnIndexList, int aMaxDepth) {
+		int aColumnIndex = aColumnIndexList.get((aColumnIndexList.size()-1));
+		int aCandidateNr = aColumnNumberList.get(aColumnIndex);
+		if (aColumnIndexList.size() < aMaxDepth) {
+			int aSubCandidateNr = 0;
+			for (int i = 0; i < aColumnNumberList.size(); i++) {
+				ArrayList<Integer> aColumnIndexListCopy = (ArrayList<Integer>) aColumnIndexList.clone();
+				aColumnIndexListCopy.add(i);
+				aSubCandidateNr += calcColumnPossibleCandidateNr(aColumnNumberList, aColumnIndexListCopy, aMaxDepth);
+				if (aColumnIndexList.contains(i) == true) {
+					aSubCandidateNr--;
+				}
+			}
+			aCandidateNr = aCandidateNr * aSubCandidateNr;
+		}
+		
+		return aCandidateNr;
 	}
 
 	/*
@@ -1401,9 +1656,9 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 					Condition aCondition = aRefinement.getCondition();
 					// if refinement is (num_attr = value) then treat it as nominal
 					if (aCondition.getColumn().getType() == AttributeType.NUMERIC && aCondition.getOperator() != Operator.EQUALS)
-						evaluateNumericRefinements(aSubgroup, aRefinement);
+						evaluateNumericRefinements(aSubgroup, aRefinement, null);
 					else
-						evaluateNominalBinaryRefinements(aSubgroup, aRefinement);
+						evaluateNominalBinaryRefinements(aSubgroup, aRefinement, null);
 				}
 			}
 			itsSemaphore.release();
@@ -1459,5 +1714,9 @@ TODO for stable jar, disabled, causes compile errors, reinstate later
 	public RegressionMeasure getRegressionMeasureBase()
 	{
 		return itsBaseRM;
+	}
+	
+	public void setRunning(boolean isRunning) {
+		this.itsRunning = isRunning;
 	}
 }

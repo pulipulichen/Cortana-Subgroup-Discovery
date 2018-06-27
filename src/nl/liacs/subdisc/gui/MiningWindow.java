@@ -75,6 +75,8 @@ public class MiningWindow extends JFrame implements ActionListener
 		itsInitialized = true;
 		jComboBoxThirdTargetFieldActionPerformed();
 	}
+	
+	private SubgroupDiscoveryProgressWindow itsSubgroupDiscoveryProgressWindow;
 
 	private void initMiningWindow()
 	{
@@ -84,14 +86,25 @@ public class MiningWindow extends JFrame implements ActionListener
 		enableTableDependentComponents(itsTable != null);
 		initTitle();
 		setIconImage(ICON);
-		setLocation(100, 100);
 		setSize(800, 600);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		//setLocation(100, 100);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initJMenuGui(); // for GUI debugging only, DO NOT REMOVE
 		setVisible(true);
 
 		// Open log/debug files
 		Log.openFileOutputStreams();
+		
+		itsSubgroupDiscoveryProgressWindow = new SubgroupDiscoveryProgressWindow();
+	}
+	
+	public void setSubgroupDiscoveryProgress(SubgroupDiscovery aSubgroupDiscovery, String theProgress) {
+		this.setTitle(theProgress);
+		itsSubgroupDiscoveryProgressWindow.setProgress(aSubgroupDiscovery, theProgress);
 	}
 
 	private void initComponents()
@@ -2008,7 +2021,9 @@ public class MiningWindow extends JFrame implements ActionListener
 	private void subgroupDiscoveryActionPerformed()
 	{
 		setBusy(true);
+		this.itsSubgroupDiscoveryProgressWindow.start();
 		runSubgroupDiscovery(itsTable, 0, null);
+		this.itsSubgroupDiscoveryProgressWindow.stop();
 		setBusy(false);
 		initTitle(); // reset the window's title
 	}
@@ -2406,7 +2421,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	// search strategy - number of threads
 	private int getNrThreads() { return getValue(Runtime.getRuntime().availableProcessors(), jTextFieldNumberOfThreads.getText()); }
 	private void setNrThreads(String aValue) { jTextFieldNumberOfThreads.setText(aValue); }
-
+	
 	private int getValue(int theDefaultValue, String theText)
 	{
 		int aValue = theDefaultValue;
@@ -2425,10 +2440,12 @@ public class MiningWindow extends JFrame implements ActionListener
 
 	private void setBusy(boolean isBusy)
 	{
-		if (isBusy)
+		if (isBusy) {
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		else
+		}
+		else {
 			this.setCursor(Cursor.getDefaultCursor());
+		}
 	}
 
 	// MENU

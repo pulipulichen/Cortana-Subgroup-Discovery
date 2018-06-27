@@ -131,7 +131,14 @@ public class TargetConcept implements XMLNodeInterface
 
 	public int getNrTargets()
 	{
-		return 1+itsSecondaryTargets.size()+itsTertiaryTargets.size();
+		int aNr = 1;
+		if (null != itsSecondaryTargets) {
+			aNr += itsSecondaryTargets.size(); 
+		}
+		if (null != itsTertiaryTargets) {
+			aNr += itsTertiaryTargets.size(); 
+		}
+		return aNr;
 	}
 
 	public boolean getInterceptRelevance() { return itsInterceptRelevance; }

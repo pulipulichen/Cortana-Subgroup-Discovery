@@ -62,8 +62,12 @@ public class ModelWindow extends JFrame implements ActionListener
 		else
 			setTitle(theName + ": Numeric Distribution");
 		setIconImage(MiningWindow.ICON);
-		setLocation(50, 50);
 		setSize(GUI.WINDOW_DEFAULT_SIZE);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		//setLocation(50, 50);
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setVisible(true);
 	}
@@ -158,8 +162,12 @@ public class ModelWindow extends JFrame implements ActionListener
 
 		setTitle(aTitle);
 		setIconImage(MiningWindow.ICON);
-		setLocation(50, 50);
 		setSize(GUI.WINDOW_DEFAULT_SIZE);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		//setLocation(50, 50);
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setVisible(true);
 	}
@@ -176,8 +184,12 @@ public class ModelWindow extends JFrame implements ActionListener
 
 		setTitle("Base Model: Bayesian Network for entire dataset");
 		setIconImage(MiningWindow.ICON);
-		setLocation(0, 0);
 		setSize(theDAGWidth, theDAGHeight);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		//setLocation(0, 0);
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setVisible(true);
 	}

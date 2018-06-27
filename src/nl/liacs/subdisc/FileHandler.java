@@ -216,7 +216,11 @@ public class FileHandler
 			}
 		});
 		aFrame.setIconImage(MiningWindow.ICON);
-		aFrame.setLocation(100, 100);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		aFrame.setLocation(dim.width/2-aFrame.getSize().width/2, dim.height/2-aFrame.getSize().height/2);
+		//aFrame.setLocation(100, 100);
+		
 		aFrame.pack();
 		aFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		aFrame.setVisible(true);

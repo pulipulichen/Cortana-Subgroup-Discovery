@@ -153,7 +153,7 @@ public class RserveUtil
 		
 		try {
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
-			Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
+			//Log.logCommandLine("RserveUtil.startup(): \"" + itsRPath + "\" -e \"" + itsRscriptStartup + "\"");
 			Thread.sleep(1000);
 			connect();
 		}
@@ -169,7 +169,7 @@ public class RserveUtil
 		try {
 			connection = new RConnection();
 			connection.setStringEncoding("utf8");
-			Log.logCommandLine("Rserve connectioned. " + (connection != null));
+			//Log.logCommandLine("Rserve connectioned. " + (connection != null));
 		}
 		catch (Exception e) {
 			try {
@@ -180,7 +180,7 @@ public class RserveUtil
 				
 				connection = new RConnection();
 				connection.setStringEncoding("utf8");
-				Log.logCommandLine("Rserve connectioned. " + (connection != null));
+				//Log.logCommandLine("Rserve connectioned. " + (connection != null));
 			}
 			catch (Exception e2) {
 				String message = "Rserve connection failed: " + e.getMessage();
@@ -204,7 +204,7 @@ public class RserveUtil
 		}
 		try {
 			rt.exec("\"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
-			Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
+			//Log.logCommandLine("RserveUtil.shutdown(): \"" + itsRPath + "\" -e \"" + itsRscriptShutdown + "\"");
 			//connection = null;
 		}
 		catch (Exception e) {
@@ -220,7 +220,7 @@ public class RserveUtil
 			connection.close();
 			connection = null;
 			declaredFunctions =  new ArrayList<String>();
-			Log.logCommandLine("Rserve disconnectioned. " + (connection != null));
+			//Log.logCommandLine("Rserve disconnectioned. " + (connection != null));
 		}
 	}
 	
@@ -230,7 +230,7 @@ public class RserveUtil
 		}
 		try {
 			rt.exec("taskkill /f /im Rserve.exe");
-			Log.logCommandLine("Rserve processes are killed.");
+			//Log.logCommandLine("Rserve processes are killed.");
 			//connection = null;
 		}
 		catch (Exception e) {
@@ -300,7 +300,7 @@ public class RserveUtil
 			//Thread.sleep(1000);	
 			
 			if (declaredFunctions.contains(aScriptKey) == false) {
-				Log.logCommandLine("Run Function Script: " + aFunctionScript);
+				//Log.logCommandLine("Run Function Script: " + aFunctionScript);
 				connection.eval(aFunctionScript);
 				
 				declaredFunctions.add(aScriptKey);
@@ -310,8 +310,8 @@ public class RserveUtil
 			
 			runScriptConnectCount++;
 			//Log.logCommandLine("Conntect: " + runScriptConnectCount);
-          
 			//Log.logCommandLine("Conntect: " + connection.eval(aDataScript));
+			
 			while (itsLock == true) {
 				Thread.sleep(3000 + ThreadLocalRandom.current().nextInt(0, 10 + 1));
 			}
@@ -320,11 +320,11 @@ public class RserveUtil
 			//connection.eval(aFunctionScript);
 			aReturn = connection.eval(aDataScript).asString();
 			itsLock = false;
-			runScriptCache.put(key, aReturn);
+			//runScriptCache.put(key, aReturn);
 			return aReturn;
 		} catch (Exception e) {
 			try {
-				Log.logCommandLine("declaredFunctions: " + aFunctionScript);
+				//Log.logCommandLine("declaredFunctions: " + aFunctionScript);
 				connection.eval(aFunctionScript);
 				aReturn = connection.eval(aDataScript).asString();
 				itsLock = false;

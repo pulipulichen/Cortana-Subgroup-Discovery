@@ -14,7 +14,7 @@ public class Process
 	private static boolean CAUC_HEAVY = false;
 	private static final boolean CAUC_HEAVY_CONVEX = false; // select subgroups on convex hull if true, select top-1 if false
 
-	public static SubgroupDiscovery runSubgroupDiscovery(Table theTable, int theFold, BitSet theBitSet, SearchParameters theSearchParameters, boolean showWindows, int theNrThreads, JFrame theMainWindow)
+	public static SubgroupDiscovery runSubgroupDiscovery(Table theTable, int theFold, BitSet theBitSet, SearchParameters theSearchParameters, boolean showWindows, int theNrThreads, MiningWindow theMainWindow)
 	{
 		TargetType aTargetType = theSearchParameters.getTargetConcept().getTargetType();
 

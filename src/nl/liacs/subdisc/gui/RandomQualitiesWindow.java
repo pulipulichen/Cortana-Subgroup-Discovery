@@ -1,5 +1,6 @@
 package nl.liacs.subdisc.gui;
 
+import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
 
@@ -27,7 +28,11 @@ public class RandomQualitiesWindow extends JDialog implements ActionListener
 		initComponents(theTargetType);
 		setTitle("Which method?");
 		setIconImage(MiningWindow.ICON);
-		setLocation(100, 100);
+
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		//setLocation(100, 100);
+		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		pack();
 		setVisible(true);
