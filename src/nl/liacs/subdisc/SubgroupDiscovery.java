@@ -367,7 +367,6 @@ public class SubgroupDiscovery extends MiningAlgorithm
 					//addToBuffer(aNewSubgroup);
 					checkAndLog(aNewSubgroup, anOldCoverage);
 					updateProgress(aCandidate);
-					
 				}
 				break;
 			}

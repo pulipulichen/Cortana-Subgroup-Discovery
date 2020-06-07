@@ -1,6 +1,7 @@
 package nl.liacs.subdisc;
 
 import java.util.*;
+import java.lang.Math;
 
 /*
  * TODO
@@ -170,6 +171,55 @@ public class Condition implements Comparable<Condition>
 			default : logTypeError("getValue"); return "";
 		}
 	}
+	
+	// see class comment on valueIsSet-boolean indicating (non)-virgin state
+		private String getPercent()
+		{
+			switch (itsColumn.getType())
+			{
+				/*
+				case NOMINAL :
+					// 如果是Nominal，那就顯示這個值所佔的%
+					
+					if (itsNominalValue != null) //single value?
+						return itsNominalValue;
+					else if (itsNominalValueSet != null) //value set?
+						return itsNominalValueSet.toString();
+					else
+						return null; // TODO no value is set yet
+					*/
+				case NUMERIC :
+					// 取得最大值，最小值，然後回傳位於中間多少
+					Float min = itsColumn.getMin();
+					Float base = itsColumn.getMax() - itsColumn.getMin(); 
+					
+					if (!Float.isNaN(itsNumericValue)) { //single value?
+						//return Float.toString((itsNumericValue - min) / base);
+						//return Float.toString( Math.round((itsNumericValue - min) / base * 10000) / 100);
+						return Float.toString( Math.round((itsNumericValue - min) / base ));
+					}
+					else if (itsInterval != null) {//interval?
+						//return Float.toString( Math.round((itsInterval.getValue() - min) / base * 10000) / 100);
+						return Float.toString( Math.round((itsInterval.getValue() - min) / base ));
+						//return itsInterval;
+					}
+					else
+						return null; // TODO no value is set yet
+
+				/*
+				 * TODO a "NaN" return may mean that no value is set yet
+				 * or that the value Float.NaN is set deliberately
+				 */
+				//case ORDINAL : return Float.toString(itsNumericValue);
+
+				/*
+				 * TODO a "0" return may mean that no value is set yet
+				 * or that the value "0" is set deliberately
+				 */
+				//case BINARY : return itsBinaryValue ? "1" : "0";
+				default : logTypeError("getValue"); return null;
+			}
+		}
 
 	/**
 	 * Set the value for this Condition, use:<br>
@@ -344,7 +394,7 @@ public class Condition implements Comparable<Condition>
 	{
 		if (itsColumn.getType() == AttributeType.NUMERIC || itsOperator == Operator.ELEMENT_OF) {
 			if (null == itsNumericValueComment) {
-				return String.format("%s %s %s", itsColumn.getName(), itsOperator, getValue());
+				return String.format("%s %s %s (%s%%)", itsColumn.getName(), itsOperator, getValue(), getPercent());
 			}
 			else {
 				return String.format("%s %s %s (%s)", itsColumn.getName(), itsOperator, getValue(), itsNumericValueComment);

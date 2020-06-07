@@ -22,4 +22,14 @@ public class Interval
 		String aRight = (itsUpper == Float.POSITIVE_INFINITY) ? "inf)" : (Float.toString(itsUpper) + "]");
 		return new StringBuilder(32).append("(").append(aLeft).append(", ").append(aRight).toString();
 	}
+	
+	public Float getValue()
+	{
+		if (itsLower == itsUpper) {
+			return itsLower;
+		}
+		else {
+			return itsUpper - itsLower;
+		}
+	}
 }
