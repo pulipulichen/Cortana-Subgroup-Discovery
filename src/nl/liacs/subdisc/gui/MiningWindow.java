@@ -547,6 +547,7 @@ public class MiningWindow extends JFrame implements ActionListener
 	}
 
 	// only called when Table is present, so using itsTotalCount is safe
+	// 數值的初始化設定
 	private void initGuiComponents()
 	{
 		//dataset
@@ -555,25 +556,60 @@ public class MiningWindow extends JFrame implements ActionListener
 		TargetType aTargetType = itsTargetConcept.getTargetType();
 		
 		// search conditions
-		int aRefinementDepth = ConfigIni.getInt("search strategy", "RefinementDepth", 1);
-		setSearchDepthMaximum("" + aRefinementDepth);
+		String aConfigRefinementDepthAuto = ConfigIni.getString("search strategy", "RefinementDepth", "auto");
+		if (aConfigRefinementDepthAuto.equals("auto")) {
+			int aBaseRefinementDepth = TargetType.getBaseRefinementDepth(aTargetType);
+			if (null != itsTable) {
+				aBaseRefinementDepth = Math.round((itsTable.getNrColumns() / 3));
+				
+				if (aBaseRefinementDepth > 5) {
+					aBaseRefinementDepth = 5;
+				}
+				else if (aBaseRefinementDepth < 1) {
+					aBaseRefinementDepth = 1;
+				}
+			}
+			setSearchDepthMaximum("" + aBaseRefinementDepth);
+		}
+		else {
+			int aBaseRefinementDepth = ConfigIni.getInt("search strategy", "RefinementDepth", TargetType.getBaseRefinementDepth(aTargetType));
+			setSearchDepthMaximum("" + aBaseRefinementDepth);
+		}
 		
 		//float aMinimumCoverage = ConfigIni.getFloat("search strategy", "MinimumCoverage", (float) 0.33);
-		setSearchCoverageMinimum("1");
+		setSearchCoverageMinimum("4");
 		
 		
 		setSearchCoverageMaximum("1.0");
 		
-		int aBaseSubgroupsMaximun = TargetType.getBaseSubgroupsMaximun(aTargetType);
-		double aBaseSearchTimeMaximum = TargetType.getBaseSearchTimeMaximum(aTargetType);
-		if (null != itsTable) {
-			aBaseSubgroupsMaximun = aBaseSubgroupsMaximun * itsTable.getNrColumns();
-			aBaseSearchTimeMaximum = aBaseSearchTimeMaximum * itsTable.getNrColumns();
-		}
-		setSubgroupsMaximum("" + aBaseSubgroupsMaximun);
-		
-		setSearchTimeMaximum("" + aBaseSearchTimeMaximum);
 
+		
+		String aConfigSubgroupsMaximunAuto = ConfigIni.getString("search strategy", "SubgroupsMaximun", "auto");
+		if (aConfigSubgroupsMaximunAuto.equals("auto")) {
+			int aBaseSubgroupsMaximun = TargetType.getBaseSubgroupsMaximun(aTargetType);
+			if (null != itsTable) {
+				aBaseSubgroupsMaximun = aBaseSubgroupsMaximun * itsTable.getNrColumns();
+			}
+			setSubgroupsMaximum("" + aBaseSubgroupsMaximun);
+		}
+		else {
+			int aBaseSubgroupsMaximun = ConfigIni.getInt("search strategy", "SubgroupsMaximun", TargetType.getBaseSubgroupsMaximun(aTargetType));
+			setSubgroupsMaximum("" + aBaseSubgroupsMaximun);
+		}
+		
+		String aConfigSearchTimeMaximumAuto = ConfigIni.getString("search strategy", "SearchTimeMaximum", "auto");
+		if (aConfigSearchTimeMaximumAuto.equals("auto")) {
+			double aBaseSearchTimeMaximum = TargetType.getBaseSearchTimeMaximum(aTargetType);
+			if (null != itsTable) {
+				aBaseSearchTimeMaximum = aBaseSearchTimeMaximum * itsTable.getNrColumns();
+			}
+			setSearchTimeMaximum("" + aBaseSearchTimeMaximum);
+		}
+		else {
+			double aConfigSearchTimeMaximum = ConfigIni.getDouble("search strategy", "SearchTimeMaximum", TargetType.getBaseSearchTimeMaximum(aTargetType));
+			setSearchTimeMaximum("" + aConfigSearchTimeMaximum);
+		}
+		
 		// search strategy
 		setStrategyWidth("100");
 		setNrBins("8");
@@ -1270,8 +1306,8 @@ public class MiningWindow extends JFrame implements ActionListener
 				
 				String aMethod = aANOVA.getMethod();
 				
-				jLabelTargetInfoText.setText(String.format("%s: %s (%s)",
-						aMethod, aANOVA.getFormatPairwiseComparison(), aANOVA.getFstatPval() ));
+				jLabelTargetInfoText.setText(String.format("%s: %s (p=%s)",
+						aMethod, aANOVA.getFormatPairwiseComparison(), (1 - aANOVA.getFstatPvalInvert()) ));
 				break;
 			}
 			case TRIPLE_ANCOVA :
@@ -1287,8 +1323,14 @@ public class MiningWindow extends JFrame implements ActionListener
 
 				RserveUtil.startup();
 				//RserveUtil.connect();
-				AncovaMeasure aANCOVA =
-						new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
+				AncovaMeasure aANCOVA = new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
+				//if (QM.ANCOVA.GUI_TEXT.equals(getQualityMeasureName())) {
+				//	aANCOVA = new AncovaMeasure(QM.ANCOVA, aIVColumn, aCOVColumn, aDVColumn);
+				//}
+				//else if (QM.ANCOVA_FANCOVA.GUI_TEXT.equals(getQualityMeasureName())) {
+				//	aANCOVA = new AncovaMeasure(QM.ANCOVA_FANCOVA, aIVColumn, aCOVColumn, aDVColumn);
+				//} 
+				 
 				//RserveUtil.disconnect();
 				RserveUtil.shutdown();
 				
@@ -1297,8 +1339,8 @@ public class MiningWindow extends JFrame implements ActionListener
 				
 				String aMethod = aANCOVA.getMethod();
 				
-				jLabelTargetInfoText.setText(String.format("%s: %s (%s)",
-						aMethod, aANCOVA.getFormatPairwiseComparison(), aANCOVA.getFstatPval() ));
+				jLabelTargetInfoText.setText(String.format("%s: %s",
+						aMethod, aANCOVA.getFormatPairwiseComparison()));
 				break;
 			}
 			case MULTI_LABEL :

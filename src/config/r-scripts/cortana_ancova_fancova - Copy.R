@@ -1,5 +1,3 @@
-rm(list=ls());
-
 if(!require(car)){install.packages("car")};
 if(!require(emmeans)){install.packages("emmeans")};
 if(!require(gtools)){install.packages("gtools")};
@@ -14,8 +12,6 @@ cortana_ancova <- function (input) {
     p.value <- 1;
     pairwise.result <- c('null');
     is.parametric.ancova <- TRUE;
-    #reg.interaction <- 0.06;
-    print(reg.interaction)
     
     if (is.null(reg.interaction) || is.na(reg.interaction) ) {
 
@@ -64,10 +60,8 @@ cortana_ancova <- function (input) {
                 input.comb$cov.jitter <- jitter(input.comb$cov, factor=0.2);
                 input.comb$dv.jitter <- jitter(input.comb$dv, factor=0.2);
 
-                # 這邊是無母數ANOVA鑑定
                 tryCatch({
                         Taov.result <- T.aov(input.comb[,"cov"], input.comb[,"dv"], input.comb[,"iv.number"], plot=FALSE, data.points=TRUE);
-                        #print("Taov.result ok");
                     },
                     warning = function(w) {}, 
                     error=function(e){
@@ -76,17 +70,14 @@ cortana_ancova <- function (input) {
                 if (is.null(Taov.result)) {
                     tryCatch({
                             Taov.result <- T.aov(input.comb$cov.jitter, input.comb$dv.jitter, input.comb$iv.number, plot=FALSE, data.points=TRUE);
-                            #print("Taov.result 2 ok");
                         },
                         warning = function(w2) {}, 
                         error=function(e2){
                     });
                 };
 
-                # 這邊半母數ANCOVA鑑定，也就是fANCOVA
                 tryCatch({
                         loess.result <- loess.ancova(input.comb$cov, input.comb$dv, input.comb$iv.number, plot=FALSE, data.points=TRUE);
-                        #print("loess.result ok");
                     }, 
                     warning = function(w) {}, 
                     error=function(e){
@@ -102,7 +93,6 @@ cortana_ancova <- function (input) {
                     });
                 };
                 
-                # 實際上可能會出錯，所以需要重做幾次
             };
             
             if (is.null(Taov.result) || is.null(loess.result)) {
@@ -141,4 +131,4 @@ cortana_ancova <- function (input) {
     paste(is.parametric.ancova, sprintf("%.5f", p.value), paste(pairwise.result, collapse=";"), sep=",");
 };
 print("script|data");
-cortana_ancova(data.frame(iv = c('E','E','E','E','E','E','E','E','E','E','C','C','C','C','C','C','C','C','C','C'),cov = c(33,14,19,1,12,13,27,15,45,22,22,12,5,13,17,15,13,14,19,16),dv = c(21,24,21,20,23,24,23,21,25,24,21,23,25,23,23,24,24,20,22,24)));
+cortana_ancova(data.frame(iv = c('ctl','ctl','ctl','ctl','ctl','ctl','ctl','ctl','ctl','ctl','ctl','exp','exp','exp','exp','exp','exp','exp','exp','exp','exp','exp','exp'),cov = c(12,13,13,11,9,2,5,10,9,7,7,13,13,11,13,15,11,15,11,11,15,13,20),dv = c(21,24,20,19,18,5,18,17,18,10,15,22,24,16,26,15,18,18,19,16,21,23,7)));

@@ -1,6 +1,7 @@
 package nl.liacs.subdisc;
 
 import java.util.*;
+import java.lang.*;
 
 public class AnovaMeasure
 {
@@ -156,8 +157,9 @@ public class AnovaMeasure
 	public double getFstatPval() {
 		return itsFstatPval;
 	}
+	
 	public double getFstatPvalInvert() {
-		return (1 - itsFstatPval);
+		return (Math.round( (1 - itsFstatPval) * 100) / 100);
 	}
 	
 	public String getFormatPairwiseComparison() {

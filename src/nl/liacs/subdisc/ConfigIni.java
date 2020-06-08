@@ -31,6 +31,7 @@ public class ConfigIni
 			
 			if (itsIniFile.isFile() == false) {
 				String aConfigContent = JARTextFileLoader.load(itsIniName);
+				Log.logCommandLine(aConfigContent);
 				BufferedWriter writer = null;
 			    writer = new BufferedWriter( new FileWriter( itsIniPath ));
 			    writer.write( aConfigContent);
@@ -51,6 +52,7 @@ public class ConfigIni
 		try {
 			String aJarPath = new File(ConfigIni.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 			itsIniPath = aJarPath + "/" + itsIniName;
+			Log.logCommandLine("itsIniPath: " + itsIniPath);
 			itsIniFile = new File(itsIniPath);
 		}
 		catch (Exception e) {
@@ -95,7 +97,7 @@ public class ConfigIni
 			aValue = aValue.toLowerCase().trim();
 			return (aValue.equals("true") || aValue.equals("t")  
 					|| aValue.equals("yes") || aValue.equals("y")
-					||aValue.equals("1"));
+					|| aValue.equals("1"));
 		}
 	}
 	
@@ -128,6 +130,17 @@ public class ConfigIni
 		String aValue = (String) itsIni.get(aHeader, aKey);
 		return (aValue != null ? Float.parseFloat(aValue): aDefaultValue);
 	}
+	
+	public static double getDouble(String aHeader, String aKey, double aDefaultValue) {
+		loadIni();
+		if (null == itsIni) {
+			return aDefaultValue;
+		}
+		String aValue = (String) itsIni.get(aHeader, aKey);
+		return (aValue != null ? Double.parseDouble(aValue): aDefaultValue);
+	}
+	
+	
 	
 	public static void set(String aHeader,  String aKey, String aValue) {
 		String content = "";

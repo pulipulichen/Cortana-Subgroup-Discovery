@@ -1,6 +1,7 @@
 package nl.liacs.subdisc;
 
 import java.util.*;
+import java.lang.*;
 
 public class AncovaMeasure
 {
@@ -19,6 +20,7 @@ public class AncovaMeasure
 	
 	private boolean itsIsParametricAncova = true;
 	private double itsFstatPval = 0;
+	private double itsHoRSPval = -1;	// homogeneity of regression slopes.
 	private ArrayList<String> itsPairwiseComparison = new ArrayList<String>();
 
 	//make a base model from two columns
@@ -67,7 +69,7 @@ public class AncovaMeasure
 			String aSplitor = "print(\"script|data\");";
 			int endIndex = aRscript.indexOf(aSplitor);
 			AncovaMeasure.itsFunctionRscriptANCOVA = aRscript.substring(0, endIndex);
-			//Log.logCommandLine("itsFunctionRscript: " + AncovaMeasure.itsFunctionRscript);
+			// Log.logCommandLine("itsFunctionRscript A: " + AncovaMeasure.itsFunctionRscriptANCOVA);
 		}
 		
 		if (null == AncovaMeasure.itsFunctionRscriptANCOVAfANCOVA) {
@@ -145,23 +147,24 @@ public class AncovaMeasure
 		
 		//String aData = "iv = c(1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2),cov = c(11,12,19,13,17,15,17,14,13,16,11,14,10,12,12,13,10,15,14,11),dv = c(21,23,25,23,23,24,24,20,22,24,21,24,21,20,23,24,23,21,25,24)";
 		String aDataScript = aIVData + aCOVData + aDVData + anEndData;
-		//Log.logCommandLine("aDataScript: " + aDataScript);
 		
+		// Log.logCommandLine("aDataScript: " + aDataScript);
 		// Init AncovaMeasure.itsRscriptFoot
 		initFunctionRscript();
 		
 		
 		String aFunctionRscript = AncovaMeasure.itsFunctionRscriptANCOVA;
-		if (itsQualityMeasure == QM.ANCOVA_FANCOVA) {
-			aFunctionRscript = AncovaMeasure.itsFunctionRscriptANCOVAfANCOVA;
-		}
+		//if (itsQualityMeasure == QM.ANCOVA_FANCOVA) {
+		//	aFunctionRscript = AncovaMeasure.itsFunctionRscriptANCOVAfANCOVA;
+		//}
 		
+		//Log.logCommandLine("" + itsQualityMeasure.GUI_TEXT);
 		//Log.logCommandLine("" + aFunctionRscript);
 		//Log.logCommandLine("" + aDataScript);
 		
 		
 		String aReturn = RserveUtil.runScript(itsQualityMeasure.GUI_TEXT, aDataScript, aFunctionRscript);
-		
+		//Log.logCommandLine("" + aReturn);
 		if (null == aReturn) {
 			Log.logCommandLine("aReturn null");
 			return;
@@ -173,9 +176,13 @@ public class AncovaMeasure
 			itsIsParametricAncova = false;
 		}
 		itsFstatPval = Double.parseDouble(aReturnParts[1]);
-		//Log.logCommandLine("ANCOVA Result: " + aReturnParts[1]);
+		if (aReturnParts[2].equals("NA") == false) {
+			itsHoRSPval = Double.parseDouble(aReturnParts[2]);			
+		}
 		
-		String[] aPairwiseComparison = aReturnParts[2].split(";");
+		//Log.logCommandLine("ANCOVA Result: " + aReturnParts[2]);
+		
+		String[] aPairwiseComparison = aReturnParts[3].split(";");
 		//itsPairwiseComparison.add(aReturnParts[1] + " (" + aReturnParts[0] + ")");
 		itsPairwiseComparison = new ArrayList<String>( Arrays.asList( aPairwiseComparison ) );
 	}
@@ -185,7 +192,8 @@ public class AncovaMeasure
 	}
 	
 	public String getMethod() {
-		String aMethod = "ANCOVA";
+		String aMethod = "HoRS p=" + itsHoRSPval + " / F p=" + itsFstatPval + "";
+		// homogeneity of regression slopes.
 		if (false == itsIsParametricAncova) {
 			aMethod = "fANCOVA";
 		}
@@ -197,7 +205,8 @@ public class AncovaMeasure
 		return itsFstatPval;
 	}
 	public double getFstatPvalInvert() {
-		return (1 - itsFstatPval);
+		double digit = 100000;
+		return (Math.round( (1 - itsFstatPval) * digit) / digit);
 	}
 	
 	public String getFormatPairwiseComparison() {

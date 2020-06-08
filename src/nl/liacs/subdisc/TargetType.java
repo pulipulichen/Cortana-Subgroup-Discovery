@@ -296,6 +296,28 @@ public enum TargetType implements EnumInterface
 				}
 			}
 		}
+		
+		// used by ResultWindow.initComponents()
+		public static int getBaseRefinementDepth(TargetType theType)
+		{
+			switch (theType)
+			{
+				case SINGLE_NOMINAL		: return 2;
+				case SINGLE_NUMERIC		: return 2;
+				case SINGLE_ORDINAL		: return 2;
+				case DOUBLE_REGRESSION		: return 2;
+				case DOUBLE_CORRELATION		: return 2;
+				case GROUP_ANOVA		: return 2;
+				case TRIPLE_ANCOVA		: return 2;
+				case MULTI_LABEL		: return 2;
+				case MULTI_BINARY_CLASSIFICATION: return 2;	// TODO true?
+				default :
+				{
+					unknownTargetType("hasBaseModel", theType);
+					return 100;
+				}
+			}
+		}
 
 		public static double getBaseSearchTimeMaximum(TargetType theType)
 		{

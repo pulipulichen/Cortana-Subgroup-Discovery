@@ -92,8 +92,8 @@ public enum QM implements EnumInterface
 	ANOVA	("ANOVA F stat. (p-val)", "-1.0", TargetType.GROUP_ANOVA),
 	
 	// TRIPLE_ANCOVA
-	ANCOVA	("ANCOVA", "-1.0", TargetType.TRIPLE_ANCOVA),
-	ANCOVA_FANCOVA	("ANCOVA or fANOCVA", "-1.0", TargetType.TRIPLE_ANCOVA);
+	// ANCOVA_FANCOVA	("ANCOVA or fANOCVA", "-1.0", TargetType.TRIPLE_ANCOVA), // 不使用，因為fANCOVA有問題
+	ANCOVA	("ANCOVA", "-1.0", TargetType.TRIPLE_ANCOVA);
 
 	// to enforce implementation of SINGLE_NUMERIC and SINGLE_ORDINAL QMs
 	static { requiredStatsTest(); };

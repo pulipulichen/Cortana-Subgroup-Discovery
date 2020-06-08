@@ -195,12 +195,12 @@ public class Condition implements Comparable<Condition>
 					
 					if (!Float.isNaN(itsNumericValue)) { //single value?
 						//return Float.toString((itsNumericValue - min) / base);
-						//return Float.toString( Math.round((itsNumericValue - min) / base * 10000) / 100);
-						return Float.toString( Math.round((itsNumericValue - min) / base ));
+						return Float.toString( Math.round((itsNumericValue - min) / base * 10000) / 100);
+						//return Float.toString( Math.round((itsNumericValue - min) / base ));
 					}
 					else if (itsInterval != null) {//interval?
-						//return Float.toString( Math.round((itsInterval.getValue() - min) / base * 10000) / 100);
-						return Float.toString( Math.round((itsInterval.getValue() - min) / base ));
+						return Float.toString( Math.round((itsInterval.getValue() - min) / base * 10000) / 100);
+						//return Float.toString( Math.round((itsInterval.getValue() - min) / base ));
 						//return itsInterval;
 					}
 					else
